@@ -68,5 +68,7 @@ $route['forum/edit/(:any)'] = "forum/edit/$1";
 
 $route["remove/(:any)"] = "lobby/remove/$1";
 
+$route["login"] = "login";
+$route["login/authenticate"]= "login/authenticate";
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
