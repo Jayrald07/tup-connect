@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------------
@@ -50,5 +50,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |		my-controller/my-method	-> my_controller/my_method
 */
 $route['default_controller'] = 'welcome';
+$route['lobby'] = "lobby";
+$route["lobby/create"] = "lobby/create";
+$route["lobby/submit"] = "lobby/submit";
+
+$route['fw'] = "freedom_wall";
+$route["fw/create"] = "freedom_wall/create";
+$route["fw/submit"] = "freedom_wall/submit";
+
+$route['forum'] = "forum";
+$route["forum/create"] = "forum/create";
+$route["forum/submit"] = "forum/submit";
+
+$route['lobby/edit/(:any)'] = "lobby/edit/$1";
+$route['fw/edit/(:any)'] = "freedom_wall/edit/$1";
+$route['forum/edit/(:any)'] = "forum/edit/$1";
+
+$route["remove/(:any)"] = "lobby/remove/$1";
+
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
