@@ -62,6 +62,10 @@ $route['forum'] = "forum";
 $route["forum/create"] = "forum/create";
 $route["forum/submit"] = "forum/submit";
 
+$route['lobby/edit/(:any)'] = "lobby/edit/$1";
+$route['fw/edit/(:any)'] = "freedom_wall/edit/$1";
+$route['forum/edit/(:any)'] = "forum/edit/$1";
+
 $route["remove/(:any)"] = "lobby/remove/$1";
 
 $route['404_override'] = '';

@@ -19,6 +19,21 @@ class Forum extends CI_Controller
         $this->load->view("view_post", $data);
     }
 
+    public function edit($post_id)
+    {
+        $data["post"] = $this->post_model->get_post_front($post_id);
+        $data["type"] = "forum";
+        $this->load->view("edit_post", $data);
+    }
+
+    public function save()
+    {
+        if ($this->post_model->save(array(
+            "content" => $this->input->post("content"),
+            "post_id" => $this->input->post("post_id")
+        ))) redirect("./forum");
+    }
+
     public function create()
     {
 

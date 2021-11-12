@@ -8,6 +8,7 @@ class Lobby extends CI_Controller
     {
         parent::__construct();
         $this->load->library(array('post', 'session'));
+        $this->load->model("post_model");
     }
 
     public function index()
@@ -30,6 +31,21 @@ class Lobby extends CI_Controller
             "category" => false,
             "type" => "lobby"
         ));
+    }
+
+    public function edit($post_id)
+    {
+        $data["post"] = $this->post_model->get_post_front($post_id);
+        $data["type"] = "lobby";
+        $this->load->view("edit_post", $data);
+    }
+
+    public function save()
+    {
+        if ($this->post_model->save(array(
+            "content" => $this->input->post("content"),
+            "post_id" => $this->input->post("post_id")
+        ))) redirect("./lobby");
     }
 
     public function remove($post_id)

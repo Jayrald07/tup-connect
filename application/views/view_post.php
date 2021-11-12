@@ -42,7 +42,9 @@
                     <p><?php echo $post["post_text"]; ?></p>
                     <small><?php echo $post["date_time_stamp"]; ?></small><br />
                     <a href="./remove/<?php echo $post["post_id"]; ?>" target="_self">Delete</a>
-                    <a href="#">Edit</a>
+                    <?php if ($type != 'fw') { ?>
+                        <a href="./<?php echo $type; ?>/edit/<?php echo $post["post_id"];  ?>">Edit</a>
+                    <?php } ?>
                 </section>
                 <hr />
             <?php endforeach ?>

@@ -64,12 +64,26 @@ class Post_model extends CI_Model
         return $query->result_array();
     }
 
+    public function save($data)
+    {
+        $this->db->set("post_text", $data["content"]);
+        $this->db->where("post_id", $data["post_id"]);
+        return $this->db->update("tbl_post");
+    }
+
     public function remove_post($post_id)
     {
         $this->db->set("status", "removed");
         $this->db->where("post_id", $post_id);
-        $this->db->update("tbl_post");
-        return true;
+        return $this->db->update("tbl_post");
+    }
+
+    public function get_post_front($post_id)
+    {
+        $this->db->select("post_id, post_text");
+        $this->db->where("post_id", $post_id);
+        $query = $this->db->get("tbl_post");
+        return $query->result_array();
     }
 
     public function get_posts($type)
