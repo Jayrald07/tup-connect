@@ -34,6 +34,47 @@ class Forum extends CI_Controller
         ))) redirect("./forum");
     }
 
+    public function report($post_id)
+    {
+        $data["post"] = $this->post_model->get_post_front($post_id);
+        $report_id = random_string('alnum', 15);
+        $post_report_id = random_string('alnum', 15);
+
+        $data = array(
+            "certain" => array(
+                "report_id" => $report_id,
+                "report_description" => $this->input->post('report_description'),
+            ),
+            "report_id" => $report_id,
+            "report_description" => $this->input->post('report_description'),
+            
+            "certain1" => array(
+                "post_report_id" => $post_report_id,
+                "post_id" => $post_id,
+                "report_id" => $report_id,
+            ),
+        );  
+
+        if ($this->post->report($data)) redirect("./fw/view_post");
+        else redirect("./fw");
+    }
+
+    public function user_report(){
+        $report_id = random_string('alnum', 15);
+
+        $data = array(
+            "certain" => array(
+                "report_id" => $report_id,
+                "report_description" => $this->input->post('report_description'),
+            ),
+            "report_id" => $report_id,
+            "report_description" => $this->input->post('report_description'),
+        );
+
+        if ($this->post->user_report($data)) redirect("./fw/view_post");
+        else redirect("./fw");
+    }
+
     public function create()
     {
 
