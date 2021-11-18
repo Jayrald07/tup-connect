@@ -31,7 +31,7 @@ class Forum extends CI_Controller
         if ($this->post_model->save(array(
             "content" => $this->input->post("content"),
             "post_id" => $this->input->post("post_id")
-        ))) redirect("./forum");
+        ))) redirect(base_url("index.php/") . "forum");
     }
 
     public function report($post_id)
@@ -47,19 +47,19 @@ class Forum extends CI_Controller
             ),
             "report_id" => $report_id,
             "report_description" => $this->input->post('report_description'),
-            
+
             "certain1" => array(
                 "post_report_id" => $post_report_id,
                 "post_id" => $post_id,
                 "report_id" => $report_id,
             ),
-        );  
+        );
 
-        if ($this->post->report($data)) redirect("./forum/view_post");
-        else redirect("./forum");
+        if ($this->post->report($data)) redirect(base_url("index.php/") . "forum/view_post");
+        else redirect(base_url("index.php/") . "forum");
     }
 
-    public function user_report()
+    public function user_report($user_detail_id)
     {
         $report_id = random_string('alnum', 15);
         $user_report_id = random_string('alnum', 15);
@@ -75,12 +75,12 @@ class Forum extends CI_Controller
             "certain1" => array(
                 "user_report_id" => $user_report_id,
                 "user_detail_id" => $this->session->userdata('user_id'),
+                "reported_user_id" => $user_detail_id,
                 "report_id" => $report_id,
             ),
         );
-
-        if ($this->post->user_report($data)) redirect("./forum/view_post");
-        else redirect("./forum");
+        if ($this->post->user_report($data)) redirect(base_url("index.php/") . "forum/view_post");
+        else redirect(base_url("index.php/") . "forum");
     }
 
     public function create()
@@ -117,7 +117,7 @@ class Forum extends CI_Controller
             "status" => "posted",
         );
 
-        if ($this->post->submit($data)) redirect("./forum");
-        else redirect("./forum/create");
+        if ($this->post->submit($data)) redirect(base_url("index.php/") . "forum");
+        else redirect(base_url("index.php/") . "forum/create");
     }
 }

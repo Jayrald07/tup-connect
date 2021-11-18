@@ -69,15 +69,14 @@ $route['forum/edit/(:any)'] = "forum/edit/$1";
 $route["remove/(:any)"] = "lobby/remove/$1";
 
 $route["login"] = "login";
-$route["login/authenticate"]= "login/authenticate";
+$route["login/authenticate"] = "login/authenticate";
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
-$route["lobby/report"] = "lobby/report";
-$route["fw/report"] = "freedom_wall/report";
-$route["forum/report"] = "forum/report";
+$route["lobby/report/(:any)"] = "lobby/report/$1";
+$route["fw/report/(:any)"] = "freedom_wall/report/$1";
+$route["forum/report/(:any)"] = "forum/report/$1";
 
-$route["lobby/user_report"] = "lobby/user_report";
-$route["fw/user_report"] = "freedom_wall/user_report";
-$route["forum/user_report"] = "forum/user_report";
-
+$route["lobby/user_report/(:any)"] = "lobby/user_report/$1";
+$route["fw/user_report/(:any)"] = "freedom_wall/user_report/$1";
+$route["forum/user_report/(:any)"] = "forum/user_report/$1";

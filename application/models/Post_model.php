@@ -113,7 +113,7 @@ class Post_model extends CI_Model
         switch ($type) {
             case 'lobby':
                 $query = $this->db->query("
-                select tbl_lobby_post.category_id, tbl_post.*
+                select tbl_lobby.user_detail_id, tbl_lobby_post.category_id, tbl_post.*
                 from tbl_lobby, tbl_lobby_post, tbl_post
                 where 
                     tbl_lobby.lobby_id = tbl_lobby_post.lobby_id and tbl_lobby_post.post_id = tbl_post.post_id and tbl_post.status = 'posted'
@@ -123,7 +123,7 @@ class Post_model extends CI_Model
 
             case 'fw':
                 $query = $this->db->query("
-                select tbl_freedom_wall.fw_id, tbl_post.*
+                select tbl_freedom_wall.user_detail_id, tbl_freedom_wall.fw_id, tbl_post.*
                 from tbl_freedom_wall, tbl_post
                 where tbl_freedom_wall.post_id = tbl_post.post_id and tbl_post.status = 'posted'
                 order by tbl_post.date_time_stamp desc");
@@ -132,7 +132,7 @@ class Post_model extends CI_Model
 
             case 'forum':
                 $query = $this->db->query("
-                select tbl_forum.forum_id, tbl_forum.category_id, tbl_post.*
+                select tbl_forum.user_detail_id, tbl_forum.forum_id, tbl_forum.category_id, tbl_post.*
                 from tbl_forum, tbl_post
                 where tbl_forum.post_id = tbl_post.post_id and tbl_post.status = 'posted'
                 order by tbl_post.date_time_stamp desc");
