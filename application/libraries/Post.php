@@ -45,7 +45,7 @@ class Post
         $this->CI->post_model->set_new_report($data["certain"]);
         $this->CI->post_model->set_new_post_report($data["certain1"]);
     }
-    
+
     public function user_report($data)
     {
         $this->CI->post_model->set_new_report($data["certain"]);
