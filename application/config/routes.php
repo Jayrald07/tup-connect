@@ -72,3 +72,12 @@ $route["login"] = "login";
 $route["login/authenticate"]= "login/authenticate";
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+$route["lobby/report"] = "lobby/report";
+$route["fw/report"] = "freedom_wall/report";
+$route["forum/report"] = "forum/report";
+
+$route["lobby/user_report"] = "lobby/user_report";
+$route["fw/user_report"] = "freedom_wall/user_report";
+$route["forum/user_report"] = "forum/user_report";
+
