@@ -70,5 +70,8 @@ $route["remove/(:any)"] = "lobby/remove/$1";
 
 $route["login"] = "login";
 $route["login/authenticate"]= "login/authenticate";
+
+$route["register"] = "register";
+
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
