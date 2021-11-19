@@ -7,7 +7,7 @@ class Lobby extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->library(array('post', 'session'));
+        $this->load->library(array('post', 'session', 'comment'));
         $this->load->model("post_model");
     }
 
@@ -17,6 +17,7 @@ class Lobby extends CI_Controller
 
         $data["type"] = "lobby";
         $data["posts"] = $this->post->get_posts('lobby');
+        $data["comments"] = $this->comment_model->get_comment();
 
         $this->load->view("view_post", $data);
     }
@@ -51,6 +52,28 @@ class Lobby extends CI_Controller
     public function remove($post_id)
     {
         if ($this->post->remove_post($post_id)) redirect("./lobby");
+    }
+
+    public function submit_comment($post_id)
+    {
+        $date = new DateTime('now');
+        $comment_id = random_string('alnum', 15);
+
+        $data = array(
+            "certain" => array(
+                "comment_id" => $comment_id,
+                "post_id" => $post_id,
+                "comment_text" => $this->input->post('comment'),
+                "comment_up_vote" => 0,
+                "comment_down_vote" => 0,
+                "user_detail_id" => $this->session->userdata('user_id'),
+                "date_time_stamp" => $date->format("Y-m-d H:i:s"),
+                "status" => "submitted",
+            ),
+        );
+        
+        if ($this->comment->submit_comment($data)) redirect("./fw");
+        else redirect("./fw");
     }
 
     public function submit()

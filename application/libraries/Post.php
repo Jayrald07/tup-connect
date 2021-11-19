@@ -39,7 +39,7 @@ class Post
     {
         return $this->CI->post_model->remove_post($post_id);
     }
-
+    
     public function submit($data)
     {
 
@@ -61,6 +61,13 @@ class Post
                 "lobby_id" => $data["lobby_id"],
                 "category_id" => $data["category_id"] || 0,
                 "post_id" => $data["post_id"],
+            ));
+        }
+
+        if ($data['type'] == 'report'){
+            $third = $this->CI->post_model->set_new_report(array(
+                "report_id" => $data["report_id"],
+                "report_description" => $data["report_description"],
             ));
         }
 

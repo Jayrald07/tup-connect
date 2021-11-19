@@ -42,11 +42,30 @@
                     <p><?php echo $post["post_text"]; ?></p>
                     <small><?php echo $post["date_time_stamp"]; ?></small><br />
                     <a href="./remove/<?php echo $post["post_id"]; ?>" target="_self">Delete</a>
+                    <a onclick="pop()" class ="btn">Report</a>
                     <?php if ($type != 'fw') { ?>
                         <a href="./<?php echo $type; ?>/edit/<?php echo $post["post_id"];  ?>">Edit</a>
                     <?php } ?>
+                        <?php foreach ($comments as $comment): ?>
+                            
+                        <?php if($post["post_id"] == $comment["post_id"]) { ?>
+                        <section>
+                            <p><?php echo $comment["comment_text"]; ?></p>
+                            <small><?php echo $comment["date_time_stamp"]; ?></small>
+                            <span><button> ⇧ </button><span id="upvote_result"> 0 </span> | 
+                            <button> ⇩ </button><span id="downvote_result" > 0 </span></span>
+                        </section>
+                        <hr />
+                        <?php } ?>
+                    <?php endforeach ?>
+                    <section>
+                        <form method="POST" action="./<?php echo $type; ?>/submit_comment/<?php echo $post["post_id"];  ?>">
+                            <textarea name="comment" rows="5" cols="50" maxlength="2000" placeholder="Type your comment..." required></textarea> </br>
+                            <input type="submit" name="submit_comment" />   
+                            <hr />
+                        </form>
+                    </section>
                 </section>
-                <hr />
             <?php endforeach ?>
         </main>
     </div>

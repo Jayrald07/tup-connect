@@ -40,6 +40,16 @@ class Post_model extends CI_Model
         return $this->db->insert("tbl_post_image", $data);
     }
 
+    public function set_new_report($data)
+    {
+        return $this->db->insert("tbl_report", $data);
+    }
+
+    public function set_new_post_report($data)
+    {
+        return $this->db->insert("tbl_post_report", $data);
+    }
+
     public function get_groups()
     {
         $query = $this->db->get("tbl_group");
@@ -78,13 +88,19 @@ class Post_model extends CI_Model
         return $this->db->update("tbl_post");
     }
 
+    public function report_post($report_id)
+    {
+        $this->db->where("report_id", $report_id);
+        return $this->db->update("tbl_report");
+    }
+
     public function get_post_front($post_id)
     {
         $this->db->select("post_id, post_text");
         $this->db->where("post_id", $post_id);
         $query = $this->db->get("tbl_post");
         return $query->result_array();
-    }
+    } 
 
     public function get_posts($type)
     {
