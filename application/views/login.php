@@ -16,6 +16,7 @@
 
     ?>
 
+<form action="<?=base_url('index.php/login')?>" method="post">  
     <label for="username"> Username or Email</label>
     <input type="text" name= "username" > <br> <br>
 
@@ -24,6 +25,8 @@
 
     <input type="submit" value= "Log in">
 
-    </form>
+    <a href="<?=base_url()?>index.php/login/forgotPassword">Forgot Password?</a>
+
+</form>
 </body>
 </html>
