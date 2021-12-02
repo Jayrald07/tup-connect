@@ -40,6 +40,18 @@ class Post
         return $this->CI->post_model->remove_post($post_id);
     }
 
+    public function report($data)
+    {
+        $this->CI->post_model->set_new_report($data["certain"]);
+        $this->CI->post_model->set_new_post_report($data["certain1"]);
+    }
+
+    public function user_report($data)
+    {
+        $this->CI->post_model->set_new_report($data["certain"]);
+        $this->CI->post_model->set_new_user_report($data["certain1"]);
+    }
+
     public function submit($data)
     {
 

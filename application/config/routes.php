@@ -79,3 +79,11 @@ $route["verify_email"] = "register/verify_email";
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+$route["lobby/report/(:any)"] = "lobby/report/$1";
+$route["fw/report/(:any)"] = "freedom_wall/report/$1";
+$route["forum/report/(:any)"] = "forum/report/$1";
+
+$route["lobby/user_report/(:any)"] = "lobby/user_report/$1";
+$route["fw/user_report/(:any)"] = "freedom_wall/user_report/$1";
+$route["forum/user_report/(:any)"] = "forum/user_report/$1";
