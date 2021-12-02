@@ -2,8 +2,6 @@
 class Lobby extends CI_Controller
 {
 
-    private $mock_session_data = array('user_id' => 'u123');
-
     public function __construct()
     {
         parent::__construct();
@@ -13,8 +11,6 @@ class Lobby extends CI_Controller
 
     public function index()
     {
-        $this->session->set_userdata($this->mock_session_data);
-
         $data["type"] = "lobby";
         $data["posts"] = $this->post->get_posts('lobby');
         $this->load->view("view_post", $data);

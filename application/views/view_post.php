@@ -5,84 +5,34 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+
+    <link rel="stylesheet" href="<?php echo base_url() ?>/public/style.css">
     <title>Post</title>
 </head>
-<style>
-    .container {
-        display: grid;
-        grid-template-columns: 1fr 4fr;
-    }
-
-    ul {
-        padding: 0;
-        margin: 0
-    }
-
-    ul li a {
-        text-decoration: none;
-        padding: 10px;
-        display: block;
-    }
-
-    .btn {
-        cursor: pointer;
-        color: #0000EE;
-    }
-
-    #box {
-        width: 500px;
-        background: #f1f1f1;
-        box-shadow: 0 0 5px black;
-        border-radius: 8px;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 9999;
-        padding: 10px;
-        text-align: center;
-        display: none;
-    }
-
-    #box span {
-        display: block;
-    }
-
-    #box p {
-        display: inline-block;
-    }
-
-    #box1 {
-        width: 500px;
-        background: #f1f1f1;
-        box-shadow: 0 0 5px black;
-        border-radius: 8px;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 9999;
-        padding: 10px;
-        text-align: center;
-        display: none;
-    }
-
-    #box1 span {
-        display: block;
-    }
-
-    #box1 p {
-        display: inline-block;
-    }
-</style>
 
 <body>
-    <div class="container">
-        <aside>
+    <nav>
+        <ul>
+            <li>
+                <a href="#">
+                    <img src="<?php echo base_url() ?>/public/assets/logo.svg" />
+                </a>
+            </li>
+            <li class="user-pic-container">
+                <a href="#">
+                    <img class="user-pic" src="<?php echo base_url() ?>/public/assets/user.png" />
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div class="post-container">
+        <aside class="pages-navigator">
             <ul>
-                <li><a href="<?php echo base_url("index.php/"); ?>lobby">Lobby</a></li>
-                <li><a href="<?php echo base_url("index.php/"); ?>fw">Freedom Wall</a></li>
-                <li><a href="<?php echo base_url("index.php/"); ?>forum">Forum</a></li>
+                <li><a href="./lobby" class=<?php if ($type === "lobby") echo "active-page" ?>><i class="fas fa-th-large"></i> Lobby</a></li>
+                <li><a href="./fw" class=<?php if ($type === "org") echo "active-page" ?>><i class="fas fa-users"></i> Organization</a></li>
+                <li><a href="./fw" class=<?php if ($type === "fw") echo "active-page" ?>><i class="fas fa-volume-up"></i> Freedom Wall</a></li>
+                <li><a href="./forum" class=<?php if ($type === "forum") echo "active-page" ?>><i class="fas fa-comments"></i> Forum</a></li>
             </ul>
         </aside>
         <main>
