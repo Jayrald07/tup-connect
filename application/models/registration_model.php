@@ -75,4 +75,58 @@ class Registration_model extends CI_Model
             else return false;
         else return false;
     }
+
+    public function final_insert($data)
+    {
+        $this->db->set(array(
+            "campus_id" => $data["campus_id"],
+            "college_id" => $data["college_id"],
+            "course_id" => $data["course_id"],
+        ));
+        $this->db->where("user_detail_id", $data["user_detail_id"]);
+
+        if ($this->db->update("tbl_user_detail")) {
+            for ($i = 0; $i < count($data["interests"]); $i++) {
+                $this->db->insert("tbl_user_interest", array(
+                    "user_detail_id" => $data["user_detail_id"],
+                    "category_id" => $data["interests"][$i]
+                ));
+            }
+
+            $this->db->set("status", "registered");
+            $this->db->where("user_detail_id", $data["user_detail_id"]);
+            if ($this->db->update("tbl_user")) return true;
+            else return false;
+        } else false;
+    }
+
+    public function get_campus_details()
+    {
+        $query = $this->db->get("tbl_campus");
+        return $query->result_array();
+    }
+
+    public function get_college_details()
+    {
+        $query = $this->db->get("tbl_college");
+        return $query->result_array();
+    }
+
+    public function get_course_details()
+    {
+        $query = $this->db->get("tbl_course");
+        return $query->result_array();
+    }
+
+    public function get_category_details()
+    {
+        $query = $this->db->get("tbl_category");
+        return $query->result_array();
+    }
+
+    public function get_gender_details()
+    {
+        $query = $this->db->get("tbl_gender");
+        return $query->result_array();
+    }
 }

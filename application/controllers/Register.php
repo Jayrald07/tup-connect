@@ -70,24 +70,37 @@ class Register extends CI_Controller
                         break;
                     case 'verified':
                         if ($type === "register") {
+                            $campus = $this->registration_model->get_campus_details();
+                            $college = $this->registration_model->get_college_details();
+                            $course = $this->registration_model->get_course_details();
+                            $category = $this->registration_model->get_category_details();
                             $this->load->view("registration", array(
                                 "action" => "/register/finalize",
-                                "type" => "last"
+                                "type" => "last",
+                                "campuses" => $campus,
+                                "colleges" => $college,
+                                "courses" => $course,
+                                "categories" => $category
                             ));
                         } else redirect("./register");
                         break;
                 }
             } else {
+                $gender = $this->registration_model->get_gender_details();
                 $this->load->view("registration", array(
                     "action" => "/register/validation",
-                    "type" => "first"
+                    "type" => "first",
+                    "genders" => $gender
                 ));
             };
         } else {
             if ($type === "register") {
+                $gender = $this->registration_model->get_gender_details();
+
                 $this->load->view("registration", array(
                     "action" => "/register/validation",
-                    "type" => "first"
+                    "type" => "first",
+                    "genders" => $gender
                 ));
             } else  redirect("./register");
         };
@@ -115,5 +128,19 @@ class Register extends CI_Controller
             if ($this->registration_model->update_code($res[0]['user_verification_id'])) redirect("./verify");
             else echo "may error gagi";
         }
+    }
+
+
+    public function finalize()
+    {
+        $data = array(
+            "user_detail_id" => $this->session->userdata("user_detail_id"),
+            "campus_id" => $this->input->post("college"),
+            "college_id" => $this->input->post("college"),
+            "course_id" => $this->input->post("course"),
+            "interests" => $this->input->post("user-interests"),
+        );
+
+        if ($this->registration_model->final_insert($data)) redirect("lobby");
     }
 }
