@@ -40,6 +40,28 @@ class Post_model extends CI_Model
         return $this->db->insert("tbl_post_image", $data);
     }
 
+    public function set_new_report($data)
+    {
+        return $this->db->insert("tbl_report", $data);
+    }
+
+    public function set_new_post_report($data)
+    {
+        return $this->db->insert("tbl_post_report", $data);
+    }
+
+    public function set_new_user_report($data)
+    {
+        return $this->db->insert("tbl_user_report", $data);
+    }
+
+    public function get_user_id_fw()
+    {
+        $this->load->database("tbl_freedom_wall");
+        $data = $this->db->get('user_detail_id');
+        return $data->result();
+    }
+
     public function get_groups()
     {
         $query = $this->db->get("tbl_group");
@@ -91,7 +113,7 @@ class Post_model extends CI_Model
         switch ($type) {
             case 'lobby':
                 $query = $this->db->query("
-                select tbl_lobby_post.category_id, tbl_post.*
+                select tbl_lobby.user_detail_id, tbl_lobby_post.category_id, tbl_post.*
                 from tbl_lobby, tbl_lobby_post, tbl_post
                 where 
                     tbl_lobby.lobby_id = tbl_lobby_post.lobby_id and tbl_lobby_post.post_id = tbl_post.post_id and tbl_post.status = 'posted'
@@ -101,7 +123,7 @@ class Post_model extends CI_Model
 
             case 'fw':
                 $query = $this->db->query("
-                select tbl_freedom_wall.fw_id, tbl_post.*
+                select tbl_freedom_wall.user_detail_id, tbl_freedom_wall.fw_id, tbl_post.*
                 from tbl_freedom_wall, tbl_post
                 where tbl_freedom_wall.post_id = tbl_post.post_id and tbl_post.status = 'posted'
                 order by tbl_post.date_time_stamp desc");
@@ -110,7 +132,7 @@ class Post_model extends CI_Model
 
             case 'forum':
                 $query = $this->db->query("
-                select tbl_forum.forum_id, tbl_forum.category_id, tbl_post.*
+                select tbl_forum.user_detail_id, tbl_forum.forum_id, tbl_forum.category_id, tbl_post.*
                 from tbl_forum, tbl_post
                 where tbl_forum.post_id = tbl_post.post_id and tbl_post.status = 'posted'
                 order by tbl_post.date_time_stamp desc");

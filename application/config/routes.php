@@ -52,7 +52,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 
 
-$route['default_controller'] = 'welcome';
+$route['default_controller'] = 'login';
 $route['lobby'] = "lobby";
 $route["lobby/create"] = "lobby/create";
 $route["lobby/submit"] = "lobby/submit";
@@ -74,5 +74,20 @@ $route["remove/(:any)"] = "lobby/remove/$1";
 $route["login"] = "login";
 $route["login/authenticate"] = "login/authenticate";
 $route["login/forgotPass"] = "login/forgotPass";
+
+$route["register"] = "register";
+$route["register/validation"] = "register/validation";
+
+$route["verify"] = "register/verify";
+$route["verify_email"] = "register/verify_email";
+
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+$route["lobby/report/(:any)"] = "lobby/report/$1";
+$route["fw/report/(:any)"] = "freedom_wall/report/$1";
+$route["forum/report/(:any)"] = "forum/report/$1";
+
+$route["lobby/user_report/(:any)"] = "lobby/user_report/$1";
+$route["fw/user_report/(:any)"] = "freedom_wall/user_report/$1";
+$route["forum/user_report/(:any)"] = "forum/user_report/$1";

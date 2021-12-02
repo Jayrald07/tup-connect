@@ -2,8 +2,6 @@
 class Lobby extends CI_Controller
 {
 
-    private $mock_session_data = array('user_id' => 'u123');
-
     public function __construct()
     {
         parent::__construct();
@@ -13,11 +11,8 @@ class Lobby extends CI_Controller
 
     public function index()
     {
-        $this->session->set_userdata($this->mock_session_data);
-
         $data["type"] = "lobby";
         $data["posts"] = $this->post->get_posts('lobby');
-
         $this->load->view("view_post", $data);
     }
 
@@ -45,12 +40,63 @@ class Lobby extends CI_Controller
         if ($this->post_model->save(array(
             "content" => $this->input->post("content"),
             "post_id" => $this->input->post("post_id")
-        ))) redirect("./lobby");
+
+        ))) redirect(base_url("index.php/") . "lobby");
+    }
+
+    public function report($post_id)
+    {
+        $data["post"] = $this->post_model->get_post_front($post_id);
+        $report_id = random_string('alnum', 15);
+        $post_report_id = random_string('alnum', 15);
+
+        $data = array(
+            "certain" => array(
+                "report_id" => $report_id,
+                "report_description" => $this->input->post('report_description'),
+            ),
+            "report_id" => $report_id,
+            "report_description" => $this->input->post('report_description'),
+
+            "certain1" => array(
+                "post_report_id" => $post_report_id,
+                "post_id" => $post_id,
+                "report_id" => $report_id,
+            ),
+        );
+
+        if ($this->post->report($data)) redirect(base_url("index.php/") . "lobby/view_post");
+        else redirect(base_url("index.php/") . "lobby");
+    }
+
+    public function user_report($user_detail_id)
+    {
+        $report_id = random_string('alnum', 15);
+        $user_report_id = random_string('alnum', 15);
+
+        $data = array(
+            "certain" => array(
+                "report_id" => $report_id,
+                "report_description" => $this->input->post('report_description'),
+            ),
+            "report_id" => $report_id,
+            "report_description" => $this->input->post('report_description'),
+
+            "certain1" => array(
+                "user_report_id" => $user_report_id,
+                "user_detail_id" => $this->session->userdata('user_id'),
+                "reported_user_id" => $user_detail_id,
+                "report_id" => $report_id,
+            ),
+        );
+
+        if ($this->post->user_report($data)) redirect(base_url("index.php/") . "lobby/view_post");
+        else redirect(base_url("index.php/") . "lobby");
     }
 
     public function remove($post_id)
     {
-        if ($this->post->remove_post($post_id)) redirect("./lobby");
+        if ($this->post->remove_post($post_id)) redirect(base_url("index.php/") . "lobby");
     }
 
     public function submit()
@@ -79,7 +125,7 @@ class Lobby extends CI_Controller
             "category_id" => $this->input->post("category")
         );
 
-        if ($this->post->submit($data)) redirect("./lobby");
-        else redirect("./lobby/create");
+        if ($this->post->submit($data)) redirect(base_url("index.php/") . "lobby");
+        else redirect(base_url("index.php/") . "lobby/create");
     }
 }

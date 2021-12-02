@@ -12,7 +12,15 @@ CREATE TABLE tbl_user(
     `user_email` varchar(50) NOT NULL,
     `user_name` varchar(20) NOT NULL,
     `user_password` varchar(20) NOT NULL,
-    `user_detail_id` varchar(15) NOT NULL
+    `user_detail_id` varchar(15) NOT NULL,
+    `status` varchar(15) NOT NULL
+);
+
+CREATE TABLE tbl_user_verification(
+    `user_verification_id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `user_detail_id` varchar(15) NOT NULL,
+    `code` varchar(6) NOT NULL,
+    `status` varchar(15) NOT NULL
 );
 
 CREATE TABLE tbl_user_detail(
@@ -23,7 +31,6 @@ CREATE TABLE tbl_user_detail(
     `birthday` date NOT NULL,
     `year_level` tinyint NOT NULL,
     `gender_id` int NOT NULL,
-    `report_id` varchar(15) NOT NULL,
     `college_id` int NOT NULL,
     `campus_id` int NOT NULL,
     `course_id` int NOT NULL,
@@ -31,8 +38,20 @@ CREATE TABLE tbl_user_detail(
     `image_path` varchar(50) NOT NULL
 );
 
+CREATE TABLE tbl_user_block(
+    `user_block_id` varchar(15) NOT NULL PRIMARY KEY,
+    `user_detail_id` varchar(15) NOT NULL,
+    `blocked_user_id` varchar(15) NOT NULL,
+    `block_id` varchar(15) NOT NULL
+);
+
+CREATE TABLE tbl_block(
+    `block_id` varchar(15) NOT NULL PRIMARY KEY,
+    `block_description` varchar(100) NOT NULL
+);
+
 CREATE TABLE tbl_user_interest(
-    `user_interest_id` int NOT NULL PRIMARY KEY,
+    `user_interest_id` int NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `user_detail_id` varchar(15) NOT NULL,
     `category_id` int NOT NULL
 );
@@ -207,6 +226,13 @@ CREATE TABLE tbl_forum(
 CREATE TABLE tbl_report(
     `report_id` varchar(15) NOT NULL PRIMARY KEY,
     `report_description` varchar(100) NOT NULL
+);
+
+CREATE TABLE tbl_user_report(
+    `user_report_id` varchar(15) NOT NULL PRIMARY KEY,
+    `user_detail_id` varchar(15) NOT NULL,
+    `reported_user_id` varchar(15) NOT NULL,
+    `report_id` varchar(15) NOT NUll
 );
 
 INSERT INTO tbl_gender(gender) VALUES("Male");
