@@ -19,7 +19,7 @@ class Register extends CI_Controller
     {
         $config = array(
             'protocol' => 'smtp',
-            'smtp_host' => 'smtp-relay.sendinblue.com',
+            'smtp_host' => $_ENV['SMTP_HOST'],
             'smtp_port' => 587,
             'smtp_user' => $_ENV['SMTP_USER'],
             'smtp_pass' => $_ENV['SMTP_PASSWORD'],
@@ -34,7 +34,7 @@ class Register extends CI_Controller
         $htmlContent .= "<p>$email_code</p>";
 
         $this->email->to($this->input->post("tupemail"));
-        $this->email->from('admin@hyakki.com', 'TUP Connect');
+        $this->email->from($_ENV['SMTP_FROM'], 'TUP Connect');
         $this->email->subject('Email Verfication');
         $this->email->message($htmlContent);
 

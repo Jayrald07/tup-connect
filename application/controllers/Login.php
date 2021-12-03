@@ -76,7 +76,7 @@ class Login extends CI_Controller
     {
         $config = array(
             'protocol' => 'smtp',
-            'smtp_host' => 'smtp-relay.sendinblue.com',
+            'smtp_host' => $_ENV['SMTP_HOST'],
             'smtp_port' => 587,
             'smtp_user' => $_ENV['SMTP_USER'],
             'smtp_pass' => $_ENV['SMTP_PASSWORD'],
@@ -88,7 +88,7 @@ class Login extends CI_Controller
         $this->email->set_newline("\r\n");
 
         $this->email->to($email);
-        $this->email->from('admin@hyakki.com', 'TUP Connect');
+        $this->email->from($_ENV['SMTP_FROM'], 'TUP Connect');
         $this->email->subject('Password Reset Link');
         $this->email->message($message);
 
