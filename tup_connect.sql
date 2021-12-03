@@ -178,7 +178,7 @@ CREATE TABLE tbl_freedom_wall(
 
 CREATE TABLE tbl_post(
     `post_id` varchar(15) NOT NULL PRIMARY KEY,
-    `post_text` varchar(2000) NOT NULL,
+    `post_text` text NOT NULL,
     `post_up_vote` int(3) NOT NULL,
     `post_down_vote` int(3) NOT NULL,
     `date_time_stamp` datetime NOT NULL,

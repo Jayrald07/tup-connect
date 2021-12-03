@@ -49,6 +49,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
+
+
+
 $route['default_controller'] = 'login';
 $route['lobby'] = "lobby";
 $route["lobby/create"] = "lobby/create";
@@ -70,6 +73,7 @@ $route["remove/(:any)"] = "lobby/remove/$1";
 
 $route["login"] = "login";
 $route["login/authenticate"] = "login/authenticate";
+$route["login/forgotPass"] = "login/forgotPass";
 
 $route["register"] = "register";
 $route["register/validation"] = "register/validation";

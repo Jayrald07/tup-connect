@@ -37,6 +37,9 @@
     </main>
 
 
+    <a href="<?= base_url() ?>index.php/login/forgotPassword">Forgot Password?</a>
+
+    </form>
 </body>
 
 </html>
