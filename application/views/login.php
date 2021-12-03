@@ -25,7 +25,7 @@
 
         <label for="password">Password</label>
         <input type="password" name="password" required placeholder="------">
-        <a href="#" class="forgot-password">Forgot Password?</a>
+        <a href="<?= base_url() ?>index.php/login/forgotPassword" class="forgot-password">Forgot Password?</a>
         <br /><br />
         <input type="submit" value="Log in">
         <a href="./register" class="create-account-button">Create an account</a><br /><br />
@@ -35,10 +35,6 @@
             <img src="../public/assets/logo.svg" />
         </div>
     </main>
-
-
-    <a href="<?= base_url() ?>index.php/login/forgotPassword">Forgot Password?</a>
-
     </form>
 </body>
 
