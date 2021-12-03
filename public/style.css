@@ -129,13 +129,11 @@ html {
 	width: 100%;
 	justify-content: center;
 	display: flex;
-	position: relative;
 }
 
 .logo-container img {
 	width: 300px;
 	margin-top: 100px;
-	position: fixed;
 }
 
 .interest {
