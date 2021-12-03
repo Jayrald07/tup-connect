@@ -8,6 +8,7 @@ class Login extends CI_Controller
         $this->load->helper(array("form", "url"));
         $this->load->library(array('form_validation', 'email'));
         $this->load->library('session');
+        $this->load->model('login_model');
     }
 
     public function authenticate()
@@ -77,8 +78,8 @@ class Login extends CI_Controller
             'protocol' => 'smtp',
             'smtp_host' => 'smtp-relay.sendinblue.com',
             'smtp_port' => 587,
-            'smtp_user' => 'hyakki03@gmail.com',
-            'smtp_pass' => 'fWKzMChYJ8nNsDv5',
+            'smtp_user' => $_ENV['SMTP_USER'],
+            'smtp_pass' => $_ENV['SMTP_PASSWORD'],
             'mailtype' => 'html',
             'charset' => 'iso-8859-1'
         );

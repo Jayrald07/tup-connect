@@ -111,7 +111,7 @@ class Lobby extends CI_Controller
             "certain" => array(
                 "lobby_id" => $lobby_id,
                 "group_id" => $this->input->post('group'),
-                "user_detail_id" => $this->session->userdata('user_id'),
+                "user_detail_id" => $this->session->userdata('user_detail_id'),
                 "campus_id" => $this->input->post("campus"),
                 "college_id" => $this->input->post("college"),
             ),
