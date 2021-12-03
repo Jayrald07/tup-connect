@@ -21,8 +21,8 @@ class Register extends CI_Controller
             'protocol' => 'smtp',
             'smtp_host' => 'ssl://smtp.mailgun.org',
             'smtp_port' => 465,
-            'smtp_user' => 'tupconnect@mlsatupm.social',
-            'smtp_pass' => '91052a64133873487e56059376e06ace-adf6de59-b9e8cb02',
+            'smtp_user' => $_ENV['SMTP_USER'],
+            'smtp_pass' => $_ENV['SMTP_PASSWORD'],
             'mailtype' => 'html',
             'charset' => 'iso-8859-1'
         );
@@ -34,7 +34,7 @@ class Register extends CI_Controller
         $htmlContent .= "<p>$email_code</p>";
 
         $this->email->to($this->input->post("tupemail"));
-        $this->email->from('tupconnect@mlsatupm.social', 'TUP Connect');
+        $this->email->from($_ENV['SMTP_USER'], 'TUP Connect');
         $this->email->subject('Email Verfication');
         $this->email->message($htmlContent);
 
