@@ -55,11 +55,14 @@ class Post_model extends CI_Model
         return $this->db->insert("tbl_user_report", $data);
     }
 
-    public function get_user_id_fw()
+    public function set_new_user_block($data)
     {
-        $this->load->database("tbl_freedom_wall");
-        $data = $this->db->get('user_detail_id');
-        return $data->result();
+        return $this->db->insert("tbl_user_block", $data);
+    }
+
+    public function set_new_block($data)
+    {
+        return $this->db->insert("tbl_block", $data);
     }
 
     public function get_groups()

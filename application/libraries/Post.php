@@ -52,6 +52,12 @@ class Post
         $this->CI->post_model->set_new_user_report($data["certain1"]);
     }
 
+    public function block_user($data)
+    {
+        $this->CI->post_model->set_new_block($data["certain"]);
+        $this->CI->post_model->set_new_user_block($data["certain1"]);
+    }
+
     public function submit($data)
     {
 

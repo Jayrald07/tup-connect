@@ -67,6 +67,26 @@
     #box1 p{
         display: inline-block;
     }
+    #box2{
+        width: 500px;
+        background: #f1f1f1;
+        box-shadow: 0 0 5px black;
+        border-radius: 8px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        padding: 10px;
+        text-align: center;
+        display: none;
+    }
+    #box2 span{
+        display: block;
+    }
+    #box2 p{
+        display: inline-block;
+    }
 </style>
 
 <body>
@@ -86,10 +106,11 @@
                     <p><?php echo $post["post_text"]; ?></p>
                     <small><?php echo $post["date_time_stamp"]; ?></small><br />
                     <a href="./remove/<?php echo $post["post_id"]; ?>" target="_self">Delete</a>
-                    <a onclick="pop()" class ="btn" >Report</a>
-                    <a onclick="pop1()" class ="btn">Report User</a>
+                    | <a onclick="pop()" class ="btn" > Report</a>
+                    | <a onclick="pop1()" class ="btn"> Report User</a>
                     <?php if ($type != 'fw') { ?>
-                        <a href="./<?php echo $type; ?>/edit/<?php echo $post["post_id"];  ?>">Edit</a>
+                        | <a onclick="pop2()" class ="btn"> Block User</a>
+                        | <a href="./<?php echo $type; ?>/edit/<?php echo $post["post_id"];  ?>">Edit</a>
                     <?php } ?>
 
                     <div id="box">
@@ -110,6 +131,17 @@
                             <input type="radio" name="report_description" value="Malicious Content">Malicious Content<br>
                             <input type="radio" name="report_description" value="Terrorism">Terrorism<br>
                             <input type="radio" name="report_description" value="Racism">Racism<br>
+                            <input type="submit" name="report" />
+                        </form>
+                    </div>
+
+                    <div id="box2">
+                        <form method="POST" action="./<?php echo $type; ?>/block_user" >
+                            <span>Block User</span><br>
+                            <input type="radio" name="block_description" value="Sexual Content">Sexual Content<br>
+                            <input type="radio" name="block_description" value="Malicious Content">Malicious Content<br>
+                            <input type="radio" name="block_description" value="Terrorism">Terrorism<br>
+                            <input type="radio" name="block_description" value="Racism">Racism<br>
                             <input type="submit" name="report" />
                         </form>
                     </div>
@@ -140,6 +172,17 @@
 			}
 			else{
 				document.getElementById("box1").style.display = "none";
+				d = 0;
+			}
+        }
+
+        function pop2(){
+            if(d == 0){
+				document.getElementById("box2").style.display = "block";
+				d = 1;
+			}
+			else{
+				document.getElementById("box2").style.display = "none";
 				d = 0;
 			}
         }

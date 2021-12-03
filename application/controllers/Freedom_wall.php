@@ -44,7 +44,7 @@ class Freedom_wall extends CI_Controller
         else redirect("./fw");
     }
 
-    public function user_report()
+    public function user_report($post_id)
     {
         $report_id = random_string('alnum', 15);
         $user_report_id = random_string('alnum', 15);

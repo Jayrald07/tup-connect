@@ -73,6 +73,30 @@ class Lobby extends CI_Controller
         else redirect("./fw");
     }
 
+    public function block_user()
+    {
+        $block_id = random_string('alnum', 15);
+        $user_block_id = random_string('alnum', 15);
+
+        $data = array(
+            "certain" => array(
+                "block_id" => $block_id,
+                "block_description" => $this->input->post('block_description'),
+            ),
+            "report_id" => $report_id,
+            "block_description" => $this->input->post('block_description'),
+
+            "certain1" => array(
+                "user_block_id" => $user_block_id,
+                "user_detail_id" => $this->session->userdata('user_id'),
+                "block_id" => $block_id,
+            ),
+        );
+
+        if ($this->post->block_user($data)) redirect("./lobby/view_post");
+        else redirect("./lobby");
+    }
+
     public function user_report()
     {
         $report_id = random_string('alnum', 15);

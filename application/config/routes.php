@@ -81,3 +81,6 @@ $route["lobby/user_report"] = "lobby/user_report";
 $route["fw/user_report"] = "freedom_wall/user_report";
 $route["forum/user_report"] = "forum/user_report";
 
+$route["lobby/block_user"] = "lobby/block_user";
+$route["forum/block_user"] = "forum/block_user";
+
