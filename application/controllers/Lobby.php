@@ -1,4 +1,7 @@
 <?php
+
+use function PHPSTORM_META\map;
+
 class Lobby extends CI_Controller
 {
 
@@ -9,16 +12,86 @@ class Lobby extends CI_Controller
         $this->load->model("post_model");
     }
 
+    public function post()
+    {
+
+        print_r($this->session->userdata());
+        print_r($_FILES);
+
+        print_r($this->input->post());
+
+        $date_stamp = new DateTime("now", new DateTimeZone("Asia/Manila"));
+        $post_id = random_string("alnum", 15);
+        $lobby_id = random_string("alnum", 15);
+        $post_image_filename = random_string("alnum", 15);
+
+        $data = array(
+            "lobby_id" => $lobby_id,
+            "group_id" => $this->session->userdata("id"),
+            "user_detail_id" => $this->session->userdata("user_detail_id"),
+            "campus_id" => 0,
+            "college_id" => 0,
+            "category_id" => 0,
+            "post_id" => $post_id,
+            "post_text" => $this->input->post("post-content"),
+            "date_time_stamp" => $date_stamp,
+            "status" => "posted",
+            "post_up_vote" => 0,
+            "post_down_vote" => 0,
+            "post_image_path" => $post_image_filename
+        );
+
+        $this->post->submit($data);
+
+        // $config['upload_path']          = './uploads/';
+        // $config['allowed_types']        = 'gif|jpg|png';
+        // $config['max_size']             = 100;
+        // $config['max_width']            = 1024;
+        // $config['max_height']           = 768;
+
+        // $this->load->library('upload', $config);
+        // $this->upload->initialize($config);
+
+        // if (!$this->upload->do_upload('post-image')) echo $this->upload->display_errors();
+        // else echo "Works";
+    }
+
+    private function get_groups()
+    {
+        $data["owned_groups"] = $this->post_model->get_owned_groups($this->session->userdata(
+            "user_detail_id"
+        ));
+        $data["joined_groups"] = $this->post_model->get_joined_groups($this->session->userdata("user_detail_id"));
+
+        return $data;
+    }
+
+    public function groups($group_id)
+    {
+        $this->session->set_userdata(array(
+            "type" => "group",
+            "id" => $group_id
+        ));
+        $data = $this->get_groups();
+        $data["type"] = "lobby";
+        $data['group_id'] = $group_id;
+        $data["posts"] = $this->post_model->get_posts("groups", $group_id);
+        $this->load->view("view_post", $data);
+    }
+
     public function index()
     {
+        $data = $this->get_groups();
+
         $data["type"] = "lobby";
-        $data["posts"] = $this->post->get_posts('lobby');
+        $data["posts"] = [];
+        $data['group_id'] = NULL;
+
         $this->load->view("view_post", $data);
     }
 
     public function create()
     {
-
         $this->post->create_form(array(
             "group" => true,
             "campus" => true,

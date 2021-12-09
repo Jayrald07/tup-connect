@@ -62,9 +62,17 @@ class Post_model extends CI_Model
         return $data->result();
     }
 
-    public function get_groups()
+    public function get_owned_groups($user_detail_id)
     {
-        $query = $this->db->get("tbl_group");
+        $query = $this->db->get_where('tbl_group', array('group_owner' => $user_detail_id));
+        return $query->result_array();
+    }
+
+    public function get_joined_groups($user_detail_id)
+    {
+        $query = $this->db->query("SELECT tbl_group.group_id, tbl_group.group_name 
+FROM tbl_group, tbl_group_user
+WHERE tbl_group_user.user_detail_id = '" . $user_detail_id . "' and tbl_group.group_id = tbl_group_user.group_id");
         return $query->result_array();
     }
 
@@ -108,36 +116,48 @@ class Post_model extends CI_Model
         return $query->result_array();
     }
 
-    public function get_posts($type)
+    // public function get_comments($post_id)
+
+    public function get_posts($type, $id)
     {
         switch ($type) {
-            case 'lobby':
-                $query = $this->db->query("
-                select tbl_lobby.user_detail_id, tbl_lobby_post.category_id, tbl_post.*
-                from tbl_lobby, tbl_lobby_post, tbl_post
-                where 
-                    tbl_lobby.lobby_id = tbl_lobby_post.lobby_id and tbl_lobby_post.post_id = tbl_post.post_id and tbl_post.status = 'posted'
-                    ORDER BY tbl_post.date_time_stamp desc");
+            case 'groups':
+                $query = $this->db->query("SELECT tbl_post.* , tbl_user_detail.first_name,tbl_user_detail.last_name,tbl_user_detail.middle_name
+FROM tbl_lobby_post, tbl_lobby, tbl_post, tbl_user_detail
+WHERE tbl_lobby.group_id = '" . $id . "' and tbl_lobby_post.lobby_id = tbl_lobby.lobby_id and tbl_post.post_id = tbl_lobby_post.post_id and tbl_post.status = 'posted' and tbl_user_detail.user_detail_id = tbl_lobby.user_detail_id ORDER BY tbl_post.date_time_stamp desc");
                 return $query->result_array();
-                break;
-
-            case 'fw':
-                $query = $this->db->query("
-                select tbl_freedom_wall.user_detail_id, tbl_freedom_wall.fw_id, tbl_post.*
-                from tbl_freedom_wall, tbl_post
-                where tbl_freedom_wall.post_id = tbl_post.post_id and tbl_post.status = 'posted'
-                order by tbl_post.date_time_stamp desc");
-                return $query->result_array();
-                break;
-
-            case 'forum':
-                $query = $this->db->query("
-                select tbl_forum.user_detail_id, tbl_forum.forum_id, tbl_forum.category_id, tbl_post.*
-                from tbl_forum, tbl_post
-                where tbl_forum.post_id = tbl_post.post_id and tbl_post.status = 'posted'
-                order by tbl_post.date_time_stamp desc");
-                return $query->result_array();
-                break;
         }
     }
+
+    // public function get_posts($type)
+    // {
+    //     switch ($type) {
+    //         case 'lobby':
+    //             $query = $this->db->query("
+    //             select tbl_lobby.user_detail_id, tbl_lobby_post.category_id, tbl_post.*
+    //             from tbl_lobby, tbl_lobby_post, tbl_post
+    //             where 
+    //                 tbl_lobby.lobby_id = tbl_lobby_post.lobby_id and tbl_lobby_post.post_id = tbl_post.post_id and tbl_post.status = 'posted'
+    //                 ORDER BY tbl_post.date_time_stamp desc");
+    //             return $query->result_array();
+    //             break;
+    //         case 'fw':
+    //             $query = $this->db->query("
+    //             select tbl_freedom_wall.user_detail_id, tbl_freedom_wall.fw_id, tbl_post.*
+    //             from tbl_freedom_wall, tbl_post
+    //             where tbl_freedom_wall.post_id = tbl_post.post_id and tbl_post.status = 'posted'
+    //             order by tbl_post.date_time_stamp desc");
+    //             return $query->result_array();
+    //             break;
+
+    //         case 'forum':
+    //             $query = $this->db->query("
+    //             select tbl_forum.user_detail_id, tbl_forum.forum_id, tbl_forum.category_id, tbl_post.*
+    //             from tbl_forum, tbl_post
+    //             where tbl_forum.post_id = tbl_post.post_id and tbl_post.status = 'posted'
+    //             order by tbl_post.date_time_stamp desc");
+    //             return $query->result_array();
+    //             break;
+    //     }
+    // }
 }
