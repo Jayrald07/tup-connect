@@ -33,14 +33,26 @@ $route["verify_email"] = "register/verify_email";
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
-$route["lobby/report/(:any)"] = "lobby/report/$1";
-$route["fw/report/(:any)"] = "freedom_wall/report/$1";
-$route["forum/report/(:any)"] = "forum/report/$1";
+// $route["lobby/report/(:any)"] = "lobby/report/$1";
+// $route["fw/report/(:any)"] = "freedom_wall/report/$1";
+// $route["forum/report/(:any)"] = "forum/report/$1";
 
-$route["lobby/user_report/(:any)"] = "lobby/user_report/$1";
-$route["fw/user_report/(:any)"] = "freedom_wall/user_report/$1";
-$route["forum/user_report/(:any)"] = "forum/user_report/$1";
+// $route["lobby/user_report/(:any)"] = "lobby/user_report/$1";
+// $route["fw/user_report/(:any)"] = "freedom_wall/user_report/$1";
+// $route["forum/user_report/(:any)"] = "forum/user_report/$1";
 
 $route["groups/(:any)"] = "lobby/groups/$1";
 
 $route['post'] = "lobby/post";
+$route["comment/insert"] = "lobby/insert_comment";
+$route["comment/get"] = "lobby/get_comments";
+
+$route["post/vote"] = "post_controller/vote";
+
+$route["post/report"] = "post_controller/report";
+$route["post/user_report"] = "post_controller/user_report";
+
+$route["post/delete"] = "post_controller/delete_post";
+$route["post/is_delete"] = "post_controller/is_allowed_deletion";
+
+$route["post/getone"] = "post_controller/get_post";

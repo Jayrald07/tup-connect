@@ -521,7 +521,7 @@ nav ul li a img {
 }
 
 .post-card {
-	padding: 20px;
+	/* padding: 20px; */
 	border: 1px solid var(--gray);
 	border-radius: 5px;
 	margin-bottom: 10px;
@@ -530,6 +530,7 @@ nav ul li a img {
 .post-header {
 	display: flex;
 	align-items: center;
+	padding: 20px;
 }
 
 .post-header figure {
@@ -566,10 +567,24 @@ nav ul li a img {
 	font-size: 11pt;
 }
 
+.post-body figure {
+	margin: 0;
+}
+
+.post-body figure img {
+	width: 100%;
+}
+
+.post-body-text {
+	padding: 5px 20px;
+}
+
 .post-footer {
 	display: flex;
 	font-size: 10pt;
 	color: var(--black);
+	padding: 10px;
+	border-top: 1px solid var(--gray);
 }
 
 .post-footer a {
@@ -584,6 +599,7 @@ nav ul li a img {
 
 .post-body {
 	padding: 10px 0;
+	word-break: break-all;
 }
 
 .post-option {
@@ -592,6 +608,16 @@ nav ul li a img {
 	border: 1px solid var(--gray);
 	border-radius: 5px;
 	display: none;
+	z-index: 99999;
+}
+
+.post-option-toggle {
+	color: var(--black);
+}
+
+.up-vote,
+.down-vote {
+	color: var(--black);
 }
 
 .post-option ul {
@@ -637,6 +663,7 @@ nav ul li a img {
 	width: 400px;
 	display: grid;
 	animation: slideRight 370ms ease-in forwards;
+	grid-template-rows: 1fr 10fr 1fr;
 }
 
 @keyframes slideRight {
@@ -647,6 +674,10 @@ nav ul li a img {
 	to {
 		left: 0;
 	}
+}
+
+.comment {
+	color: var(--black);
 }
 
 .comment-body {
@@ -827,7 +858,7 @@ nav ul li a img {
 	width: 500px;
 }
 
-.post-modal-body form button {
+.post-modal-body button {
 	width: 100%;
 	margin-top: 10px;
 	padding: 10px 0;
@@ -839,6 +870,164 @@ nav ul li a img {
 
 .post-modal-header {
 	display: flex;
-	justify-content: flex-end;
 	padding: 10px;
+}
+
+.post-modal-header h5 {
+	width: 100%;
+	margin: 0;
+}
+
+.report-modal {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	z-index: 9999;
+	top: 0;
+	left: 0;
+	background-color: rgba(255, 255, 255, 0.5);
+	display: none;
+	align-items: center;
+	justify-content: center;
+}
+
+.report-box {
+	background-color: #fff;
+	border: 1px solid var(--gray);
+	border-radius: 5px;
+	width: 300px;
+}
+
+.report-header {
+	padding: 20px;
+	display: flex;
+	align-items: center;
+}
+
+.report-header h5 {
+	margin: 0;
+	width: 100%;
+}
+
+.report-body ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+.report-body ul li:hover {
+	background-color: rgba(0, 0, 0, 0.03);
+}
+
+.report-body ul li label,
+.report-footer {
+	padding: 10px 20px;
+	display: block;
+	font-size: 10pt;
+}
+
+#report-submit {
+	display: block;
+	padding: 10px;
+	width: 100%;
+	border: none;
+	background-color: var(--red);
+	color: white;
+	border-radius: 5px;
+	font-weight: bold;
+}
+
+.delete-modal {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(255, 255, 255, 0.5);
+	top: 0;
+	left: 0;
+	z-index: 9999;
+}
+
+.delete-box {
+	background-color: #fff;
+	border: 1px solid var(--gray);
+	border-radius: 5px;
+}
+
+.delete-body {
+	padding: 20px 30px;
+	font-size: 11pt;
+}
+
+.delete-footer {
+	padding: 10px;
+	display: flex;
+	justify-content: space-around;
+}
+
+.delete-footer button {
+	padding: 10px 20px;
+	border: none;
+	background-color: var(--red);
+	color: #fff;
+	border-radius: 5px;
+}
+
+.delete-footer button:last-child {
+	border: 1px solid gray;
+	color: var(--black);
+	background-color: #fff;
+}
+
+.user-based {
+	display: none;
+}
+
+#post-image-container {
+	display: grid;
+	margin: 30px 0;
+	grid-template-columns: repeat(5, 1fr);
+	grid-gap: 10px;
+}
+
+.image-container {
+	position: relative;
+	border-radius: 5px;
+	z-index: 999;
+}
+
+.image-container a {
+	color: #fff;
+	display: none;
+	border-radius: 5px;
+}
+
+.image-container:hover > a {
+	background-color: rgba(0, 0, 0, 0.5) !important;
+	color: #fff !important;
+	display: flex;
+}
+
+.post-image-delete {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 99999;
+}
+
+#post-image-container img {
+	width: 100px;
+	padding: 10px 0;
+	display: block;
+	border-radius: 5px;
+	border: 1px solid var(--gray);
+}
+
+.splide__slide img {
+	width: 100% !important;
 }

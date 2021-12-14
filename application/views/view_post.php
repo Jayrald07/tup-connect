@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
     <script src="https://cdn.ckeditor.com/4.17.1/basic/ckeditor.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@3.6.9/dist/css/splide.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@3.6.9/dist/js/splide.min.js"></script>
     <link rel="stylesheet" href="<?php echo base_url("public/style.css") ?>">
     <title>Post</title>
 </head>
@@ -34,65 +37,11 @@
                 <a href="javascript:void(0)" class="comment-modal-close"><i class="fas fa-times"></i></a>
             </div>
             <div class="comment-body">
-                <section class="comment-section">
-                    <div class="comment-section-header">
-                        <figure>
-                            <img src=<?php echo base_url("public/assets/user.png") ?> />
-                        </figure>
-                        <div>
-                            <h1>Juan Dela Cruz</h1>
-                            <time>10m</time>
-                        </div>
-                        <a href="#">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </a>
-                    </div>
-                    <div class="comment-section-body">
-                        <p>
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae porro dignissimos est harum adipisci, sint tempore obcaecati nemo saepe veniam facere dolor, exercitationem repudiandae aliquam eveniet aspernatur molestias nihil id.
-                        </p>
-                    </div>
-                    <div class="comment-section-footer">
-                        <a href="#">
-                            <i class="fas fa-reply"></i>
-                        </a>
-                        <a href="#">
-                            View Replies
-                        </a>
-                    </div>
-                </section>
 
-                <section class="comment-section">
-                    <div class="comment-section-header">
-                        <figure>
-                            <img src=<?php echo base_url("public/assets/user.png") ?> />
-                        </figure>
-                        <div>
-                            <h1>Juan Dela Cruz</h1>
-                            <time>10m</time>
-                        </div>
-                        <a href="#">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </a>
-                    </div>
-                    <div class="comment-section-body">
-                        <p>
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae porro dignissimos est harum adipisci, sint tempore obcaecati nemo saepe veniam facere dolor, exercitationem repudiandae aliquam eveniet aspernatur molestias nihil id.
-                        </p>
-                    </div>
-                    <div class="comment-section-footer">
-                        <a href="#">
-                            <i class="fas fa-reply"></i>
-                        </a>
-                        <a href="#">
-                            View Replies
-                        </a>
-                    </div>
-                </section>
             </div>
             <div class="comment-footer">
-                <input placeholder="Type your comment/reply" />
-                <button>
+                <input placeholder="Type your comment/reply" id="comment-input" />
+                <button id="comment-button">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
@@ -101,18 +50,61 @@
 
     <div class="post-option">
         <ul>
-            <li>
-                <a href="#">Report Post</a>
+            <li class="user-based">
+                <a href="javascript:void(0)" id="edit-post">Edit Post</a>
+            </li>
+            <li class="user-based">
+                <a href="javascript:void(0)" id="delete-post">Delete Post</a>
             </li>
             <li>
-                <a href="#">Report User</a>
+                <a href="javascript:void(0)" id="report-post">Report Post</a>
+            </li>
+            <li>
+                <a href="javascript:void(0)" id="report-user">Report User</a>
             </li>
         </ul>
+    </div>
+
+    <div class="report-modal">
+        <div class="report-box">
+            <div class="report-header">
+                <h5>Select Reason</h5>
+                <a href="javascript:void(0)" id="report-modal-close">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+            <div class="report-body">
+                <ul>
+                    <li>
+                        <label for="malicious-content">
+                            <input type="radio" class="report-desc" x-value="Malicious Content" id="malicious-content" name="report-option" />
+                            <span>Malicious Content</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label for="terrorism">
+                            <input type="radio" class="report-desc" x-value="Terrorism" id="terrorism" name="report-option" />
+                            <span>Terrorism</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label for="sexual-content">
+                            <input type="radio" class="report-desc" x-value="Sexual Content" id="sexual-content" name="report-option" />
+                            <span>Sexual Content</span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+            <div class="report-footer">
+                <button id="report-submit">Submit</button>
+            </div>
+        </div>
     </div>
 
     <div class="post-modal">
         <section class="post-modal-box">
             <div class="post-modal-header">
+                <h5>Share your thoughts</h5>
                 <a href="javascript:void(0)" class="post-modal-close">
                     <i class="fas fa-times"></i>
                 </a>
@@ -120,7 +112,7 @@
             <div class="post-modal-body">
                 <?php echo form_open_multipart(base_url("index.php/post")) ?>
                 <textarea required name='post-content'></textarea>
-                <input type="file" name="post-image" accept=".png,.jpg" />
+                <input type="file" name="post-image[]" accept=".png,.jpg" multiple />
                 <button type="submit">Submit</button>
                 </form>
             </div>
@@ -128,11 +120,42 @@
         </section>
     </div>
 
+    <div class="post-modal v2-modal">
+        <section class="post-modal-box">
+            <div class="post-modal-header">
+                <h5>Share your thoughts</h5>
+                <a href="javascript:void(0)" class="post-modal-close v2-modal-close">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+            <div class="post-modal-body">
+                <textarea required name='post-content-edit'></textarea>
+                <section id="post-image-container">
+                </section>
+                <input type="file" name="post-image" accept=".png,.jpg" />
+                <input type="hidden" id="post-content-id">
+                <button type="submit">Save</button>
+            </div>
+            <div class="post-modal-footer"></div>
+        </section>
+    </div>
+
+    <div class="delete-modal">
+        <div class="delete-box">
+            <div class="delete-body">
+                <p>Are you sure to delete this post?</p>
+            </div>
+            <div class="delete-footer">
+                <button id="delete-cancel">Cancel</button>
+                <button id="delete-delete">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <div class="post-container">
         <div style="position:relative">
             <aside class="pages-navigator">
                 <ul>
-                    <li><a href=<?php echo base_url("index.php/general") ?> class=<?php if ($type === "general") echo "active-page" ?>><i class="fas fa-th-large"></i> General</a></li>
                     <li><a href=<?php echo base_url("index.php/groups") ?> class=<?php if ($type === "lobby") echo "active-page" ?>><i class="fas fa-th-large"></i> Groups</a></li>
                     <li><a href=<?php echo base_url("index.php/fw") ?> class=<?php if ($type === "org") echo "active-page" ?>><i class="fas fa-users"></i> Organization</a></li>
                     <li><a href=<?php echo base_url("index.php/fw") ?> class=<?php if ($type === "fw") echo "active-page" ?>><i class=" fas fa-volume-up"></i> Freedom Wall</a></li>
@@ -168,68 +191,48 @@
                             <time><?php echo $post["date_time_stamp"] ?></time>
                         </section>
                         <div>
-                            <a href="javascript:void(0)" class="post-option-toggle">
+                            <a href="javascript:void(0)" class="post-option-toggle" post-value=<?php echo $post["post_id"] ?> user-value=<?php echo $post["user_detail_id"] ?>>
                                 <i class="fas fa-ellipsis-v"></i>
                             </a>
                         </div>
                     </section>
                     <section class="post-body">
-                        <p>
+                        <div class="post-body-text">
                             <?php echo $post['post_text'] ?>
-                        </p>
+                        </div>
+                        <?php if (count($post["post_image_path"])) { ?>
+                            <div class="splide">
+                                <div class="splide__track">
+                                    <ul class="splide__list">
+                                        <?php foreach ($post["post_image_path"] as $image_path) : ?>
+                                            <!-- <figure> -->
+                                            <li class="splide__slide">
+                                                <img src=<?php echo base_url("uploads/") . $image_path["post_image_path"] ?> />
+                                            </li>
+                                            <!-- </figure> -->
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
+                            </div>
+                        <?php } ?>
                     </section>
                     <section class="post-footer">
-                        <a href="#" class="up-vote">
+                        <a href="javascript:void(0)" class="up-vote" x-value=<?php echo $post["post_id"] ?>>
                             <i class="fas fa-arrow-up"></i>
                             <span class="up-vote-count"><?php echo $post['post_up_vote'] ?></span>
                         </a>
-                        <a href="#" class="down-vote">
+                        <a href="javascript:void(0)" class="down-vote" x-value=<?php echo $post["post_id"] ?>>
                             <i class="fas fa-arrow-down"></i>
-                            <span class="up-vote-count"><?php echo $post['post_down_vote'] ?></span>
+                            <span class="down-vote-count"><?php echo $post['post_down_vote'] ?></span>
                         </a>
-                        <a href="javascript:void(0)" class="comment">
+                        <a href="javascript:void(0)" class="comment" x-value=<?php echo $post["post_id"] ?>>
                             <i class="fas fa-comment"></i>
-                            <span class="up-vote-count">0</span>
+                            <span class="comment-count"><?php echo $post['comments_count'] ?></span>
                         </a>
                     </section>
                 </section>
             <?php endforeach; ?>
 
-            <!-- <?php foreach ($posts as $post) : ?>
-                <section>
-                    <p><?php echo $post["post_text"]; ?></p>
-                    <small><?php echo $post["date_time_stamp"]; ?></small><br />
-                    <a href="./remove/<?php echo $post["post_id"]; ?>" target="_self">Delete</a>
-                    <a onclick="pop()" class="btn">Report</a>
-                    <a onclick="pop1()" class="btn">Report User</a>
-                    <?php if ($type != 'fw') { ?>
-                        <a href="./<?php echo $type; ?>/edit/<?php echo $post["post_id"];  ?>">Edit</a>
-                    <?php } ?>
-
-                    <div id="box">
-                        <form method="POST" action="./<?php echo $type; ?>/report/<?php echo $post["post_id"];  ?>">
-                            <span>Report Post</span><br>
-                            <input type="radio" name="report_description" value="Sexual Content">Sexual Content<br>
-                            <input type="radio" name="report_description" value="Malicious Content">Malicious Content<br>
-                            <input type="radio" name="report_description" value="Terrorism">Terrorism<br>
-                            <input type="radio" name="report_description" value="Racism">Racism<br>
-                            <input type="submit" name="report" />
-                        </form>
-                    </div>
-
-                    <div id="box1">
-                        <form method="POST" action="./<?php echo $type; ?>/user_report/<?php echo $post['user_detail_id']; ?>">
-                            <span>Report User</span><br>
-                            <input type="radio" name="report_description" value="Sexual Content">Sexual Content<br>
-                            <input type="radio" name="report_description" value="Malicious Content">Malicious Content<br>
-                            <input type="radio" name="report_description" value="Terrorism">Terrorism<br>
-                            <input type="radio" name="report_description" value="Racism">Racism<br>
-                            <input type="submit" name="report" />
-                        </form>
-                    </div>
-                </section>
-                <hr />
-            <?php endforeach ?> -->
 
         </main>
         <div style="position:relative">
@@ -264,6 +267,7 @@
     <script>
         controller.posts_init()
         CKEDITOR.replace('post-content')
+        CKEDITOR.replace('post-content-edit')
     </script>
 </body>
 

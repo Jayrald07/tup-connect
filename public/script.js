@@ -51,6 +51,26 @@ var ui = (function () {
 	let post_button = document.getElementsByClassName("post-button")[0];
 	let post_modal_close = document.getElementsByClassName("post-modal-close")[0];
 	let post_modal = document.getElementsByClassName("post-modal")[0];
+	let comment_input = document.getElementById("comment-input");
+	let comment_button = document.getElementById("comment-button");
+	let comment_body = document.getElementsByClassName("comment-body")[0];
+	let up_vote = document.getElementsByClassName("up-vote");
+	let down_vote = document.getElementsByClassName("down-vote");
+	let report_post = document.getElementById("report-post");
+	let report_user = document.getElementById("report-user");
+	let report_modal = document.getElementsByClassName("report-modal")[0];
+	let report_modal_close = document.getElementById("report-modal-close");
+	let report_submit = document.getElementById("report-submit");
+	let report_desc = document.getElementsByClassName("report-desc");
+	let post_delete = document.getElementById("delete-post");
+	let delete_modal = document.getElementsByClassName("delete-modal")[0];
+	let delete_cancel = document.getElementById("delete-cancel");
+	let delete_delete = document.getElementById("delete-delete");
+	let user_based = document.getElementsByClassName("user-based");
+	let edit_post = document.getElementById("edit-post");
+	let post_image_container = document.getElementById("post-image-container");
+	let v2_modal = document.getElementsByClassName("v2-modal")[0];
+	let v2_modal_close = document.getElementsByClassName("v2-modal-close")[0];
 	return {
 		input_email,
 		regpass,
@@ -65,6 +85,26 @@ var ui = (function () {
 		post_button,
 		post_modal_close,
 		post_modal,
+		comment_input,
+		comment_button,
+		comment_body,
+		up_vote,
+		down_vote,
+		report_post,
+		report_user,
+		report_modal,
+		report_modal_close,
+		report_submit,
+		report_desc,
+		post_delete,
+		delete_modal,
+		delete_cancel,
+		delete_delete,
+		user_based,
+		edit_post,
+		post_image_container,
+		v2_modal,
+		v2_modal_close,
 	};
 })();
 
@@ -73,6 +113,11 @@ var controller = (function (_UI) {
 	let is_basic_good = false;
 	let is_password_good = false;
 	let boxes;
+	let comment_post_id;
+	let report_post_id = null;
+	let report_user_id = null;
+	let report_type = null;
+	let report_description = null;
 
 	return {
 		init() {
@@ -113,28 +158,286 @@ var controller = (function (_UI) {
 				});
 			}
 		},
+		async vote(post_id, type) {
+			try {
+				let result = await $.ajax({
+					url: "http://localhost/tup-connect/index.php/post/vote",
+					type: "POST",
+					dataType: "json",
+					data: {
+						post_id: post_id,
+						vote_type: type,
+					},
+				});
+				return result;
+			} catch (e) {
+				new Error(e);
+			}
+		},
+		report() {
+			report_type = this.type;
+			_UI.report_modal.style.display = "flex";
+			_UI.post_option.style.display = "none";
+		},
+		open_user_based(value) {
+			for (let i = 0; i < _UI.user_based.length; i++) {
+				_UI.user_based[i].style.display = value;
+			}
+		},
 		posts_init() {
 			for (let i = 0; i < _UI.post_option_toggle.length; i++) {
 				_UI.post_option_toggle[i].addEventListener("click", function (e) {
-					_UI.post_option.style.display =
-						_UI.post_option.style.display === "block" ? "none" : "block";
-					console.log(this);
 					_UI.post_option.style.left = e.target.offsetLeft - 110 + "px";
 					_UI.post_option.style.top = e.target.offsetTop - 10 + "px";
+					report_post_id = this.getAttribute("post-value");
+					report_user_id = this.getAttribute("user-value");
+
+					$.ajax({
+						url: "http://localhost/tup-connect/index.php/post/is_delete",
+						type: "POST",
+						dataType: "text",
+						data: {
+							user_detail_id: report_user_id,
+						},
+						success: function (data) {
+							if (data == 1) controller.open_user_based("block");
+							else controller.open_user_based("none");
+							_UI.post_option.style.display =
+								_UI.post_option.style.display === "block" ? "none" : "block";
+						},
+						error: function (data) {
+							console.log(data);
+						},
+					});
 				});
-				_UI.comment[i].addEventListener("click", (e) => {
+				_UI.comment[i].addEventListener("click", function (e) {
 					_UI.comment_modal.style.display = "block";
+					comment_post_id = this.getAttribute("x-value");
+					_UI.comment_body.textContent = null;
+					$.ajax({
+						url: "http://localhost/tup-connect/index.php/comment/get",
+						type: "POST",
+						dataType: "json",
+						data: { "post-id": comment_post_id },
+						success: function (data) {
+							console.log(data);
+							if (data.length) {
+								data.forEach((item) => {
+									_UI.comment_body.insertAdjacentHTML(
+										"afterbegin",
+										`
+										<section class="comment-section">
+                    <div class="comment-section-header">
+                        <figure>
+                            <img src="http://localhost/tup-connect/public/assets/user.png" />
+                        </figure>
+                        <div>
+                            <h1>${item.first_name} ${item.last_name}</h1>
+                            <time>${item.date_time_stamp}</time>
+                        </div>
+                        <a href="#">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </a>
+                    </div>
+                    <div class="comment-section-body">
+                        <p>
+                            ${item.comment_text}
+                        </p>
+                    </div>
+                    <div class="comment-section-footer">
+                        <a href="#">
+                            <i class="fas fa-reply"></i>
+                        </a>
+                        <a href="#">
+                            View Replies
+                        </a>
+                    </div>
+                </section>
+									`
+									);
+								});
+							} else
+								_UI.comment_body.innerHTML =
+									"<p align='center'><small>No Comment</small></p>";
+						},
+						error: function (data) {
+							console.log(data.responseText);
+						},
+					});
 				});
 				_UI.comment_modal_close.addEventListener("click", (e) => {
 					_UI.comment_modal.style.display = "none";
 				});
+
+				_UI.up_vote[i].addEventListener("click", async () => {
+					let res = await this.vote(
+						_UI.up_vote[i].getAttribute("x-value"),
+						"up"
+					);
+					if (res.length) {
+						_UI.up_vote[i].children[1].textContent = res[0].post_up_vote;
+						_UI.down_vote[i].children[1].textContent = res[0].post_down_vote;
+					}
+				});
+				_UI.down_vote[i].addEventListener("click", async () => {
+					let res = await this.vote(
+						_UI.down_vote[i].getAttribute("x-value"),
+						"down"
+					);
+					if (res.length) {
+						_UI.up_vote[i].children[1].textContent = res[0].post_up_vote;
+						_UI.down_vote[i].children[1].textContent = res[0].post_down_vote;
+					}
+				});
 			}
-			_UI.post_button.addEventListener("click", (e) => {
+
+			for (let i = 0; i < _UI.report_desc.length; i++) {
+				_UI.report_desc[i].addEventListener("click", function (e) {
+					report_description = this.getAttribute("x-value");
+				});
+			}
+
+			var elms = document.getElementsByClassName("splide");
+
+			for (var i = 0; i < elms.length; i++) {
+				new Splide(elms[i], {
+					type: "loop",
+				}).mount();
+			}
+
+			_UI.post_button.addEventListener("click", () => {
 				_UI.post_modal.style.display = "flex";
+				CKEDITOR.instances["post-content"].setData("");
 			});
 
-			_UI.post_modal_close.addEventListener("click", (e) => {
+			_UI.post_modal_close.addEventListener("click", () => {
 				_UI.post_modal.style.display = "none";
+				_UI.post_image_container.textContent = "";
+			});
+
+			_UI.v2_modal_close.addEventListener("click", () => {
+				_UI.v2_modal.style.display = "none";
+				_UI.post_image_container.textContent = "";
+			});
+
+			_UI.comment_button.addEventListener("click", () => {
+				$.ajax({
+					url: "http://localhost/tup-connect/index.php/comment/insert",
+					type: "POST",
+					dataType: "text",
+					data: {
+						comment: _UI.comment_input.value.trim(),
+						"post-id": comment_post_id,
+					},
+					success: function (data) {
+						if (data) location.reload();
+					},
+					error: function (data) {
+						console.log(data.responseText);
+					},
+				});
+			});
+			_UI.report_post.addEventListener(
+				"click",
+				this.report.bind({ type: "post" })
+			);
+			_UI.report_user.addEventListener(
+				"click",
+				this.report.bind({ type: "user" })
+			);
+			_UI.report_modal_close.addEventListener("click", () => {
+				_UI.report_modal.style.display = "none";
+			});
+			_UI.report_submit.addEventListener("click", (e) => {
+				let props = null;
+				if (report_type === "post") {
+					props = {
+						post_id: report_post_id,
+						user_detail_id: report_user_id,
+						report_description: report_description,
+						url: "report",
+					};
+				} else {
+					props = {
+						user_detail_id: report_user_id,
+						report_description: report_description,
+						url: "user_report",
+					};
+				}
+
+				$.ajax({
+					url: `http://localhost/tup-connect/index.php/post/${props.url}`,
+					type: "POST",
+					dataType: "text",
+					data: props,
+					success: function (data) {
+						if (data === "success") location.reload();
+					},
+					error: function (data) {
+						console.log(data);
+					},
+				});
+			});
+			_UI.post_delete.addEventListener(
+				"click",
+				(e) => (_UI.delete_modal.style.display = "flex")
+			);
+			_UI.delete_cancel.addEventListener(
+				"click",
+				(e) => (_UI.delete_modal.style.display = "none")
+			);
+			_UI.delete_delete.addEventListener("click", (e) => {
+				$.ajax({
+					url: "http://localhost/tup-connect/index.php/post/delete",
+					type: "POST",
+					dataType: "text",
+					data: {
+						post_id: report_post_id,
+					},
+					success: function (data) {
+						if (data === "success") location.reload();
+					},
+					error: function (data) {
+						console.log(data);
+					},
+				});
+			});
+
+			_UI.edit_post.addEventListener("click", (e) => {
+				_UI.post_image_container.textContent = "";
+				_UI.post_option.style.display = "none";
+				$.ajax({
+					url: "http://localhost/tup-connect/index.php/post/getone",
+					type: "POST",
+					dataType: "json",
+					data: {
+						post_id: report_post_id,
+					},
+					success: function (data) {
+						if (data.length) {
+							console.log(data);
+							_UI.v2_modal.style.display = "flex";
+							CKEDITOR.instances["post-content-edit"].setData(
+								data[0].post_text
+							);
+							if (data[0].post_image_path) {
+								for (let i = 0; i < data[0].post_image_path.length; i++) {
+									_UI.post_image_container.insertAdjacentHTML(
+										"afterbegin",
+										`<div class="image-container">
+								<a href="javascript:void(0)" class="post-image-delete"><i class="fas fa-trash"></i></a>
+								<img src="http://localhost/tup-connect/uploads/${data[0].post_image_path[i].post_image_path}" />
+								</div>
+							`
+									);
+								}
+							}
+						}
+					},
+					error: function (data) {
+						console.log(data);
+					},
+				});
 			});
 		},
 	};
