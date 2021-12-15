@@ -12,38 +12,47 @@
 </head>
 
 <body>
-    <style>
-        input {
-            width: 30px;
-            height: 30px;
-            text-align: center;
-        }
-    </style>
-
     <main class="verification-container">
-        <div class="verification-form">
-            <h1>Email Verification</h1>
-            <p>
-                <i class="fas fa-envelope"></i> Enter the 6-digit code we sent to your email
-            </p>
-            <?php echo form_open("./verify_email"); ?>
-            <section class="code-box">
-                <input type="text" name="code[]" />
-                <input type="text" name="code[]" />
-                <input type="text" name="code[]" />
-                <input type="text" name="code[]" />
-                <input type="text" name="code[]" />
-                <input type="text" name="code[]" />
-            </section>
-            <button>Verify</button>
-            </form>
-        </div>
-
-        <div class="logo-container">
+        <div>
             <img src="../public/assets/logo.svg" />
+            <?php
+            // print_r($_SESSION);
+            if (isset($error) && $error) {
+            ?>
+                <section class="alert-error">
+                    <i class="fas fa-info-circle"></i>
+                    <section>
+                        <h1><?php echo $error_title ?></h1>
+                        <p><?php echo $error_description ?></p>
+                    </section>
+                </section>
+            <?php } ?>
+            <div class="verification-form">
+                <h1>Email Verification</h1>
+                <p>
+                    <i class="fas fa-envelope"></i> Enter the 6-digit code we sent to your email
+                </p>
+                <?php echo form_open("./verify_email"); ?>
+                <section class="code-box">
+                    <input class="input-code-box" maxlength="1" required type="text" name="code[]" />
+                    <input class="input-code-box" maxlength="1" required type="text" name="code[]" />
+                    <input class="input-code-box" maxlength="1" required type="text" name="code[]" />
+                    <input class="input-code-box" maxlength="1" required type="text" name="code[]" />
+                    <input class="input-code-box" maxlength="1" required type="text" name="code[]" />
+                    <input class="input-code-box" maxlength="1" required type="text" name="code[]" />
+                </section>
+                <div class="resend-container">
+                    <a href="javascript:void(0)">Resend(<span class="resend-left-time">0</span>)</a>
+                </div>
+                <button class="input-button">Verify</button>
+                </form>
+            </div>
         </div>
     </main>
-
+    <script src=<?php echo base_url("public/script.js") ?>></script>
+    <script>
+        controller.verify();
+    </script>
 </body>
 
 </html>

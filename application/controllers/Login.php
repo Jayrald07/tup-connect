@@ -13,12 +13,24 @@ class Login extends CI_Controller
 
     public function authenticate()
     {
-        if (count($this->login_model->authenticate())) redirect("lobby/");
+        $data = $this->login_model->authenticate();
+        if (count($data)) {
+            $this->session->unset_userdata(array("error_login", "error_title", "error_description"));
+            $this->session->set_userdata("user_detail_id", $data[0]["user_detail_id"]);
+            redirect("groups");
+        } else {
+            $this->session->set_userdata(array(
+                "error_login" => true,
+                "error_title" => "Invalid Credentials",
+                "error_description" => "Incorrect Username/Password"
+            ));
+            redirect("login");
+        }
     }
 
     public function index()
     {
-        $this->load->view('login');
+        $this->load->view('login', $this->session->userdata());
     }
 
     public function forgotPassword()
@@ -48,7 +60,7 @@ class Login extends CI_Controller
                     $subject = "Password Reset Link";
                     $sentStatus = $this->sendEmail($email, $subject, $message);
 
-                    if ($sentStatus == true) {
+                    if ($sentStatus) {
                         $this->login_model->updatePasswordhash($data, $email);
                         redirect(base_url('index.php/login/forgotPassword'));
                         echo 'hehe';
@@ -83,16 +95,16 @@ class Login extends CI_Controller
             'mailtype' => 'html',
             'charset' => 'iso-8859-1'
         );
+
         $this->email->initialize($config);
         $this->email->set_mailtype("html");
         $this->email->set_newline("\r\n");
 
         $this->email->to($email);
         $this->email->from($_ENV['SMTP_FROM'], 'TUP Connect');
-        $this->email->subject('Password Reset Link');
+        $this->email->subject($subject);
         $this->email->message($message);
 
-        if ($this->email->send()) return true;
-        else return false;
+        return $this->email->send();
     }
 }

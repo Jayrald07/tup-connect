@@ -66,7 +66,7 @@ class Register extends CI_Controller
             if (count($res)) {
                 switch ($res[0]['status']) {
                     case 'pending':
-                        $this->load->view("verify");
+                        $this->load->view("verify", $this->session->userdata());
                         break;
                     case 'verified':
                         if ($type === "register") {
@@ -123,10 +123,20 @@ class Register extends CI_Controller
         echo $code;
 
         $res = $this->registration_model->verify_code($code, $this->session->userdata("user_detail_id"));
-        if (!count($res)) redirect("./verify");
-        else {
-            if ($this->registration_model->update_code($res[0]['user_verification_id'])) redirect("./verify");
-            else echo "may error gagi";
+        if (!count($res)) {
+            $this->session->set_userdata(
+                array(
+                    "error" => true,
+                    "error_title" => "Invalid Code",
+                    "error_description" => "Please Try Again"
+                )
+            );
+            redirect("./verify");
+        } else {
+            if ($this->registration_model->update_code($res[0]['user_verification_id'])) {
+                $this->session->unset_userdata(array("error", "error_title", "error_description"));
+                redirect("./verify");
+            } else echo "may error gagi";
         }
     }
 

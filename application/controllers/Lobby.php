@@ -1,4 +1,7 @@
 <?php
+
+use function PHPSTORM_META\map;
+
 class Lobby extends CI_Controller
 {
 
@@ -9,16 +12,123 @@ class Lobby extends CI_Controller
         $this->load->model("post_model");
     }
 
+    public function post()
+    {
+
+        $date_stamp = new DateTime("now", new DateTimeZone("Asia/Manila"));
+        $post_id = random_string("alnum", 15);
+        $lobby_id = random_string("alnum", 15);
+        $i = 0;
+        $post_images = [];
+
+        if (!empty($_FILES["post-image"]["name"][0])) {
+            foreach ($_FILES["post-image"]["name"] as $key) {
+                $exploded = explode(".", $key);
+                $extension = $exploded[count($exploded) - 1];
+                $post_images[$i] = random_string("alnum", 15) . '.' . $extension;
+                $i++;
+            }
+        }
+
+        $data = array(
+            "type" => "lobby",
+            "lobby_id" => $lobby_id,
+            "group_id" => $this->session->userdata("id"),
+            "user_detail_id" => $this->session->userdata("user_detail_id"),
+            "campus_id" => 0,
+            "college_id" => 0,
+            "category_id" => 0,
+            "post_id" => $post_id,
+            "post_text" => $this->input->post("post-content"),
+            "date_time_stamp" => $date_stamp->format("Y-m-d H:i:s"),
+            "status" => "posted",
+            "post_up_vote" => 0,
+            "post_down_vote" => 0,
+            "post_image_path" => $post_images,
+        );
+
+        if ($this->post->submit($data)) {
+            if (count($post_images)) {
+                $done = 0;
+                for ($i = 0; $i < count($post_images); $i++) {
+                    $config['upload_path']          = './uploads/';
+                    $config['allowed_types']        = 'gif|jpg|png';
+
+                    $config["file_name"]             = explode(".", $post_images[$i])[0];
+
+                    $_FILES["p-image"]["name"] = $_FILES["post-image"]["name"][$i];
+                    $_FILES["p-image"]["type"] = $_FILES["post-image"]["type"][$i];
+                    $_FILES["p-image"]["tmp_name"] = $_FILES["post-image"]["tmp_name"][$i];
+                    $_FILES["p-image"]["error"] = $_FILES["post-image"]["error"][$i];
+                    $_FILES["p-image"]["size"] = $_FILES["post-image"]["size"][$i];
+
+                    $this->load->library('upload', $config);
+                    $this->upload->initialize($config);
+                    if (!$this->upload->do_upload('p-image')) echo $this->upload->display_errors();
+                    $done++;
+                }
+                if (count($post_images) == $done) redirect(base_url("index.php/groups/") . $this->session->userdata("id"));
+            } else redirect(base_url("index.php/groups/") . $this->session->userdata("id"));
+        }
+    }
+
+    public function insert_comment()
+    {
+        $date_stamp = new DateTime("now", new DateTimeZone("Asia/Manila"));
+        $data = array(
+            "comment_id" => random_string("alnum", 15),
+            "post_id" => $this->input->post("post-id"),
+            "comment_text" => $this->input->post("comment"),
+            "comment_down_vote" => 0,
+            "comment_up_vote" => 0,
+            "user_detail_id" => $this->session->userdata("user_detail_id"),
+            "date_time_stamp" => $date_stamp->format("Y-m-d H:i:s"),
+            "status" => "commented"
+        );
+        echo $this->post->insert_comment($data);
+    }
+
+    public function get_comments()
+    {
+        echo json_encode($this->post->get_comments($this->input->post("post-id")));
+    }
+
+    private function get_groups()
+    {
+        $data["owned_groups"] = $this->post_model->get_owned_groups($this->session->userdata(
+            "user_detail_id"
+        ));
+        $data["joined_groups"] = $this->post_model->get_joined_groups($this->session->userdata("user_detail_id"));
+
+        return $data;
+    }
+
+    public function groups($group_id)
+    {
+        $this->session->set_userdata(array(
+            "type" => "group",
+            "id" => $group_id
+        ));
+        $data = $this->get_groups();
+        $data["type"] = "lobby";
+        $data['group_id'] = $group_id;
+        $data["posts"] = $this->post_model->get_posts("groups", $group_id);
+        $this->load->view("view_post", $data);
+    }
+
     public function index()
     {
+        $data = $this->get_groups();
+
         $data["type"] = "lobby";
-        $data["posts"] = $this->post->get_posts('lobby');
+        $data["posts"] = [];
+        $data['group_id'] = NULL;
+
         $this->load->view("view_post", $data);
     }
 
     public function create()
     {
-
         $this->post->create_form(array(
             "group" => true,
             "campus" => true,
@@ -44,55 +154,7 @@ class Lobby extends CI_Controller
         ))) redirect(base_url("index.php/") . "lobby");
     }
 
-    public function report($post_id)
-    {
-        $data["post"] = $this->post_model->get_post_front($post_id);
-        $report_id = random_string('alnum', 15);
-        $post_report_id = random_string('alnum', 15);
 
-        $data = array(
-            "certain" => array(
-                "report_id" => $report_id,
-                "report_description" => $this->input->post('report_description'),
-            ),
-            "report_id" => $report_id,
-            "report_description" => $this->input->post('report_description'),
-
-            "certain1" => array(
-                "post_report_id" => $post_report_id,
-                "post_id" => $post_id,
-                "report_id" => $report_id,
-            ),
-        );
-
-        if ($this->post->report($data)) redirect(base_url("index.php/") . "lobby/view_post");
-        else redirect(base_url("index.php/") . "lobby");
-    }
-
-    public function user_report($user_detail_id)
-    {
-        $report_id = random_string('alnum', 15);
-        $user_report_id = random_string('alnum', 15);
-
-        $data = array(
-            "certain" => array(
-                "report_id" => $report_id,
-                "report_description" => $this->input->post('report_description'),
-            ),
-            "report_id" => $report_id,
-            "report_description" => $this->input->post('report_description'),
-
-            "certain1" => array(
-                "user_report_id" => $user_report_id,
-                "user_detail_id" => $this->session->userdata('user_id'),
-                "reported_user_id" => $user_detail_id,
-                "report_id" => $report_id,
-            ),
-        );
-
-        if ($this->post->user_report($data)) redirect(base_url("index.php/") . "lobby/view_post");
-        else redirect(base_url("index.php/") . "lobby");
-    }
 
     public function remove($post_id)
     {
