@@ -509,15 +509,11 @@ nav ul li a img {
 	padding: 10px;
 	border: 1px solid var(--gray);
 	border-radius: 5px;
-	margin-bottom: 5px;
+	margin-bottom: 10px;
 	text-decoration: none;
 	color: var(--black);
-	font-size: 11pt;
-}
-
-.container-card {
 	font-size: 10pt;
-	margin: 0;
+	display: block;
 }
 
 .post-card {
@@ -808,10 +804,6 @@ nav ul li a img {
 
 .groups-action {
 	margin-bottom: 40px;
-	/* background-color: #f9f9f9; */
-	/* padding: 10px; */
-	/* display: grid; */
-	/* grid-template-columns: 6fr 1fr; */
 	display: flex;
 	align-items: center;
 }
@@ -835,6 +827,16 @@ nav ul li a img {
 
 .groups-action div:last-child {
 	text-align: right;
+}
+
+.force-left {
+	text-align: left !important;
+	display: flex;
+}
+
+.fw-button a {
+	background-color: var(--red) !important;
+	color: #fff !important;
 }
 
 .post-modal {
@@ -1030,4 +1032,8 @@ nav ul li a img {
 
 .splide__slide img {
 	width: 100% !important;
+}
+
+.selected-delete {
+	background-color: #c52e476b !important;
 }

@@ -1,21 +1,47 @@
 <?php
-class Freedom_wall extends CI_Controller
-{
 
+class Organization extends CI_Controller
+{
     public function __construct()
     {
         parent::__construct();
         $this->load->library(array('post', 'session'));
-        $this->load->model("post_model");
-        $this->load->helper("string");
+        $this->load->model("organization_model");
+    }
+
+    public function get_orgs()
+    {
+        $data["org_joined"] = $this->organization_model->get_joined_org($this->session->userdata("user_detail_id"));
+        $data["org_owned"] = $this->organization_model->get_owned_org($this->session->userdata("user_detail_id"));
+
+        return $data;
     }
 
     public function index()
     {
-        $data["type"] = "fw";
-        $data["posts"] = $this->post_model->get_posts("fw", '');
+        $data = $this->get_orgs();
+
+        $data["type"] = "org";
+        $data["posts"] = [];
+        $data['org_id'] = NULL;
+
         $this->load->view("view_post", $data);
     }
+
+
+    public function org($org_id)
+    {
+        $this->session->set_userdata(array(
+            "type" => "org",
+            "id" => $org_id
+        ));
+        $data = $this->get_orgs();
+        $data["type"] = "org";
+        $data['org_id'] = $org_id;
+        $data["posts"] = $this->post_model->get_posts("org", $org_id);
+        $this->load->view("view_post", $data);
+    }
+
 
     public function post()
     {
@@ -35,8 +61,9 @@ class Freedom_wall extends CI_Controller
         }
 
         $data = array(
-            "type" => "fw",
-            "fw_id" => $organization_post_id,
+            "type" => "org",
+            "organization_post_id" => $organization_post_id,
+            "organization_id" => $this->session->userdata("id"),
             "user_detail_id" => $this->session->userdata("user_detail_id"),
             "post_id" => $post_id,
             "post_text" => $this->input->post("post-content"),
@@ -67,8 +94,8 @@ class Freedom_wall extends CI_Controller
                     if (!$this->upload->do_upload('p-image')) echo $this->upload->display_errors();
                     $done++;
                 }
-                if (count($post_images) == $done) redirect(base_url("index.php/fw"));
-            } else redirect(base_url("index.php/fw"));
+                if (count($post_images) == $done) redirect(base_url("index.php/organizations/") . $this->session->userdata("id"));
+            } else redirect(base_url("index.php/organizations/") . $this->session->userdata("id"));
         }
     }
 }

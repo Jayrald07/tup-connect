@@ -71,6 +71,10 @@ var ui = (function () {
 	let post_image_container = document.getElementById("post-image-container");
 	let v2_modal = document.getElementsByClassName("v2-modal")[0];
 	let v2_modal_close = document.getElementsByClassName("v2-modal-close")[0];
+	let post_image_add = document.getElementById("post-image-add");
+	let post_update_submit = document.getElementById("post-update-submit");
+	let elms = document.getElementsByClassName("splide");
+
 	return {
 		input_email,
 		regpass,
@@ -105,6 +109,12 @@ var ui = (function () {
 		post_image_container,
 		v2_modal,
 		v2_modal_close,
+		post_image_delete() {
+			return document.getElementsByClassName("post-image-delete");
+		},
+		post_image_add,
+		post_update_submit,
+		elms,
 	};
 })();
 
@@ -118,6 +128,7 @@ var controller = (function (_UI) {
 	let report_user_id = null;
 	let report_type = null;
 	let report_description = null;
+	let selected_image_deletion = [];
 
 	return {
 		init() {
@@ -183,6 +194,26 @@ var controller = (function (_UI) {
 			for (let i = 0; i < _UI.user_based.length; i++) {
 				_UI.user_based[i].style.display = value;
 			}
+		},
+		image_delete() {
+			const _ = this;
+			for (let i = 0; i < _UI.post_image_delete().length; i++) {
+				_UI.post_image_delete()[i].addEventListener("click", function (e) {
+					_.toggle_deleted_image(this.getAttribute("x-value"));
+					if (e.target.localName === "i")
+						e.target.parentElement.parentElement.classList.toggle(
+							"selected-delete"
+						);
+					else e.target.parentElement.classList.toggle("selected-delete");
+				});
+			}
+		},
+		toggle_deleted_image(post_image_id) {
+			if (selected_image_deletion.includes(post_image_id)) {
+				selected_image_deletion = selected_image_deletion.filter((item) => {
+					return item !== post_image_id;
+				});
+			} else selected_image_deletion.push(post_image_id);
 		},
 		posts_init() {
 			for (let i = 0; i < _UI.post_option_toggle.length; i++) {
@@ -297,10 +328,8 @@ var controller = (function (_UI) {
 				});
 			}
 
-			var elms = document.getElementsByClassName("splide");
-
-			for (var i = 0; i < elms.length; i++) {
-				new Splide(elms[i], {
+			for (var i = 0; i < _UI.elms.length; i++) {
+				new Splide(_UI.elms[i], {
 					type: "loop",
 				}).mount();
 			}
@@ -309,17 +338,14 @@ var controller = (function (_UI) {
 				_UI.post_modal.style.display = "flex";
 				CKEDITOR.instances["post-content"].setData("");
 			});
-
 			_UI.post_modal_close.addEventListener("click", () => {
 				_UI.post_modal.style.display = "none";
 				_UI.post_image_container.textContent = "";
 			});
-
 			_UI.v2_modal_close.addEventListener("click", () => {
 				_UI.v2_modal.style.display = "none";
 				_UI.post_image_container.textContent = "";
 			});
-
 			_UI.comment_button.addEventListener("click", () => {
 				$.ajax({
 					url: "http://localhost/tup-connect/index.php/comment/insert",
@@ -402,7 +428,6 @@ var controller = (function (_UI) {
 					},
 				});
 			});
-
 			_UI.edit_post.addEventListener("click", (e) => {
 				_UI.post_image_container.textContent = "";
 				_UI.post_option.style.display = "none";
@@ -413,29 +438,62 @@ var controller = (function (_UI) {
 					data: {
 						post_id: report_post_id,
 					},
-					success: function (data) {
+					success: (data) => {
 						if (data.length) {
-							console.log(data);
+							selected_image_deletion = [];
 							_UI.v2_modal.style.display = "flex";
 							CKEDITOR.instances["post-content-edit"].setData(
 								data[0].post_text
 							);
 							if (data[0].post_image_path) {
 								for (let i = 0; i < data[0].post_image_path.length; i++) {
+									let { post_image_path, post_image_id } =
+										data[0].post_image_path[i];
 									_UI.post_image_container.insertAdjacentHTML(
 										"afterbegin",
 										`<div class="image-container">
-								<a href="javascript:void(0)" class="post-image-delete"><i class="fas fa-trash"></i></a>
-								<img src="http://localhost/tup-connect/uploads/${data[0].post_image_path[i].post_image_path}" />
+								<a href="javascript:void(0)" x-value=${post_image_id} class="post-image-delete"><i class="fas fa-trash"></i></a>
+								<img src="http://localhost/tup-connect/uploads/${post_image_path}" />
 								</div>
 							`
 									);
 								}
+								this.image_delete();
 							}
 						}
 					},
 					error: function (data) {
 						console.log(data);
+					},
+				});
+			});
+			_UI.post_update_submit.addEventListener("click", () => {
+				console.log(_UI.post_image_add.files);
+				let data = new FormData();
+				let images = [];
+				data.append("post_id", report_post_id);
+				data.append(
+					"post_text",
+					CKEDITOR.instances["post-content-edit"].getData()
+				);
+				data.append("post_image_ids_delete", selected_image_deletion);
+
+				for (let i = 0; i < _UI.post_image_add.files.length; i++)
+					data.append("post_image_add[]", _UI.post_image_add.files[i]);
+
+				$.ajax({
+					url: "http://localhost/tup-connect/index.php/post/update",
+					type: "POST",
+					dataType: "text",
+					data,
+					processData: false,
+					contentType: false,
+					success: function (data) {
+						if (data === "success") location.reload();
+						else alert("There's a problem editing the post.");
+					},
+					error: function (data) {
+						console.log(data.responseText, "asd");
 					},
 				});
 			});

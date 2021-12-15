@@ -31,12 +31,7 @@ class Post
 
     public function submit($data)
     {
-
-        switch ($data["type"]) {
-            case 'lobby':
-                return $this->CI->post_model->submit($data["type"], $data);
-                break;
-        }
+        return $this->CI->post_model->submit($data["type"], $data);
     }
 
     public function insert_comment($data)

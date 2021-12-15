@@ -47,8 +47,6 @@ class Lobby extends CI_Controller
             "post_image_path" => $post_images,
         );
 
-        print_r($_FILES);
-
         if ($this->post->submit($data)) {
             if (count($post_images)) {
                 $done = 0;

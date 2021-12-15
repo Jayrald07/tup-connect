@@ -7,12 +7,14 @@ $route["lobby/create"] = "lobby/create";
 $route["lobby/submit"] = "lobby/submit";
 
 $route['fw'] = "freedom_wall";
-$route["fw/create"] = "freedom_wall/create";
+$route["fw/post"] = "freedom_wall/post";
 $route["fw/submit"] = "freedom_wall/submit";
 
+$route["organizations"] = "organization";
+
 $route['forum'] = "forum";
-$route["forum/create"] = "forum/create";
-$route["forum/submit"] = "forum/submit";
+$route["forum/(:any)"] = "forum/forum/$1";
+$route["frm/post"] = "forum/post";
 
 $route['groups/edit/(:any)'] = "lobby/edit/$1";
 $route['fw/edit/(:any)'] = "freedom_wall/edit/$1";
@@ -33,15 +35,8 @@ $route["verify_email"] = "register/verify_email";
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
-// $route["lobby/report/(:any)"] = "lobby/report/$1";
-// $route["fw/report/(:any)"] = "freedom_wall/report/$1";
-// $route["forum/report/(:any)"] = "forum/report/$1";
-
-// $route["lobby/user_report/(:any)"] = "lobby/user_report/$1";
-// $route["fw/user_report/(:any)"] = "freedom_wall/user_report/$1";
-// $route["forum/user_report/(:any)"] = "forum/user_report/$1";
-
 $route["groups/(:any)"] = "lobby/groups/$1";
+$route["organizations/(:any)"] = "organization/org/$1";
 
 $route['post'] = "lobby/post";
 $route["comment/insert"] = "lobby/insert_comment";
@@ -56,3 +51,6 @@ $route["post/delete"] = "post_controller/delete_post";
 $route["post/is_delete"] = "post_controller/is_allowed_deletion";
 
 $route["post/getone"] = "post_controller/get_post";
+$route["post/update"] = "post_controller/update_post";
+
+$route["org/post"] = "organization/post";

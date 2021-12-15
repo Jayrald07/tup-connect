@@ -110,7 +110,13 @@
                 </a>
             </div>
             <div class="post-modal-body">
-                <?php echo form_open_multipart(base_url("index.php/post")) ?>
+                <?php
+                if ($type === "lobby") echo form_open_multipart(base_url("index.php/post"));
+                else if ($type === "org") echo form_open_multipart(base_url("index.php/org/post"));
+                else if ($type === "fw") echo form_open_multipart(base_url("index.php/fw/post"));
+                else if ($type === "forum") echo form_open_multipart(base_url("index.php/frm/post"));
+
+                ?>
                 <textarea required name='post-content'></textarea>
                 <input type="file" name="post-image[]" accept=".png,.jpg" multiple />
                 <button type="submit">Submit</button>
@@ -132,9 +138,8 @@
                 <textarea required name='post-content-edit'></textarea>
                 <section id="post-image-container">
                 </section>
-                <input type="file" name="post-image" accept=".png,.jpg" />
-                <input type="hidden" id="post-content-id">
-                <button type="submit">Save</button>
+                <input type="file" id="post-image-add" accept=".png,.jpg" multiple />
+                <button id="post-update-submit" type="submit">Save</button>
             </div>
             <div class="post-modal-footer"></div>
         </section>
@@ -157,7 +162,7 @@
             <aside class="pages-navigator">
                 <ul>
                     <li><a href=<?php echo base_url("index.php/groups") ?> class=<?php if ($type === "lobby") echo "active-page" ?>><i class="fas fa-th-large"></i> Groups</a></li>
-                    <li><a href=<?php echo base_url("index.php/fw") ?> class=<?php if ($type === "org") echo "active-page" ?>><i class="fas fa-users"></i> Organization</a></li>
+                    <li><a href=<?php echo base_url("index.php/organizations") ?> class=<?php if ($type === "org") echo "active-page" ?>><i class="fas fa-users"></i> Organization</a></li>
                     <li><a href=<?php echo base_url("index.php/fw") ?> class=<?php if ($type === "fw") echo "active-page" ?>><i class=" fas fa-volume-up"></i> Freedom Wall</a></li>
                     <li><a href=<?php echo base_url("index.php/forum") ?> class=<?php if ($type === "forum") echo "active-page" ?>><i class="fas fa-comments"></i> Forum</a></li>
                 </ul>
@@ -166,16 +171,20 @@
         <main>
 
             <section class="groups-action">
-                <div>
-                    <a href="#">
-                        <i class="fas fa-users"></i>
-                        Members
-                    </a>
-                </div>
-                <div>
+                <?php if ($type !== "fw" and $type !== "forum") { ?>
+                    <div>
+                        <a href="#">
+                            <i class="fas fa-users"></i>
+                            Members
+                        </a>
+                    </div>
+                <?php } ?>
+                <div class='<?php if ($type === "fw" or $type === "forum") echo "force-left fw-button" ?>'>
                     <a href="javascript:void(0)" class="post-button">
                         <i class="fas fa-pen"></i>
-                        Post
+                        <?php if ($type === "fw") echo "Create Entry";
+                        else if ($type === "forum") echo "Ask";
+                        else echo "Post" ?>
                     </a>
                 </div>
             </section>
@@ -183,12 +192,20 @@
             <?php foreach ($posts as $post) : ?>
                 <section class="post-card">
                     <section class="post-header">
-                        <figure>
-                            <img src=<?php echo base_url("public/assets/user.png") ?> />
-                        </figure>
+                        <?php if ($type !== "fw") { ?>
+                            <figure>
+                                <img src=<?php echo base_url("public/assets/user.png") ?> />
+                            </figure>
+                        <?php } ?>
                         <section>
-                            <h1><?php echo $post["first_name"] . " " . $post["last_name"] ?></h1>
-                            <time><?php echo $post["date_time_stamp"] ?></time>
+                            <h1><?php
+                                if ($type === "fw") echo "Anonymous";
+                                else echo $post["first_name"] . " " . $post["last_name"] ?>
+                            </h1>
+                            <time><?php
+                                    if ($type === 'fw') echo "Entry ID: " . $post["fw_id"];
+                                    else echo $post["date_time_stamp"];
+                                    ?></time>
                         </section>
                         <div>
                             <a href="javascript:void(0)" class="post-option-toggle" post-value=<?php echo $post["post_id"] ?> user-value=<?php echo $post["user_detail_id"] ?>>
@@ -235,33 +252,68 @@
 
 
         </main>
-        <div style="position:relative">
-            <div class="container-container">
-                <section class="container-action">
-                    <a href="#"><i class="fas fa-search"></i> Search</a>
-                    <a href="#"><i class="fas fa-plus"></i> Create</a>
-                </section>
-                <hr class="container-divider" />
-                <section class="container-own">
-                    <h1>Your Groups</h1>
-                    <?php foreach ($owned_groups as $group) : ?>
-                        <a href=<?php echo base_url("index.php/groups/") . $group["group_id"] ?> class="container-card <?php echo $group["group_id"] === $group_id ? 'active-page' : '' ?>">
-                            <?php echo $group["group_name"] ?>
-                        </a>
-                    <?php endforeach; ?>
-                </section>
-                <hr class="container-divider" />
 
-                <section class="container-joined">
-                    <h1>Joined Groups</h1>
-                    <?php foreach ($joined_groups as $group) : ?>
-                        <a href=<?php echo base_url("index.php/groups/") . $group["group_id"] ?> class="container-card <?php echo $group["group_id"] === $group_id ? 'active-page' : '' ?>">
-                            <?php echo $group["group_name"] ?>
-                        </a>
-                    <?php endforeach; ?>
-                </section>
+        <?php if ($type !== "fw") { ?>
+            <div style="position:relative">
+                <div class="container-container">
+                    <?php if ($type !== "forum") { ?>
+                        <section class="container-action">
+                            <a href="#"><i class="fas fa-search"></i> Search</a>
+                            <a href="#"><i class="fas fa-plus"></i> Create</a>
+                        </section>
+                        <hr class="container-divider" />
+                    <?php } ?>
+                    <section class="container-own">
+                        <?php if ($type !== "forum") { ?>
+                            <h1>Your <?php if ($type === "org") echo "Organizations";
+                                        else echo "Groups"; ?></h1>
+                            <?php if ($type === "lobby") { ?>
+                                <?php foreach ($owned_groups as $group) : ?>
+                                    <a href=<?php echo base_url("index.php/groups/") . $group["group_id"] ?> class="container-card <?php echo $group["group_id"] === $group_id ? 'active-page' : '' ?>">
+                                        <?php echo $group["group_name"] ?>
+                                    </a>
+                                <?php endforeach; ?>
+                            <?php } else if ($type === "org") { ?>
+                                <?php foreach ($org_owned as $org) : ?>
+                                    <a href=<?php echo base_url("index.php/organizations/") . $org["organization_id"] ?> class="container-card <?php echo $org["organization_id"] === $org_id ? 'active-page' : '' ?>">
+                                        <?php echo $org["organization_name"] ?>
+                                    </a>
+                                <?php endforeach; ?>
+                            <?php } ?>
+                        <?php } else { ?>
+                            <h1>Categories</h1>
+                            <?php foreach ($categories as $category) : ?>
+                                <a href=<?php echo base_url("index.php/forum/") . $category["category_id"] ?> class="container-card <?php echo $category["category_id"] === $category_id ? 'active-page' : '' ?>">
+                                    <?php echo $category["category_name"] ?>
+                                </a>
+                            <?php endforeach; ?>
+                        <?php } ?>
+                    </section>
+
+                    <?php if ($type !== "forum") { ?>
+                        <hr class="container-divider" />
+                        <section class="container-joined">
+                            <h1>Joined <?php if ($type === "org") echo "Organizations";
+                                        else echo "Groups"; ?></h1>
+                            <?php if ($type === "lobby") { ?>
+                                <?php foreach ($joined_groups as $group) : ?>
+                                    <a href=<?php echo base_url("index.php/groups/") . $group["group_id"] ?> class="container-card <?php echo $group["group_id"] === $group_id ? 'active-page' : '' ?>">
+                                        <?php echo $group["group_name"] ?>
+                                    </a>
+                                <?php endforeach; ?>
+                            <?php } else if ($type === "org") { ?>
+                                <?php foreach ($org_joined as $org) : ?>
+                                    <a href=<?php echo base_url("index.php/organizations/") . $org["organization_id"] ?> class="container-card <?php echo $org["organization_id"] === $org_id ? 'active-page' : '' ?>">
+                                        <?php echo $org["organization_name"] ?>
+                                    </a>
+                                <?php endforeach; ?>
+                            <?php } ?>
+
+                        </section>
+                    <?php } ?>
+                </div>
             </div>
-        </div>
+        <?php } ?>
     </div>
     <script src=<?php echo base_url("public/script.js") ?>></script>
     <script>

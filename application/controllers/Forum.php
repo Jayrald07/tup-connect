@@ -8,116 +8,85 @@ class Forum extends CI_Controller
     {
         parent::__construct();
         $this->load->library(array('post', 'session'));
+        $this->load->model("post_model");
+        $this->load->helper("string");
     }
 
     public function index()
     {
-        $this->session->set_userdata($this->mock_session_data);
         $data["type"] = "forum";
-        $data["posts"] = $this->post->get_posts('forum');
-
+        $data["category_id"] = NULL;
+        $data["posts"] = [];
+        $data["categories"] = $this->post_model->get_categories();
         $this->load->view("view_post", $data);
     }
 
-    public function edit($post_id)
+    public function forum($category_id)
     {
-        $data["post"] = $this->post_model->get_post_front($post_id);
-        $data["type"] = "forum";
-        $this->load->view("edit_post", $data);
-    }
-
-    public function save()
-    {
-        if ($this->post_model->save(array(
-            "content" => $this->input->post("content"),
-            "post_id" => $this->input->post("post_id")
-        ))) redirect(base_url("index.php/") . "forum");
-    }
-
-    public function report($post_id)
-    {
-        $data["post"] = $this->post_model->get_post_front($post_id);
-        $report_id = random_string('alnum', 15);
-        $post_report_id = random_string('alnum', 15);
-
-        $data = array(
-            "certain" => array(
-                "report_id" => $report_id,
-                "report_description" => $this->input->post('report_description'),
-            ),
-            "report_id" => $report_id,
-            "report_description" => $this->input->post('report_description'),
-
-            "certain1" => array(
-                "post_report_id" => $post_report_id,
-                "post_id" => $post_id,
-                "report_id" => $report_id,
-            ),
-        );
-
-        if ($this->post->report($data)) redirect(base_url("index.php/") . "forum/view_post");
-        else redirect(base_url("index.php/") . "forum");
-    }
-
-    public function user_report($user_detail_id)
-    {
-        $report_id = random_string('alnum', 15);
-        $user_report_id = random_string('alnum', 15);
-
-        $data = array(
-            "certain" => array(
-                "report_id" => $report_id,
-                "report_description" => $this->input->post('report_description'),
-            ),
-            "report_id" => $report_id,
-            "report_description" => $this->input->post('report_description'),
-
-            "certain1" => array(
-                "user_report_id" => $user_report_id,
-                "user_detail_id" => $this->session->userdata('user_id'),
-                "reported_user_id" => $user_detail_id,
-                "report_id" => $report_id,
-            ),
-        );
-        if ($this->post->user_report($data)) redirect(base_url("index.php/") . "forum/view_post");
-        else redirect(base_url("index.php/") . "forum");
-    }
-
-    public function create()
-    {
-
-        $this->post->create_form(array(
-            "group" => false,
-            "campus" => false,
-            "college" => false,
-            "category" => true,
-            "type" => "forum"
+        $this->session->set_userdata(array(
+            "category_id" => $category_id
         ));
+        $data["type"] = "forum";
+        $data["category_id"] = $category_id;
+        $data["posts"] = [];
+        $data["posts"] = $this->post_model->get_posts("forum", $category_id);
+        $data["categories"] = $this->post_model->get_categories();
+        $this->load->view("view_post", $data);
     }
 
-    public function submit()
+    public function post()
     {
-        $date = new DateTime('now');
-        $post_id = random_string('alnum', 15);
+        $date_stamp = new DateTime("now", new DateTimeZone("Asia/Manila"));
+        $post_id = random_string("alnum", 15);
+        $forum_id = random_string("alnum", 15);
+        $i = 0;
+        $post_images = [];
+
+        if (!empty($_FILES["post-image"]["name"][0])) {
+            foreach ($_FILES["post-image"]["name"] as $key) {
+                $exploded = explode(".", $key);
+                $extension = $exploded[count($exploded) - 1];
+                $post_images[$i] = random_string("alnum", 15) . '.' . $extension;
+                $i++;
+            }
+        }
 
         $data = array(
-            "allowed" => "*",
-            "type" => 'forum',
-            "certain" => array(
-                "forum_id" => random_string('alnum', 15),
-                "user_detail_id" => $this->session->userdata('user_id'),
-                "category_id" => $this->input->post("category"),
-                "post_id" => $post_id,
-            ),
+            "type" => "forum",
+            "category_id" => $this->session->userdata("category_id"),
+            "forum_id" => $forum_id,
+            "user_detail_id" => $this->session->userdata("user_detail_id"),
             "post_id" => $post_id,
-            "post_text" => $this->input->post('content'),
+            "post_text" => $this->input->post("post-content"),
+            "date_time_stamp" => $date_stamp->format("Y-m-d H:i:s"),
+            "status" => "posted",
             "post_up_vote" => 0,
             "post_down_vote" => 0,
-            "date_time_stamp" => $date->format("Y-m-d H:i:s"),
-            "status" => "posted",
+            "post_image_path" => $post_images,
         );
 
-        if ($this->post->submit($data)) redirect(base_url("index.php/") . "forum");
-        else redirect(base_url("index.php/") . "forum/create");
+        if ($this->post->submit($data)) {
+            if (count($post_images)) {
+                $done = 0;
+                for ($i = 0; $i < count($post_images); $i++) {
+                    $config['upload_path']          = './uploads/';
+                    $config['allowed_types']        = 'gif|jpg|png';
+
+                    $config["file_name"]             = explode(".", $post_images[$i])[0];
+
+                    $_FILES["p-image"]["name"] = $_FILES["post-image"]["name"][$i];
+                    $_FILES["p-image"]["type"] = $_FILES["post-image"]["type"][$i];
+                    $_FILES["p-image"]["tmp_name"] = $_FILES["post-image"]["tmp_name"][$i];
+                    $_FILES["p-image"]["error"] = $_FILES["post-image"]["error"][$i];
+                    $_FILES["p-image"]["size"] = $_FILES["post-image"]["size"][$i];
+
+                    $this->load->library('upload', $config);
+                    $this->upload->initialize($config);
+                    if (!$this->upload->do_upload('p-image')) echo $this->upload->display_errors();
+                    $done++;
+                }
+                if (count($post_images) == $done) redirect(base_url("index.php/forum/") . $this->session->userdata("category_id"));
+            } else redirect(base_url("index.php/forum/") . $this->session->userdata("category_id"));
+        }
     }
 }
