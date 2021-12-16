@@ -37,7 +37,6 @@
                 <a href="javascript:void(0)" class="comment-modal-close"><i class="fas fa-times"></i></a>
             </div>
             <div class="comment-body">
-
             </div>
             <div class="comment-footer">
                 <input placeholder="Type your comment/reply" id="comment-input" />
@@ -61,6 +60,9 @@
             </li>
             <li>
                 <a href="javascript:void(0)" id="report-user">Report User</a>
+            </li>
+            <li id="user-based-block">
+                <a href="javascript:void(0)" id="block-user">Block User</a>
             </li>
         </ul>
     </div>

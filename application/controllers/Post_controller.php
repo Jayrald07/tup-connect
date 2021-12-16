@@ -50,6 +50,24 @@ class Post_controller extends CI_Controller
         else echo "error";
     }
 
+    public function block_user()
+    {
+
+        $this->load->library("session");
+        $this->load->helper("string");
+        $this->load->model("post_model");
+
+        $data = array(
+            "user_block_id" => random_string("alnum", 15),
+            "user_detail_id" => $this->session->userdata("user_detail_id"),
+            "blocked_user_id" => $this->input->post("user_detail_id"),
+            "block_id" => random_string("alnum", 15),
+            "block_description" => $this->input->post("block_description")
+        );
+
+        if ($this->post_model->block_user($data)) echo "success";
+        else echo "error";
+    }
     public function user_report()
     {
         $this->load->library(array(

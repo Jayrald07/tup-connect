@@ -46,6 +46,8 @@ $route["post/vote"] = "post_controller/vote";
 
 $route["post/report"] = "post_controller/report";
 $route["post/user_report"] = "post_controller/user_report";
+$route["post/block_user"] = "post_controller/block_user";
+
 
 $route["post/delete"] = "post_controller/delete_post";
 $route["post/is_delete"] = "post_controller/is_allowed_deletion";

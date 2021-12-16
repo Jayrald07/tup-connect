@@ -333,4 +333,20 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
             count($this->get_image($post_id)) > 0 ? $this->get_image($post_id) : [];
         return $post;
     }
+
+
+    public function block_user($data)
+    {
+        $this->db->insert("tbl_block", array(
+            "block_id" => $data["block_id"],
+            "block_description" => $data["block_description"]
+        ));
+
+        return $this->db->insert("tbl_user_block", array(
+            "user_block_id" => $data["user_block_id"],
+            "user_detail_id" => $data["user_detail_id"],
+            "blocked_user_id" => $data["blocked_user_id"],
+            "block_id" => $data["block_id"]
+        ));
+    }
 }
