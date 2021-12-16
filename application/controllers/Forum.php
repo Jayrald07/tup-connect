@@ -14,6 +14,8 @@ class Forum extends CI_Controller
 
     public function index()
     {
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+
         $data["type"] = "forum";
         $data["category_id"] = NULL;
         $data["posts"] = [];
@@ -23,6 +25,10 @@ class Forum extends CI_Controller
 
     public function forum($category_id)
     {
+
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+
+
         $this->session->set_userdata(array(
             "category_id" => $category_id
         ));

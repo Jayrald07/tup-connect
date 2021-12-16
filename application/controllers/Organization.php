@@ -19,6 +19,8 @@ class Organization extends CI_Controller
 
     public function index()
     {
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+
         $data = $this->get_orgs();
 
         $data["type"] = "org";
@@ -31,6 +33,9 @@ class Organization extends CI_Controller
 
     public function org($org_id)
     {
+
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+
         $this->session->set_userdata(array(
             "type" => "org",
             "id" => $org_id
