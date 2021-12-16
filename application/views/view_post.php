@@ -26,6 +26,28 @@
                 <a href="#">
                     <img class="user-pic" src="<?php echo base_url() ?>/public/assets/user.png" />
                 </a>
+                <div class="account-option">
+                    <ul>
+                        <li>
+                            <a href="#">
+                                <i class="fas fa-user"></i>
+                                Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="fas fa-cog"></i>
+                                Settings
+                            </a>
+                        </li>
+                        <li>
+                            <a href="signout">
+                                <i class="fas fa-sign-out"></i>
+                                Sign Out
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
         </ul>
     </nav>

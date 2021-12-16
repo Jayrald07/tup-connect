@@ -56,3 +56,4 @@ $route["post/getone"] = "post_controller/get_post";
 $route["post/update"] = "post_controller/update_post";
 
 $route["org/post"] = "organization/post";
+$route["signout"] = "login/signout";

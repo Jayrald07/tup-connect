@@ -28,8 +28,16 @@ class Login extends CI_Controller
         }
     }
 
+    public function signout()
+    {
+        $this->session->sess_destroy();
+        redirect("login");
+    }
+
     public function index()
     {
+        if (!empty(trim($this->session->userdata("user_detail_id")))) redirect("groups");
+
         $this->load->view('login', $this->session->userdata());
     }
 

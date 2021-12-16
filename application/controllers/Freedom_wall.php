@@ -12,6 +12,8 @@ class Freedom_wall extends CI_Controller
 
     public function index()
     {
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+
         $data["type"] = "fw";
         $data["posts"] = $this->post_model->get_posts("fw", '');
         $this->load->view("view_post", $data);

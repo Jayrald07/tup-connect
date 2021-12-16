@@ -105,6 +105,8 @@ class Lobby extends CI_Controller
 
     public function groups($group_id)
     {
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+
         $this->session->set_userdata(array(
             "type" => "group",
             "id" => $group_id
@@ -118,6 +120,8 @@ class Lobby extends CI_Controller
 
     public function index()
     {
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+
         $data = $this->get_groups();
 
         $data["type"] = "lobby";

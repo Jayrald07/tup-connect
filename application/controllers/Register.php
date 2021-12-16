@@ -12,6 +12,9 @@ class Register extends CI_Controller
 
     public function index()
     {
+
+        if (!empty(trim($this->session->userdata("user_detail_id")))) redirect("groups");
+
         $this->_verify("register");
     }
 
