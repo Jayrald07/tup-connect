@@ -74,6 +74,8 @@ var ui = (function () {
 	let post_image_add = document.getElementById("post-image-add");
 	let post_update_submit = document.getElementById("post-update-submit");
 	let elms = document.getElementsByClassName("splide");
+	let block_user = document.getElementById("block-user");
+	let user_based_block = document.getElementById("user-based-block");
 
 	return {
 		input_email,
@@ -115,6 +117,8 @@ var ui = (function () {
 		post_image_add,
 		post_update_submit,
 		elms,
+		block_user,
+		user_based_block,
 	};
 })();
 
@@ -193,6 +197,8 @@ var controller = (function (_UI) {
 		open_user_based(value) {
 			for (let i = 0; i < _UI.user_based.length; i++) {
 				_UI.user_based[i].style.display = value;
+				if (value === "block") _UI.block_user.style.display = "none";
+				else _UI.block_user.style.display = "block";
 			}
 		},
 		image_delete() {
@@ -280,7 +286,7 @@ var controller = (function (_UI) {
                             <i class="fas fa-reply"></i>
                         </a>
                         <a href="#">
-                            View Replies
+                            <i class="fas fa-comment"></i>
                         </a>
                     </div>
                 </section>
@@ -383,11 +389,17 @@ var controller = (function (_UI) {
 						report_description: report_description,
 						url: "report",
 					};
-				} else {
+				} else if (report_type === "user") {
 					props = {
 						user_detail_id: report_user_id,
 						report_description: report_description,
 						url: "user_report",
+					};
+				} else if (report_type === "block") {
+					props = {
+						user_detail_id: report_user_id,
+						block_description: report_description,
+						url: "block_user",
 					};
 				}
 
@@ -496,6 +508,11 @@ var controller = (function (_UI) {
 						console.log(data.responseText, "asd");
 					},
 				});
+			});
+			_UI.block_user.addEventListener("click", function (e) {
+				report_type = "block";
+				_UI.report_modal.style.display = "flex";
+				_UI.post_option.style.display = "none";
 			});
 		},
 	};
