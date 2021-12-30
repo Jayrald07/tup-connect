@@ -18,7 +18,7 @@ class login_model extends CI_Model
 
 	function checkUser($email, $password)
 	{
-		$query = $this->db->query("SELECT * from tbl_pass_manage where email='$email' AND password='$password'");
+		$query = $this->db->query("SELECT * from tbl_user where user_email='$email' AND user_password='$password'");
 		if ($query->num_rows() == 1) {
 			return $query->row();
 		} else {
@@ -29,7 +29,7 @@ class login_model extends CI_Model
 	function checkCurrentPassword($currentPassword)
 	{
 		$userid = $this->session->userdata('LoginSession')['id'];
-		$query = $this->db->query("SELECT * from tbl_pass_manage WHERE id='$userid' AND password='$currentPassword' ");
+		$query = $this->db->query("SELECT * from tbl_user WHERE user_id='$userid' AND user_password='$currentPassword' ");
 		if ($query->num_rows() == 1) {
 			return true;
 		} else {
@@ -40,12 +40,12 @@ class login_model extends CI_Model
 	function updatePassword($password)
 	{
 		$userid = $this->session->userdata('LoginSession')['id'];
-		$query = $this->db->query("UPDATE tbl_pass_manage set password='$password' WHERE id='$userid' ");
+		$query = $this->db->query("UPDATE tbl_user set user_password='$password' WHERE user_id='$userid' ");
 	}
 
 	public function validateEmail($email)
 	{
-		$query = $this->db->query("SELECT * FROM tbl_pass_manage WHERE email='$email'");
+		$query = $this->db->query("SELECT * FROM tbl_user WHERE user_email='$email'");
 		if ($query->num_rows() == 1) {
 			return $query->row();
 		} else {
@@ -55,13 +55,13 @@ class login_model extends CI_Model
 
 	public function updatePasswordhash($data, $email)
 	{
-		$this->db->where('email', $email);
-		$this->db->update('tbl_pass_manage', $data);
+		$this->db->where('user_email', $email);
+		$this->db->update('tbl_user', $data);
 	}
 
 	function getHashDetails($hash)
 	{
-		$query = $this->db->query("SELECT * from tbl_pass_manage WHERE hash_key='$hash'");
+		$query = $this->db->query("SELECT * from tbl_user WHERE hash_key='$hash'");
 		if ($query->num_rows() == 1) {
 			return $query->row();
 		} else {
@@ -71,7 +71,7 @@ class login_model extends CI_Model
 
 	function validateCurrentPassword($currentPassword, $hash)
 	{
-		$query = $this->db->query("SELECT * from tbl_pass_manage WHERE password = '$currentPassword' AND hash_key='$hash'");
+		$query = $this->db->query("SELECT * from tbl_user WHERE user_password = '$currentPassword' AND hash_key='$hash'");
 		if ($query->num_rows() == 1) {
 			return true;
 		} else {
@@ -82,6 +82,6 @@ class login_model extends CI_Model
 	function updateNewPassword($data, $hash)
 	{
 		$this->db->where('hash_key', $hash);
-		$this->db->update('tbl_pass_manage', $data);
+		$this->db->update('tbl_user', $data);
 	}
 }

@@ -114,6 +114,7 @@ class Lobby extends CI_Controller
         $data = $this->get_groups();
         $data["type"] = "lobby";
         $data['group_id'] = $group_id;
+        $data["categories"] = $this->post_model->get_categories();
         $data["posts"] = $this->post_model->get_posts("groups", $group_id);
         $this->load->view("view_post", $data);
     }
@@ -127,6 +128,7 @@ class Lobby extends CI_Controller
         $data["type"] = "lobby";
         $data["posts"] = [];
         $data['group_id'] = NULL;
+        $data["categories"] = $this->post_model->get_categories();
 
         $this->load->view("view_post", $data);
     }
@@ -193,5 +195,26 @@ class Lobby extends CI_Controller
 
         if ($this->post->submit($data)) redirect(base_url("index.php/") . "lobby");
         else redirect(base_url("index.php/") . "lobby/create");
+    }
+
+    public function add_group() {
+        $data = array(
+            "group_id" => random_string("alnum",15),
+            "group_name" => $this->input->post("group-name"),
+            "category_id" => $this->input->post("group-category"),
+            "group_owner" => $this->session->userdata("user_detail_id")
+        );
+
+        if ($this->post_model->add_group($data)) redirect(base_url("index.php/groups"));
+        else "error";
+    }
+
+    public function search_group() {
+        $data = array(
+            "group_name" => $this->input->post("group_name"),
+            "categories" => $this->input->post("categories")
+        );
+
+        echo json_encode($this->post_model->search_group($data));
     }
 }

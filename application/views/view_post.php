@@ -150,6 +150,59 @@
         </section>
     </div>
 
+    <div class="create-group-modal">
+        <div class="create-group-box">
+            <div class="create-group-header">
+                <h1>Create Group</h1>
+                <a href="javascript:void(0)" id="create-group-close">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+            <div class="create-group-body">
+                <?php echo form_open(base_url("index.php/add_group")) ?>
+                    <label>Group Name:</label>
+                    <input type="text" name="group-name" required/>
+                    <label>Category:</label>
+                    <select name="group-category" required>
+                        <?php foreach($categories as $category): ?>
+                            <option value=<?php echo $category["category_id"] ?>><?php echo $category["category_name"] ?></option>
+                        <?php endforeach ?>
+                    </select>
+                    <button>Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-group-modal">
+        <div class="search-group-box">
+            <div class="search-group-header">
+                <h1>Search Group</h1>
+                <a href="javascript:void(0)">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+            <div class="search-group-body">
+                <div class="search-input-container">
+                    <label>Group Name:</label>
+                    <input type="text" id="group-name">
+                </div>
+                <label>Interests: </label>
+                <div class="search-interest-container">
+                    <?php foreach($categories as $category): ?>
+                        <div class="search-interest-card">
+                            <input type="checkbox" id="<?php echo $category["category_name"]  ?>" class="search-interest" x-value="<?php echo $category["category_id"] ?>"/>
+                            <label for="<?php echo $category["category_name"] ?>"><?php echo $category["category_name"] ?></label>
+                        </div>
+                    <?php endforeach ?>
+                </div>
+                <div class="search-result-container">
+                    <h1>No Groups</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="post-modal v2-modal">
         <section class="post-modal-box">
             <div class="post-modal-header">
@@ -282,8 +335,13 @@
                 <div class="container-container">
                     <?php if ($type !== "forum") { ?>
                         <section class="container-action">
-                            <a href="#"><i class="fas fa-search"></i> Search</a>
-                            <a href="#"><i class="fas fa-plus"></i> Create</a>
+                            <?php if ($type === "lobby") {?>
+                                <a href="#"><i class="fas fa-search"></i> Search</a>
+                                <a href="#" id="create-group-trigger"><i class="fas fa-plus"></i> Create</a>
+                            <?php } else { ?>
+                                <a href="#"><i class="fas fa-search"></i> Search</a>
+                                <a href="#" id="create-org-trigger"><i class="fas fa-plus"></i> Create</a>
+                            <?php } ?>
                         </section>
                         <hr class="container-divider" />
                     <?php } ?>

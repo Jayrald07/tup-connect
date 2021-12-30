@@ -38,7 +38,7 @@ class Reset extends CI_Controller
 							{
 								 $newPassword = $newPassword;
 								 $data = array(
-								 	'password'=>$newPassword,
+								 	'user_password'=>$newPassword,
 								 	'hash_key'=>null,
 								 	'hash_expiry'=>null
 								);

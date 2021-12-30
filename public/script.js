@@ -119,6 +119,12 @@ var ui = (function () {
 		elms,
 		block_user,
 		user_based_block,
+		getId(id) {
+			return document.getElementById(id);
+		},
+		getClass(class_name) {
+			return document.getElementsByClassName(class_name);
+		},
 	};
 })();
 
@@ -133,6 +139,7 @@ var controller = (function (_UI) {
 	let report_type = null;
 	let report_description = null;
 	let selected_image_deletion = [];
+	let search_categories = [];
 
 	return {
 		init() {
@@ -220,6 +227,62 @@ var controller = (function (_UI) {
 					return item !== post_image_id;
 				});
 			} else selected_image_deletion.push(post_image_id);
+		},
+		search_group() {
+			_UI.getClass("search-result-container")[0].textContent = null;
+
+			if (
+				_UI.getId("group-name").value.trim() == false &&
+				search_categories.length == 0
+			) {
+				_UI.getClass("search-result-container")[0].insertAdjacentHTML(
+					"afterbegin",
+					`
+								<h1>No Groups</h1>
+							`
+				);
+			} else {
+				_UI.getClass("search-result-container")[0].textContent = null;
+				$.ajax({
+					url: `http://localhost/tup-connect/index.php/search_group`,
+					type: "POST",
+					dataType: "json",
+					data: {
+						group_name: _UI.getId("group-name").value,
+						categories: search_categories,
+					},
+					success: function (data) {
+						_UI.getClass("search-result-container")[0].textContent = null;
+
+						if (data.length) {
+							for (let i = 0; i < data.length; i++) {
+								_UI.getClass("search-result-container")[0].insertAdjacentHTML(
+									"afterbegin",
+									`
+									<div class="search-group-card">
+										<section>
+											<h1>${data[i].group_name}</h1>
+											<small>Members: <span>${data[i].members}</span></small>
+										</section>
+										<button class="search-group-join">Join</button>
+									</div>
+								`
+								);
+							}
+						} else {
+							_UI.getClass("search-result-container")[0].insertAdjacentHTML(
+								"afterbegin",
+								`
+									<h1>No Groups</h1>
+								`
+							);
+						}
+					},
+					error: function (data) {
+						console.log(data);
+					},
+				});
+			}
 		},
 		posts_init() {
 			for (let i = 0; i < _UI.post_option_toggle.length; i++) {
@@ -514,6 +577,32 @@ var controller = (function (_UI) {
 				_UI.report_modal.style.display = "flex";
 				_UI.post_option.style.display = "none";
 			});
+
+			_UI.getId("create-group-trigger")?.addEventListener("click", () => {
+				_UI.getClass("create-group-modal")[0].style.display = "flex";
+			});
+
+			_UI.getId("create-group-close").addEventListener("click", () => {
+				_UI.getClass("create-group-modal")[0].style.display = "none";
+			});
+
+			_UI
+				.getId("group-name")
+				.addEventListener("keyup", () => this.search_group());
+
+			for (let i = 0; i < _UI.getClass("search-interest").length; i++) {
+				_UI
+					.getClass("search-interest")
+					[i].addEventListener("change", function () {
+						if (search_categories.indexOf(this.getAttribute("x-value")) > -1) {
+							search_categories = search_categories.filter((item) => {
+								return item === this.getAttribute("x-value") ? false : true;
+							});
+						} else search_categories.push(this.getAttribute("x-value"));
+						console.log(search_categories);
+						controller.search_group();
+					});
+			}
 		},
 	};
 })(ui);

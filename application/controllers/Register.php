@@ -23,7 +23,7 @@ class Register extends CI_Controller
         $config = array(
             'protocol' => 'smtp',
             'smtp_host' => $_ENV['SMTP_HOST'],
-            'smtp_port' => 587,
+            'smtp_port' => 465,
             'smtp_user' => $_ENV['SMTP_USER'],
             'smtp_pass' => $_ENV['SMTP_PASSWORD'],
             'mailtype' => 'html',
@@ -116,14 +116,11 @@ class Register extends CI_Controller
 
     public function verify_email()
     {
-        print_r($this->input->post("code"));
         $code = "";
         $codes = $this->input->post("code");
         foreach ($codes as $c) {
             $code .= $c;
         }
-
-        echo $code;
 
         $res = $this->registration_model->verify_code($code, $this->session->userdata("user_detail_id"));
         if (!count($res)) {
@@ -138,7 +135,7 @@ class Register extends CI_Controller
         } else {
             if ($this->registration_model->update_code($res[0]['user_verification_id'])) {
                 $this->session->unset_userdata(array("error", "error_title", "error_description"));
-                redirect("./verify");
+                $this->_verify("register");
             } else echo "may error gagi";
         }
     }

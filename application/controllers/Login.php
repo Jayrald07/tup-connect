@@ -51,7 +51,7 @@ class Login extends CI_Controller
                 $validateEmail = $this->login_model->validateEmail($email);
                 if ($validateEmail != false) {
                     $row = $validateEmail;
-                    $user_id = $row->id;
+                    $user_id = $row->user_id;
 
                     $string = time() . $user_id . $email;
                     $hash_string = hash('sha256', $string);

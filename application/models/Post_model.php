@@ -349,4 +349,38 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
             "block_id" => $data["block_id"]
         ));
     }
+
+    public function add_group($data) {
+        return $this->db->insert("tbl_group",$data);
+    }
+
+    public function get_group_members_count($id) {
+        $this->db->select("count(*) as members");
+        $this->db->where(array(
+            "group_id" => $id
+        ));
+        return $this->db->get("tbl_group_user")->result_array();
+    }
+
+    public function search_group($data) {
+
+        $categ = 'select * from tbl_group where group_name like "%'. $data["group_name"] .'%" ';
+
+        if ($data["categories"] && count($data["categories"])) {
+            for($i = 0;$i < count($data["categories"]);$i++) {
+                if ($i === 0) $categ .= "and (category_id = " . $data["categories"][$i];
+                $categ .= " or category_id = " . $data["categories"][$i];
+            }
+            $categ .= ")";
+        }
+        $res = $this->db->query($categ)->result_array();
+
+        for($i = 0;$i < count($res);$i++) {
+            $res[$i]["members"] = $this->get_group_members_count($res[$i]["group_id"])[0]["members"];
+        }
+
+        return $res;
+
+    }
 }
+

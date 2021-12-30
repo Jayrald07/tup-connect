@@ -57,3 +57,8 @@ $route["post/update"] = "post_controller/update_post";
 
 $route["org/post"] = "organization/post";
 $route["signout"] = "login/signout";
+
+
+$route["add_group"] = "lobby/add_group";
+
+$route["search_group"] = "lobby/search_group";
