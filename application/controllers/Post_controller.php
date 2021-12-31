@@ -34,6 +34,7 @@ class Post_controller extends CI_Controller
             "certain" => array(
                 "report_id" => $report_id,
                 "report_description" => $this->input->post('report_description'),
+                "status" => 1
             ),
             "report_id" => $report_id,
             "report_description" => $this->input->post('report_description'),

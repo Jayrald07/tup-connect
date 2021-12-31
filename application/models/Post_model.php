@@ -47,6 +47,9 @@ class Post_model extends CI_Model
 
     public function set_new_post_report($data)
     {
+        $this->db->set("report_status",1);
+        $this->db->where("post_id",$data["post_id"]);
+        $this->db->update("tbl_post");
         return $this->db->insert("tbl_post_report", $data);
     }
 
@@ -72,7 +75,7 @@ class Post_model extends CI_Model
     {
         $query = $this->db->query("SELECT tbl_group.group_id, tbl_group.group_name 
 FROM tbl_group, tbl_group_user
-WHERE tbl_group_user.user_detail_id = '" . $user_detail_id . "' and tbl_group.group_id = tbl_group_user.group_id");
+WHERE tbl_group_user.user_detail_id = '" . $user_detail_id . "' and tbl_group.group_id = tbl_group_user.group_id and tbl_group_user.status = 1");
         return $query->result_array();
     }
 
@@ -110,7 +113,7 @@ WHERE tbl_group_user.user_detail_id = '" . $user_detail_id . "' and tbl_group.gr
             case 'groups':
                 $query = $this->db->query("SELECT tbl_post.* , tbl_user_detail.first_name,tbl_user_detail.last_name,tbl_user_detail.middle_name, tbl_user_detail.user_detail_id
 FROM tbl_lobby_post, tbl_lobby, tbl_post, tbl_user_detail
-WHERE tbl_lobby.group_id = '" . $id . "' and tbl_lobby_post.lobby_id = tbl_lobby.lobby_id and tbl_post.post_id = tbl_lobby_post.post_id and tbl_post.status = 'posted' and tbl_user_detail.user_detail_id = tbl_lobby.user_detail_id ORDER BY tbl_post.date_time_stamp desc");
+WHERE tbl_lobby.group_id = '" . $id . "' and tbl_lobby_post.lobby_id = tbl_lobby.lobby_id and tbl_post.post_id = tbl_lobby_post.post_id and tbl_post.status = 'posted' and (tbl_post.report_status = 0 or tbl_post.report_status = 1) and tbl_user_detail.user_detail_id = tbl_lobby.user_detail_id ORDER BY tbl_post.date_time_stamp desc");
                 break;
             case 'org':
                 $query = $this->db->query("SELECT tbl_organization_post.organization_post_id, tbl_organization_post.user_detail_id,tbl_organization_post.organization_id, tbl_post.*, tbl_user_detail.user_detail_id,tbl_user_detail.first_name, tbl_user_detail.middle_name, tbl_user_detail.last_name
@@ -270,7 +273,7 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
                 $this->db->insert("tbl_lobby_post", array(
                     "lobby_id" => $data['lobby_id'],
                     "category_id" => $data["category_id"],
-                    "post_id" => $data["post_id"]
+                    "post_id" => $data["post_id"],
                 ));
 
                 break;
@@ -312,6 +315,7 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
             "post_down_vote" => $data["post_down_vote"],
             "date_time_stamp" => $data["date_time_stamp"],
             "status" => $data["status"],
+            "report_status" => 0
         ));
     }
 
@@ -357,9 +361,17 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
     public function get_group_members_count($id) {
         $this->db->select("count(*) as members");
         $this->db->where(array(
-            "group_id" => $id
+            "group_id" => $id,
+            "status" => 1
         ));
         return $this->db->get("tbl_group_user")->result_array();
+    }
+
+    public function user_group_status($uid,$gid) {
+        return $this->db->get_where("tbl_group_user",array(
+            "user_detail_id" => $uid,
+            "group_id" => $gid
+        ))->result_array();
     }
 
     public function search_group($data) {
@@ -374,13 +386,261 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
             $categ .= ")";
         }
         $res = $this->db->query($categ)->result_array();
-
         for($i = 0;$i < count($res);$i++) {
             $res[$i]["members"] = $this->get_group_members_count($res[$i]["group_id"])[0]["members"];
+            $res[$i]["is_owner"] = $res[$i]["group_owner"] === $data["user_detail_id"] ? TRUE : FALSE;
+            $val = $this->user_group_status($data["user_detail_id"],$res[$i]["group_id"]);
+            $res[$i]["status"] = -1;
+            if (count($val)) $res[$i]["status"] = $val[0]["status"];
         }
 
         return $res;
 
     }
+
+    public function join_group($data) {
+
+        $res = $this->db->get_where("tbl_group_user",array(
+            "user_detail_id" => $data["user_detail_id"],
+            "group_id" => $data["group_id"],
+        ))->result_array();
+
+        if (count($res)) {
+            $this->db->set("status",0);
+            $this->db->where(array(
+            "user_detail_id" => $data["user_detail_id"],
+            "group_id" => $data["group_id"],
+            ));
+            return $this->db->update("tbl_group_user");
+        } else {
+            return $this->db->insert("tbl_group_user",array(
+                "user_detail_id" => $data["user_detail_id"],
+                "role_id" => 0,
+                "group_id" => $data["group_id"],
+                "status" => 0
+            ));
+        }
+
+    }
+
+    public function cancel_group_request($data) {
+        return $this->db->delete("tbl_group_user",$data);
+    }
+
+    public function get_group_members($id) {
+        $mems =  $this->db->get_where("tbl_group_user",array(
+            "group_id" => $id,
+            "status" => 1
+        ))->result_array();
+
+        $res = [];
+
+        for($i = 0;$i < count($mems);$i++) {
+            $val = $this->db->get_where("tbl_user_detail",array(
+                "user_detail_id" => $mems[$i]["user_detail_id"]
+            ))->result_array();
+            $res[$i]["user_detail_id"] = $val[0]["user_detail_id"];
+            $res[$i]["firstname"] = $val[0]["first_name"];
+            $res[$i]["middlename"] = $val[0]["middle_name"];
+            $res[$i]["lastname"] = $val[0]["last_name"];
+        }
+
+        return $res;
+
+    }
+
+    public function remove_group_user($data) {
+        $this->db->set(array(
+            "status" => -1
+        ));
+        $this->db->where($data);
+        return $this->db->update("tbl_group_user");
+    }
+
+    public function get_group($group_id) {
+        return $this->db->get_where("tbl_group",array(
+            "group_id" => $group_id
+        ))->result_array();
+    }
+
+    public function get_group_user($data) {
+        $res = $this->db->get_where("tbl_group_user",$data)->result_array();
+        for($i = 0;$i < count($res);$i++) {
+            $val = $this->db->get_where("tbl_user_detail",array(
+                "user_detail_id" => $res[$i]["user_detail_id"]
+            ))->result_array();
+            $res[$i]["user_detail_id"] = $val[0]["user_detail_id"];
+            $res[$i]["firstname"] = $val[0]["first_name"];
+            $res[$i]["middlename"] = $val[0]["middle_name"];
+            $res[$i]["lastname"] = $val[0]["last_name"];
+        }
+        return $res;
+    }
+
+    public function group_user_update_status($data,$status) {
+        $this->db->set("status",$status);
+        $this->db->where($data);
+        return $this->db->update("tbl_group_user");
+    }
+
+    public function update_post_reported($data,$status) {
+        $this->db->set("report_status",$status);
+        $this->db->where("post_id",$data["post_id"]);
+        if ($this->db->update("tbl_post")) {
+            $val = $this->db->get_where("tbl_post_report",array(
+                "post_id" => $data["post_id"]
+            ))->result_array();
+            $i = 0;
+            foreach($val as $v) {
+                $this->db->set("status",$status);
+                $this->db->where("report_id",$v["report_id"]);
+                if ($this->db->update("tbl_report")) $i++;
+            }
+            if ($i === count($val)) return true;
+            else return false;
+        }
+    }
+
+    public function get_user_role($group_id,$role) {
+        $this->db->select("count(*) as count");
+        $this->db->where(array(
+            "group_id" => $group_id,
+            "role_id" => $role
+        ));
+        return $this->db->get("tbl_group_user")->result_array();
+    }
+
+    public function get_reported_group_post($group_id) {
+        $val = $this->db->get_where("tbl_lobby",array("group_id"=>$group_id))->result_array();
+        $post_details = [];
+        foreach($val as $v) {
+            $p = $this->db->get_where("tbl_lobby_post",array("lobby_id" => $v["lobby_id"]))->result_array();
+
+            foreach($p as $pt) {
+                $data = array(
+                    "post_id" => $pt["post_id"],
+                    "user_detail_id" => $v["user_detail_id"]
+                );
+                $post_details[] = $data;
+            }
+
+        }
+
+        $res = [];
+
+        for($i = 0;$i < count($post_details);$i++) {
+            $cond = $this->db->get_where("tbl_post",array("post_id" => $post_details[$i]["post_id"],"report_status" => 1))->result_array();
+            $data = array(
+                "user" => $this->db->get_where("tbl_user_detail",array("user_detail_id" => $post_details[$i]["user_detail_id"]))->result_array(),
+                "post" => $cond,
+            );
+            if (count($cond)) {
+                $report = $this->db->get_where("tbl_post_report",array(
+                    "post_id" => $cond[0]["post_id"]
+                ))->result_array();
+                $desclist = [];
+                foreach($report as $r) {
+                    $desc = $this->db->get_where("tbl_report",array(
+                        "report_id" => $r["report_id"],
+                        "status" => 1
+                    ))->result_array();
+                    if (count($desc)) $desclist[] = $desc[0];
+                }
+                $image = $this->db->get_where("tbl_post_image",array(
+                    "post_id" => $cond[0]["post_id"]
+                ))->result_array();
+
+                $data["report"] = $desclist;
+                $data["post_image"] = $image;
+                $res[] = $data;
+            }
+        }   
+
+        return $res;
+        
+    }
+
+    public function get_roles($id) {
+        return $this->db->get_where("tbl_role",array(
+            "id_ref" => $id
+        ))->result_array();
+    }
+
+    public function add_role($group_id,$role) {
+        if ($this->db->insert("tbl_role",array(
+            "role_name" => $role,
+            "id_ref" => $group_id
+        ))) {
+            return $this->db->get_where("tbl_role",array(
+            "role_name" => $role,
+            "id_ref" => $group_id
+            ))->result_array();
+        }
+    }
+
+    public function delete_role($id) {
+        return $this->db->delete("tbl_role",array(
+            "role_id" => $id
+        ));
+    }
+
+    public function get_group_user_roles($role_id,$group_id) {
+        $user = $this->db->get_where("tbl_group_user",array(
+            "role_id" => $role_id,
+            "group_id" => $group_id,
+            "status" => 1
+        ))->result_array();
+
+        $res = [];
+
+        foreach($user as $u) {
+            $val = $this->db->get_where("tbl_user_detail",array(
+                "user_detail_id" => $u["user_detail_id"]
+            ))->result_array();
+            $res[] = $val[0];
+        }
+
+        return $res;
+
+    }
+
+    public function get_group_user_hasno_roles($group_id) {
+        $user = $this->db->get_where("tbl_group_user",array(
+            "group_id" => $group_id,
+            "role_id" => -1,
+            "status" => 1
+        ))->result_array();
+
+        $res = [];
+
+        foreach($user as $u) {
+            $val = $this->db->get_where("tbl_user_detail",array(
+                "user_detail_id" => $u["user_detail_id"]
+            ))->result_array();
+            $res[] = $val[0];
+        }
+
+        return $res;
+    }
+
+    public function update_group_user_role($data) {
+        $this->db->set(array(
+            "role_id" => $data["role_id"]
+        ));
+        $this->db->where(array(
+            "user_detail_id" => $data["user_detail_id"],
+            "group_id" => $data["group_id"]
+        ));
+        if ($this->db->update("tbl_group_user")) {
+            return count($this->db->get_where("tbl_group_user",array(
+                "group_id" => $data["group_id"],
+                "role_id" => $data["role_id"]
+            ))->result_array());
+        }
+    }
+
+
 }
+
+
 

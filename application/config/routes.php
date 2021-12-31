@@ -62,3 +62,17 @@ $route["signout"] = "login/signout";
 $route["add_group"] = "lobby/add_group";
 
 $route["search_group"] = "lobby/search_group";
+$route["join_group"] = "lobby/join_group";
+$route["cancel_group_request"] = "lobby/cancel_group_request";
+$route["member/delete"] = "lobby/remove_group_user";
+
+$route["groups/admin/(:any)"] = "lobby/admin/$1";
+
+$route["group/update_status"] = "lobby/group_user_update_status";
+$route["report/update_status"] = "lobby/update_post_reported";
+$route["group/add_role"] = "lobby/add_role";
+$route["role/delete_role"] = "lobby/delete_role";
+$route["role/members"] = "lobby/get_group_user_roles";
+$route["role/no_roles"] = "lobby/get_group_user_hasno_roles";
+$route["role/add_member_role"] = "lobby/get_group_user_hasno_roles";
+$route["role/update_member_role"] = "lobby/update_group_user_role";

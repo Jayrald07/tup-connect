@@ -41,7 +41,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="signout">
+                            <a href="<?php echo base_url("index.php/signout") ?>">
                                 <i class="fas fa-sign-out"></i>
                                 Sign Out
                             </a>
@@ -174,11 +174,37 @@
         </div>
     </div>
 
+    <div class="members-modal">
+        <div class="members-box">
+            <div class="members-header">
+                <h1>Members</h1>
+                <a href="javascript:void(0)" id="members-close">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+            <div class="members-body">
+                <a href="javascript:void()">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Invite</span>
+                </a>
+                <?php foreach($members as $member): ?>
+                    <div class="group-members-card">
+                        <img src="<?php echo base_url("public/assets/user.png") ?>" />
+                        <h1><?php echo $member["firstname"] . ' ' . $member["lastname"] ?></h1>
+                        <a href="javascript:void(0)" class="group-members-remove" x-value=<?php echo $member["user_detail_id"] ?>>
+                            <i class="fas fa-user-minus"></i>
+                        </a>
+                    </div>
+                <?php endforeach ?>
+            </div>
+        </div>
+    </div>
+
     <div class="search-group-modal">
         <div class="search-group-box">
             <div class="search-group-header">
                 <h1>Search Group</h1>
-                <a href="javascript:void(0)">
+                <a href="javascript:void(0)" id="search-group-close">
                     <i class="fas fa-times"></i>
                 </a>
             </div>
@@ -234,6 +260,18 @@
         </div>
     </div>
 
+    <div class="delete-member-modal">
+        <div class="delete-member-box">
+            <div class="delete-member-body">
+                <p>Are you sure to remove this member?</p>
+            </div>
+            <div class="delete-member-footer">
+                <button id="delete-member-cancel">Cancel</button>
+                <button id="delete-member-delete">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <div class="post-container">
         <div style="position:relative">
             <aside class="pages-navigator">
@@ -250,9 +288,15 @@
             <section class="groups-action">
                 <?php if ($type !== "fw" and $type !== "forum") { ?>
                     <div>
-                        <a href="#">
+                        <a href="javascript:void(0)" id="members-modal-trigger" x-value="<?php if ($type === "lobby")echo $group_id; else echo null; ?>">
                             <i class="fas fa-users"></i>
                             Members
+                        </a>
+                    </div>
+                    <div>
+                        <a href="<?php if ($type === "lobby")echo base_url("index.php/groups/admin/$group_id"); else echo null; ?>" >
+                            <i class="fas fa-cogs"></i>
+                            Settings
                         </a>
                     </div>
                 <?php } ?>
@@ -336,7 +380,7 @@
                     <?php if ($type !== "forum") { ?>
                         <section class="container-action">
                             <?php if ($type === "lobby") {?>
-                                <a href="#"><i class="fas fa-search"></i> Search</a>
+                                <a href="#" id="search-group-trigger"><i class="fas fa-search"></i> Search</a>
                                 <a href="#" id="create-group-trigger"><i class="fas fa-plus"></i> Create</a>
                             <?php } else { ?>
                                 <a href="#"><i class="fas fa-search"></i> Search</a>

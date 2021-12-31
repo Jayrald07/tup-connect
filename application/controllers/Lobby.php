@@ -116,6 +116,7 @@ class Lobby extends CI_Controller
         $data['group_id'] = $group_id;
         $data["categories"] = $this->post_model->get_categories();
         $data["posts"] = $this->post_model->get_posts("groups", $group_id);
+        $data["members"] = $this->post_model->get_group_members($group_id);
         $this->load->view("view_post", $data);
     }
 
@@ -212,9 +213,150 @@ class Lobby extends CI_Controller
     public function search_group() {
         $data = array(
             "group_name" => $this->input->post("group_name"),
-            "categories" => $this->input->post("categories")
+            "categories" => $this->input->post("categories"),
+            "user_detail_id" => $this->session->userdata("user_detail_id")
         );
 
         echo json_encode($this->post_model->search_group($data));
     }
+
+    public function join_group() {
+        $data = array(
+            "group_id" => $this->input->post("group_id"),
+            "user_detail_id" => $this->session->userdata("user_detail_id")
+        );
+
+        if ($this->post_model->join_group($data)) echo true;
+        else echo false;
+    }
+
+    public function cancel_group_request() {
+        $data = array(
+            "group_id" => $this->input->post("group_id"),
+            "user_detail_id" => $this->session->userdata("user_detail_id")
+        );
+        echo $this->post_model->cancel_group_request($data);
+    }
+
+    public function remove_group_user() {
+        $data = array(
+            "group_id" => $this->input->post("group_id"),
+            "user_detail_id" => $this->input->post("user_detail_id")
+        );
+        echo $this->post_model->remove_group_user($data);
+    }
+
+    public function admin($group_id) {
+        $this->session->set_userdata("group_id",$group_id);
+
+        $val = $this->post_model->get_roles($group_id);
+        for($i = 0;$i < count($val);$i++) {
+            $r = $this->post_model->get_user_role($group_id,$val[$i]["role_id"]);
+            if (count($r)) $val[$i]["count"] = $r[0]["count"];
+        }
+
+        $data = array(
+            "group_id" => $group_id,
+            "group_details" => $this->post_model->get_group($group_id),
+            "member_request" => $this->post_model->get_group_user(array(
+            "group_id" => $group_id,
+            "status" => 0,
+            )),
+            "reported_posts" => $this->post_model->get_reported_group_post($group_id),
+            "role" => $val
+        );
+
+
+        $this->load->view("admin",$data);
+    }
+
+    public function group_user_update_status() {
+
+        if ($this->input->post("isBulk") === true) {
+            $val = $this->input->post("user_detail_id");
+            $i = 0;
+            foreach($val as $v) {
+                $data = array(
+                    "group_id" => $this->session->userdata("group_id"),
+                    "user_detail_id" => $v,
+                );
+
+                $status = $this->input->post("status");
+
+                if ($this->post_model->group_user_update_status($data,$status)) $i++;
+            }
+
+            if ($i === count($val)) echo true;
+            else echo false;
+
+        } else {
+            $data = array(
+                "group_id" => $this->session->userdata("group_id"),
+                "user_detail_id" => $this->input->post("user_detail_id"),
+            );
+    
+            $status = $this->input->post("status");
+    
+            echo $this->post_model->group_user_update_status($data,$status);
+
+        }
+
+
+    }
+
+    public function update_post_reported() {
+        if ($this->input->post("isBulk") == "true") {
+            $val = $this->input->post("post_id");
+            $i = 0;
+            foreach($val as $v) {
+                $data = array(
+                    "post_id" => $v
+                );
+
+                $status = $this->input->post("status");
+
+                if ($this->post_model->update_post_reported($data,$status)) $i++;
+            }
+
+            if ($i === count($val)) echo true;
+            else echo false;
+
+        } else {
+            $data = array(
+                "post_id" => $this->input->post("post_id"),
+            );
+    
+            $status = $this->input->post("status");
+    
+            echo $this->post_model->update_post_reported($data,$status);
+        }
+    }
+
+    public function add_role() {
+        echo json_encode($this->post_model->add_role($this->session->userdata("group_id"),$this->input->post("role_name")));
+    }
+
+    public function delete_role() {
+        echo $this->post_model->delete_role($this->input->post("role_id"));
+    }
+
+    public function get_group_user_roles() {
+        echo json_encode($this->post_model->get_group_user_roles($this->input->post("role_id"),$this->session->userdata("group_id")));
+    }
+
+    public function get_group_user_hasno_roles() {
+        echo json_encode($this->post_model->get_group_user_hasno_roles($this->session->userdata("group_id")));
+    }
+
+    public function update_group_user_role() {
+        $data = array(
+            "group_id" => $this->session->userdata("group_id"),
+            "user_detail_id" => $this->input->post("user_detail_id"),
+            "role_id" => $this->input->post("role_id")
+        );
+
+        echo $this->post_model->update_group_user_role($data);
+
+    }
+
 }

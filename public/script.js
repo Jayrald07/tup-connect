@@ -140,6 +140,11 @@ var controller = (function (_UI) {
 	let report_description = null;
 	let selected_image_deletion = [];
 	let search_categories = [];
+	let delete_member_id = null;
+	let group_id = null;
+	let bulk_group_user_update = [];
+	let bulk_post_reported = [];
+	let delete_role_id = null;
 
 	return {
 		init() {
@@ -228,6 +233,69 @@ var controller = (function (_UI) {
 				});
 			} else selected_image_deletion.push(post_image_id);
 		},
+		join_group_event() {
+			let elm = _UI.getClass("search-group-join");
+			let _ = this;
+			for (let i = 0; i < elm.length; i++) {
+				_UI
+					.getClass("join-trigger")
+					?.[i]?.addEventListener("click", function () {
+						$.ajax({
+							url: `http://localhost/tup-connect/index.php/join_group`,
+							type: "POST",
+							dataType: "text",
+							data: {
+								group_id: this.getAttribute("x-value"),
+							},
+							success: (data) => {
+								if (data) _.search_group();
+							},
+							error: (data) => console.log(data),
+						});
+					});
+
+				_UI
+					.getClass("cancel-group-trigger")
+					?.[i]?.addEventListener("click", function () {
+						$.ajax({
+							url: `http://localhost/tup-connect/index.php/cancel_group_request`,
+							type: "POST",
+							dataType: "text",
+							data: {
+								group_id: this.getAttribute("x-value"),
+							},
+							success: (data) => {
+								if (data) _.search_group();
+							},
+							error: (data) => console.log(data),
+						});
+					});
+			}
+		},
+		join_action(data) {
+			if (data.is_owner) {
+				return (
+					'<a href="http://localhost/tup-connect/index.php/groups/' +
+					data.group_id +
+					'" class="search-group-join" >View</a>'
+				);
+			} else {
+				console.log(data.status);
+				if (data.status === -1 || data.status == 2) {
+					return (
+						'<a href="javascript:void(0)" class="search-group-join join-trigger" x-value="' +
+						data.group_id +
+						'" >Join</a>'
+					);
+				} else {
+					return (
+						'<a href="javascript:void(0)" class="search-group-join cancel-group-trigger" x-value="' +
+						data.group_id +
+						'" >Cancel Requested</a>'
+					);
+				}
+			}
+		},
 		search_group() {
 			_UI.getClass("search-result-container")[0].textContent = null;
 
@@ -235,12 +303,9 @@ var controller = (function (_UI) {
 				_UI.getId("group-name").value.trim() == false &&
 				search_categories.length == 0
 			) {
-				_UI.getClass("search-result-container")[0].insertAdjacentHTML(
-					"afterbegin",
-					`
-								<h1>No Groups</h1>
-							`
-				);
+				_UI
+					.getClass("search-result-container")[0]
+					.insertAdjacentHTML("afterbegin", `<h1>No Groups</h1>`);
 			} else {
 				_UI.getClass("search-result-container")[0].textContent = null;
 				$.ajax({
@@ -251,7 +316,7 @@ var controller = (function (_UI) {
 						group_name: _UI.getId("group-name").value,
 						categories: search_categories,
 					},
-					success: function (data) {
+					success: (data) => {
 						_UI.getClass("search-result-container")[0].textContent = null;
 
 						if (data.length) {
@@ -264,11 +329,12 @@ var controller = (function (_UI) {
 											<h1>${data[i].group_name}</h1>
 											<small>Members: <span>${data[i].members}</span></small>
 										</section>
-										<button class="search-group-join">Join</button>
+										${this.join_action(data[i])}
 									</div>
 								`
 								);
 							}
+							this.join_group_event();
 						} else {
 							_UI.getClass("search-result-container")[0].insertAdjacentHTML(
 								"afterbegin",
@@ -601,6 +667,432 @@ var controller = (function (_UI) {
 						} else search_categories.push(this.getAttribute("x-value"));
 						console.log(search_categories);
 						controller.search_group();
+					});
+			}
+
+			_UI.getId("search-group-trigger")?.addEventListener("click", function () {
+				_UI.getClass("search-group-modal")[0].style.display = "flex";
+			});
+
+			_UI.getId("search-group-close")?.addEventListener("click", function () {
+				_UI.getClass("search-group-modal")[0].style.display = "none";
+			});
+
+			_UI
+				.getId("members-modal-trigger")
+				?.addEventListener("click", function () {
+					_UI.getClass("members-modal")[0].style.display = "flex";
+					group_id = this.getAttribute("x-value");
+				});
+
+			_UI.getId("members-close").addEventListener("click", () => {
+				_UI.getClass("members-modal")[0].style.display = "none";
+			});
+
+			for (let i = 0; i < _UI.getClass("group-members-remove").length; i++) {
+				_UI
+					.getClass("group-members-remove")
+					[i].addEventListener("click", function () {
+						delete_member_id = this.getAttribute("x-value");
+						_UI.getClass("delete-member-modal")[0].style.display = "flex";
+					});
+			}
+
+			_UI
+				.getId("delete-member-cancel")
+				.addEventListener(
+					"click",
+					() => (_UI.getClass("delete-member-modal")[0].style.display = "none")
+				);
+
+			_UI.getId("delete-member-delete").addEventListener("click", (e) => {
+				$.ajax({
+					url: "http://localhost/tup-connect/index.php/member/delete",
+					type: "POST",
+					dataType: "text",
+					data: {
+						user_detail_id: delete_member_id,
+						group_id,
+					},
+					success: function (data) {
+						if (data) location.reload();
+					},
+					error: function (data) {
+						console.log(data);
+					},
+				});
+			});
+		},
+		group_user_update_status(status, ref, isBulk) {
+			$.ajax({
+				url: "http://localhost/tup-connect/index.php/group/update_status",
+				type: "POST",
+				dataType: "text",
+				data: {
+					user_detail_id: !isBulk
+						? ref.getAttribute("x-value")
+						: bulk_group_user_update.map((item) => item.id),
+					status,
+					isBulk,
+				},
+				success: (data) => {
+					console.log(data);
+					if (isBulk) {
+						if (data) {
+							bulk_group_user_update.map((item) => {
+								_UI.getId(item.ref.getAttribute("data-target")).remove();
+							});
+							bulk_group_user_update = [];
+						}
+					} else {
+						if (data) {
+							_UI.getId(ref.getAttribute("data-target")).remove();
+							bulk_group_user_update = [];
+						}
+					}
+					_UI.getId("select-all").checked = false;
+				},
+				error: function (data) {
+					console.log(data);
+				},
+			});
+		},
+		update_post_reported(status, ref, isBulk) {
+			$.ajax({
+				url: "http://localhost/tup-connect/index.php/report/update_status",
+				type: "POST",
+				dataType: "text",
+				data: {
+					post_id: !isBulk
+						? ref.getAttribute("x-value")
+						: bulk_post_reported.map((item) => item.id),
+					status,
+					isBulk,
+				},
+				success: (data) => {
+					if (isBulk) {
+						if (data) {
+							bulk_post_reported.map((item) => {
+								_UI.getId(item.ref.getAttribute("data-target")).remove();
+							});
+							bulk_post_reported = [];
+						}
+					} else {
+						if (data) {
+							_UI.getId(ref.getAttribute("data-target")).remove();
+							bulk_post_reported = [];
+						}
+					}
+					_UI.getId("select-reported-all").checked = false;
+				},
+				error: function (data) {
+					console.log(data);
+				},
+			});
+		},
+		member_add_role(role_id) {
+			let addrole = _UI.getClass("member-add-role");
+			for (let i = 0; i < addrole.length; i++) {
+				addrole[i].addEventListener("click", function () {
+					$.ajax({
+						url: "http://localhost/tup-connect/index.php/role/update_member_role",
+						type: "POST",
+						dataType: "json",
+						data: {
+							role_id,
+							user_detail_id: this.getAttribute("x-value"),
+						},
+						success: (data) => {
+							if (data) {
+								_UI.getId(`rm-${this.getAttribute("x-value")}`).remove();
+								_UI.getClass("members-modal")[0].style.display = "none";
+								_UI.getId(`rm-count-${role_id}`).textContent = data;
+							}
+						},
+						error: (data) => console.log(data),
+					});
+				});
+			}
+		},
+		member_remove_role(role_id, og_id) {
+			let removerole = _UI.getClass("member-remove-role");
+			for (let i = 0; i < removerole.length; i++) {
+				removerole[i].addEventListener("click", function () {
+					$.ajax({
+						url: "http://localhost/tup-connect/index.php/role/update_member_role",
+						type: "POST",
+						dataType: "json",
+						data: {
+							role_id,
+							user_detail_id: this.getAttribute("x-value"),
+						},
+						success: (data) => {
+							console.log(data);
+							if (data) {
+								_UI.getId(`rmr-${this.getAttribute("x-value")}`).remove();
+								_UI.getClass("members-modal")[0].style.display = "none";
+								_UI.getId(`rm-count-${og_id}`).textContent = data - 1;
+							}
+						},
+						error: (data) => console.log(data),
+					});
+				});
+			}
+		},
+		admin() {
+			let elm = _UI.getClass("admin-trigger");
+			let adm = _UI.getClass("admin-container");
+			let _ = this;
+			for (let i = 0; i < elm.length; i++) {
+				elm[i].addEventListener("click", function () {
+					for (let n = 0; n < adm.length; n++) {
+						adm[n].classList.add("hidden");
+						elm[n].classList.remove("admin-panel-selected");
+					}
+					this.classList.add("admin-panel-selected");
+					_UI
+						.getId(this.getAttribute("data-target"))
+						.classList.remove("hidden");
+				});
+			}
+
+			let tog = _UI.getClass("toggler");
+			for (let i = 0; i < tog.length; i++) {
+				tog[i].addEventListener("click", function () {
+					this.classList.toggle("toggler-off");
+					this.children[0].classList.toggle("thumb-on");
+				});
+			}
+
+			let mreq_app = _UI.getClass("member-request-approve");
+			for (let i = 0; i < mreq_app.length; i++) {
+				mreq_app[i].addEventListener("click", function (e) {
+					_.group_user_update_status(1, this, false);
+				});
+
+				_UI
+					.getClass("member-request-decline")
+					[i].addEventListener("click", function (e) {
+						_.group_user_update_status(2, this, false);
+					});
+
+				_UI
+					.getClass("check-member-request")
+					[i].addEventListener("click", function () {
+						bulk_group_user_update = bulk_group_user_update.filter((item) => {
+							return item.id !== this.getAttribute("x-value");
+						});
+						if (this.checked)
+							bulk_group_user_update.push({
+								id: this.getAttribute("x-value"),
+								ref: this,
+							});
+					});
+			}
+
+			_UI.getId("select-all").addEventListener("click", function () {
+				let input_select = _UI.getClass("check-member-request");
+				bulk_group_user_update = [];
+				for (let i = 0; i < input_select.length; i++) {
+					input_select[i].checked = this.checked;
+					if (this.checked)
+						bulk_group_user_update.push({
+							id: input_select[i].getAttribute("x-value"),
+							ref: input_select[i],
+						});
+				}
+			});
+
+			_UI.getId("select-reported-all").addEventListener("click", function () {
+				let input_select = _UI.getClass("select-reported-check");
+				bulk_post_reported = [];
+				for (let i = 0; i < input_select.length; i++) {
+					input_select[i].checked = this.checked;
+					if (this.checked)
+						bulk_post_reported.push({
+							id: input_select[i].getAttribute("x-value"),
+							ref: input_select[i],
+						});
+				}
+			});
+
+			_UI.getId("member-request-approve-all").addEventListener("click", () => {
+				this.group_user_update_status(1, null, true);
+			});
+
+			_UI.getId("member-request-decline-all").addEventListener("click", () => {
+				this.group_user_update_status(2, null, true);
+			});
+
+			_UI.getId("reported-content-keep-all").addEventListener("click", () => {
+				this.update_post_reported(1, null, true);
+			});
+
+			_UI.getId("reported-content-remove-all").addEventListener("click", () => {
+				this.update_post_reported(2, null, true);
+			});
+
+			let reported = _UI.getClass("reported-content-keep");
+			for (let i = 0; i < reported.length; i++) {
+				reported[i].addEventListener("click", function () {
+					_.update_post_reported(0, this, false);
+				});
+				_UI
+					.getClass("reported-content-remove")
+					[i].addEventListener("click", function () {
+						_.update_post_reported(2, this, false);
+					});
+
+				_UI
+					.getClass("select-reported-check")
+					[i].addEventListener("click", function () {
+						bulk_post_reported = bulk_post_reported.filter((item) => {
+							return item.id !== this.getAttribute("x-value");
+						});
+						if (this.checked)
+							bulk_post_reported.push({
+								id: this.getAttribute("x-value"),
+								ref: this,
+							});
+					});
+			}
+
+			_UI.getId("add-role-trigger").addEventListener("click", () => {
+				$.ajax({
+					url: "http://localhost/tup-connect/index.php/group/add_role",
+					type: "POST",
+					dataType: "json",
+					data: {
+						role_name: _UI.getId("role-name").value,
+					},
+					success: (data) => {
+						if (data.length) {
+							_UI.getId("role-container").insertAdjacentHTML(
+								"afterbegin",
+								`
+								<tr>
+                                    <td>${data[0].role_name}</td>
+                                    <td>
+                                        <i class="fas fa-user"></i>
+                                        <span>0</span>
+                                    </td>
+                                    <td>
+                                        <a href="javascript:void(0)" class="role-add-member" x-value="${data[0].role_id}">Add Members</a>
+                                        <a href="javascript:void(0)" class="role-delete-member" x-value="${data[0].role_id}">Delete</a>
+                                    </td>
+                                </tr>
+							`
+							);
+							_UI.getId("role-name").value = "";
+						}
+					},
+					error: (data) => console.log(data),
+				});
+			});
+			let delete_role = _UI.getClass("role-delete-member");
+
+			for (let i = 0; i < delete_role.length; i++) {
+				delete_role[i].addEventListener("click", function () {
+					delete_role_id = this.getAttribute("x-value");
+					_UI.getClass("delete-modal")[0].style.display = "flex";
+				});
+			}
+
+			_UI.getId("delete-delete").addEventListener("click", () => {
+				$.ajax({
+					url: "http://localhost/tup-connect/index.php/role/delete_role",
+					type: "POST",
+					dataType: "json",
+					data: {
+						role_id: delete_role_id,
+					},
+					success: (data) => {
+						console.log(data);
+						if (data) {
+							_UI.getId(`role-c-${delete_role_id}`).remove();
+							_UI.getClass("delete-modal")[0].style.display = "none";
+						}
+					},
+				});
+			});
+
+			_UI
+				.getId("delete-cancel")
+				.addEventListener(
+					"click",
+					() => (_UI.getClass("delete-modal")[0].style.display = "none")
+				);
+
+			_UI
+				.getId("members-modal-close")
+				.addEventListener(
+					"click",
+					() => (_UI.getClass("members-modal")[0].style.display = "none")
+				);
+
+			let mems = _UI.getClass("role-members");
+			for (let i = 0; i < mems.length; i++) {
+				mems[i].addEventListener("click", function () {
+					_UI.getClass("members-modal-body")[0].textContent = null;
+					$.ajax({
+						url: "http://localhost/tup-connect/index.php/role/members",
+						type: "POST",
+						dataType: "json",
+						data: {
+							role_id: this.getAttribute("x-value"),
+						},
+						success: (data) => {
+							if (data) {
+								_UI.getClass("members-modal")[0].style.display = "flex";
+								data.map((item) => {
+									_UI.getClass("members-modal-body")[0].insertAdjacentHTML(
+										"afterbegin",
+										`
+									<div class="role-member-card" id="rmr-${item.user_detail_id}">
+										<img src="http://localhost/tup-connect/public/assets/user.png" />
+										<h1>${item.first_name} ${item.middle_name} ${item.last_name}</h1>
+										<a href="javascript:void(0)" class="member-remove-role" x-value="${item.user_detail_id}">Remove</a>
+									</div>
+									
+									`
+									);
+								});
+								_.member_remove_role(-1, this.getAttribute("x-value"));
+							}
+						},
+						error: (data) => console.log(data),
+					});
+				});
+
+				_UI
+					.getClass("role-add-member")
+					[i].addEventListener("click", function () {
+						_UI.getClass("members-modal-body")[0].textContent = null;
+						$.ajax({
+							url: "http://localhost/tup-connect/index.php/role/no_roles",
+							type: "POST",
+							dataType: "json",
+							success: (data) => {
+								if (data) {
+									_UI.getClass("members-modal")[0].style.display = "flex";
+									data.map((item) => {
+										_UI.getClass("members-modal-body")[0].insertAdjacentHTML(
+											"afterbegin",
+											`
+										<div class="role-member-card" id="rm-${item.user_detail_id}">
+											<img src="http://localhost/tup-connect/public/assets/user.png" />
+											<h1>${item.first_name} ${item.middle_name} ${item.last_name}</h1>
+											<a href="javascript:void(0)" class="member-add-role" x-value="${item.user_detail_id}">Add</a>
+										</div>
+											
+										`
+										);
+									});
+									_.member_add_role(this.getAttribute("x-value"));
+								}
+							},
+							error: (data) => console.log(data),
+						});
 					});
 			}
 		},
