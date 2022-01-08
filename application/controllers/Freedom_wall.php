@@ -16,6 +16,9 @@ class Freedom_wall extends CI_Controller
 
         $data["type"] = "fw";
         $data["posts"] = $this->post_model->get_posts("fw", '');
+        $data["pin_post"] = $this->input->get("pin");
+
+
         $this->load->view("view_post", $data);
     }
 

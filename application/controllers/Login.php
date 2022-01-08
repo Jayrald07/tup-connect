@@ -51,7 +51,7 @@ class Login extends CI_Controller
                 $validateEmail = $this->login_model->validateEmail($email);
                 if ($validateEmail != false) {
                     $row = $validateEmail;
-                    $user_id = $row->id;
+                    $user_id = $row->user_id;
 
                     $string = time() . $user_id . $email;
                     $hash_string = hash('sha256', $string);
@@ -70,25 +70,31 @@ class Login extends CI_Controller
 
                     if ($sentStatus) {
                         $this->login_model->updatePasswordhash($data, $email);
-                        redirect(base_url('index.php/login/forgotPassword'));
-                        echo 'hehe';
+                        $this->load->view('forgotPass',array(
+                            "proceed_change" => TRUE
+                        ));
+                        // echo 'hehe';
                     } else {
                         $this->session->set_flashdata('error', 'Email sending error');
                         $this->load->view('forgotPass');
-                        echo 'hotdog';
+                        // echo 'hotdog';
                     }
                 } else {
-                    $this->session->set_flashdata('error', 'invalid email id');
-                    $this->load->view('forgotPass');
+                    // $this->session->set_userdata();
+                    $this->load->view('forgotPass',array(
+                        "error_login" => TRUE,
+                        "error_title" => "Invalid Email Address",
+                        "error_description" => "Please check your email address"
+                    ));
                     echo 'wew';
                 }
             } else {
                 $this->load->view('forgotPass');
-                echo 'ha';
+                // echo 'ha';
             }
         } else {
             $this->load->view('forgotPass');
-            echo 'heh';
+            // echo 'heh';
         }
     }
 
@@ -97,7 +103,7 @@ class Login extends CI_Controller
         $config = array(
             'protocol' => 'smtp',
             'smtp_host' => $_ENV['SMTP_HOST'],
-            'smtp_port' => 587,
+            'smtp_port' => 465,
             'smtp_user' => $_ENV['SMTP_USER'],
             'smtp_pass' => $_ENV['SMTP_PASSWORD'],
             'mailtype' => 'html',
@@ -115,4 +121,5 @@ class Login extends CI_Controller
 
         return $this->email->send();
     }
+
 }

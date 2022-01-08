@@ -19,7 +19,10 @@ class Forum extends CI_Controller
         $data["type"] = "forum";
         $data["category_id"] = NULL;
         $data["posts"] = [];
-        $data["categories"] = $this->post_model->get_categories();
+        $data["categories"] = $this->post_model->get_category_post_count($this->post_model->get_categories());
+
+        $data["startup"] = TRUE;
+
         $this->load->view("view_post", $data);
     }
 
@@ -34,9 +37,9 @@ class Forum extends CI_Controller
         ));
         $data["type"] = "forum";
         $data["category_id"] = $category_id;
-        $data["posts"] = [];
+        $data["pin_post"] = $this->input->get("pin");
         $data["posts"] = $this->post_model->get_posts("forum", $category_id);
-        $data["categories"] = $this->post_model->get_categories();
+        $data["categories"] = $this->post_model->get_category_post_count($this->post_model->get_categories());
         $this->load->view("view_post", $data);
     }
 
