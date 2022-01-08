@@ -111,14 +111,14 @@ var ui = (function () {
 		post_image_container,
 		v2_modal,
 		v2_modal_close,
-		post_image_delete() {
-			return document.getElementsByClassName("post-image-delete");
-		},
 		post_image_add,
 		post_update_submit,
 		elms,
 		block_user,
 		user_based_block,
+		post_image_delete() {
+			return document.getElementsByClassName("post-image-delete");
+		},
 		getId(id) {
 			return document.getElementById(id);
 		},
@@ -145,6 +145,7 @@ var controller = (function (_UI) {
 	let bulk_group_user_update = [];
 	let bulk_post_reported = [];
 	let delete_role_id = null;
+	let current_role_id = null;
 
 	return {
 		init() {
@@ -351,6 +352,15 @@ var controller = (function (_UI) {
 			}
 		},
 		posts_init() {
+			_UI.getClass("post-modal-upload")[0].addEventListener("click", () => {
+				_UI.getId("post-modal-files").click();
+			});
+
+			_UI.getId("post-modal-files").addEventListener("change", function () {
+				_UI.getId("upload-details").textContent =
+					this.files.length + " picture/s";
+			});
+
 			for (let i = 0; i < _UI.post_option_toggle.length; i++) {
 				_UI.post_option_toggle[i].addEventListener("click", function (e) {
 					_UI.post_option.style.left = e.target.offsetLeft - 110 + "px";
@@ -389,13 +399,18 @@ var controller = (function (_UI) {
 							console.log(data);
 							if (data.length) {
 								data.forEach((item) => {
+									const val = item.image_path.split(".");
+									let path = "uploads/";
+
+									if (val[0] === "user-1") path = "public/assets/";
+
 									_UI.comment_body.insertAdjacentHTML(
 										"afterbegin",
 										`
 										<section class="comment-section">
                     <div class="comment-section-header">
                         <figure>
-                            <img src="http://localhost/tup-connect/public/assets/user.png" />
+                            <img src="http://localhost/tup-connect/${path}${item.image_path}" />
                         </figure>
                         <div>
                             <h1>${item.first_name} ${item.last_name}</h1>
@@ -464,12 +479,10 @@ var controller = (function (_UI) {
 			}
 
 			for (var i = 0; i < _UI.elms.length; i++) {
-				new Splide(_UI.elms[i], {
-					type: "loop",
-				}).mount();
+				new Splide(_UI.elms[i]).mount();
 			}
 
-			_UI.post_button.addEventListener("click", () => {
+			_UI.post_button?.addEventListener("click", () => {
 				_UI.post_modal.style.display = "flex";
 				CKEDITOR.instances["post-content"].setData("");
 			});
@@ -839,6 +852,37 @@ var controller = (function (_UI) {
 				});
 			}
 		},
+		toggle_permission(value, id) {
+			if (parseInt(value)) {
+				_UI.getId(id).classList.remove("toggler-off");
+				_UI.getId(id).children[0].classList.add("thumb-on");
+			} else {
+				_UI.getId(id).classList.add("toggler-off");
+				_UI.getId(id).children[0].classList.remove("thumb-on");
+			}
+		},
+		get_whole_name(val) {
+			if (val == "mpc") return "member_request";
+			if (val == "mrc") return "reported_content";
+			if (val == "manr") return "manage_roles";
+			if (val == "manp") return "manage_permission";
+		},
+		toggle_role_permission(id) {
+			let _ = this;
+			_UI.getId(id).addEventListener("click", function () {
+				$.ajax({
+					url: "http://localhost/tup-connect/index.php/role/toggle_permission",
+					type: "POST",
+					dataType: "text",
+					data: {
+						role_id: current_role_id,
+						permission: _.get_whole_name(id),
+						value: this.classList.contains("toggler-off") ? 0 : 1,
+					},
+					success: (data) => console.log(data),
+				});
+			});
+		},
 		admin() {
 			let elm = _UI.getClass("admin-trigger");
 			let adm = _UI.getClass("admin-container");
@@ -890,7 +934,7 @@ var controller = (function (_UI) {
 					});
 			}
 
-			_UI.getId("select-all").addEventListener("click", function () {
+			_UI.getId("select-all")?.addEventListener("click", function () {
 				let input_select = _UI.getClass("check-member-request");
 				bulk_group_user_update = [];
 				for (let i = 0; i < input_select.length; i++) {
@@ -903,7 +947,7 @@ var controller = (function (_UI) {
 				}
 			});
 
-			_UI.getId("select-reported-all").addEventListener("click", function () {
+			_UI.getId("select-reported-all")?.addEventListener("click", function () {
 				let input_select = _UI.getClass("select-reported-check");
 				bulk_post_reported = [];
 				for (let i = 0; i < input_select.length; i++) {
@@ -916,21 +960,23 @@ var controller = (function (_UI) {
 				}
 			});
 
-			_UI.getId("member-request-approve-all").addEventListener("click", () => {
+			_UI.getId("member-request-approve-all")?.addEventListener("click", () => {
 				this.group_user_update_status(1, null, true);
 			});
 
-			_UI.getId("member-request-decline-all").addEventListener("click", () => {
+			_UI.getId("member-request-decline-all")?.addEventListener("click", () => {
 				this.group_user_update_status(2, null, true);
 			});
 
-			_UI.getId("reported-content-keep-all").addEventListener("click", () => {
+			_UI.getId("reported-content-keep-all")?.addEventListener("click", () => {
 				this.update_post_reported(1, null, true);
 			});
 
-			_UI.getId("reported-content-remove-all").addEventListener("click", () => {
-				this.update_post_reported(2, null, true);
-			});
+			_UI
+				.getId("reported-content-remove-all")
+				?.addEventListener("click", () => {
+					this.update_post_reported(2, null, true);
+				});
 
 			let reported = _UI.getClass("reported-content-keep");
 			for (let i = 0; i < reported.length; i++) {
@@ -957,7 +1003,7 @@ var controller = (function (_UI) {
 					});
 			}
 
-			_UI.getId("add-role-trigger").addEventListener("click", () => {
+			_UI.getId("add-role-trigger")?.addEventListener("click", () => {
 				$.ajax({
 					url: "http://localhost/tup-connect/index.php/group/add_role",
 					type: "POST",
@@ -998,7 +1044,7 @@ var controller = (function (_UI) {
 				});
 			}
 
-			_UI.getId("delete-delete").addEventListener("click", () => {
+			_UI.getId("delete-delete")?.addEventListener("click", () => {
 				$.ajax({
 					url: "http://localhost/tup-connect/index.php/role/delete_role",
 					type: "POST",
@@ -1018,14 +1064,14 @@ var controller = (function (_UI) {
 
 			_UI
 				.getId("delete-cancel")
-				.addEventListener(
+				?.addEventListener(
 					"click",
 					() => (_UI.getClass("delete-modal")[0].style.display = "none")
 				);
 
 			_UI
 				.getId("members-modal-close")
-				.addEventListener(
+				?.addEventListener(
 					"click",
 					() => (_UI.getClass("members-modal")[0].style.display = "none")
 				);
@@ -1094,6 +1140,80 @@ var controller = (function (_UI) {
 							error: (data) => console.log(data),
 						});
 					});
+			}
+
+			_UI.getId("role-permission")?.addEventListener("change", function () {
+				current_role_id = this.value;
+				$.ajax({
+					url: "http://localhost/tup-connect/index.php/role/get_permission",
+					type: "POST",
+					dataType: "json",
+					data: {
+						role_id: this.value,
+					},
+					success: (data) => {
+						if (data) {
+							let {
+								member_request,
+								reported_content,
+								manage_roles,
+								manage_permission,
+							} = data[0];
+							_.toggle_permission(member_request, "mpc");
+							_.toggle_permission(reported_content, "mrc");
+							_.toggle_permission(manage_roles, "manr");
+							_.toggle_permission(manage_permission, "manp");
+						}
+					},
+					error: (data) => console.log(data),
+				});
+			});
+
+			this.toggle_role_permission("mpc");
+			this.toggle_role_permission("mrc");
+			this.toggle_role_permission("manr");
+			this.toggle_role_permission("manp");
+
+			current_role_id = _UI.getId("role-permission").value;
+
+			_UI.getId("role-clear-permission")?.addEventListener("click", () => {
+				$.ajax({
+					url: "http://localhost/tup-connect/index.php/role/clear_permission",
+					type: "POST",
+					dataType: "text",
+					data: {
+						role_id: current_role_id,
+					},
+					success: (data) => {
+						if (data) {
+							this.toggle_permission(0, "mpc");
+							this.toggle_permission(0, "mrc");
+							this.toggle_permission(0, "manr");
+							this.toggle_permission(0, "manp");
+						}
+					},
+				});
+			});
+		},
+		account() {
+			let original_pic = _UI.getId("account-image-source")?.src;
+			_UI.getId("account-image")?.addEventListener("change", (e) => {
+				if (e.target.files.length) {
+					_UI.getId("account-image-source").src = URL.createObjectURL(
+						e.target.files[0]
+					);
+				} else _UI.getId("account-image-source").src = original_pic;
+			});
+			_UI.getId("account-image-select")?.addEventListener("click", (e) => {
+				_UI.getId("account-image").click();
+			});
+			_UI.getId("account-image-cancel")?.addEventListener("click", (e) => {
+				_UI.getId("account-image-source").src = original_pic;
+				_UI.getId("account-image").value = null;
+			});
+
+			for (let i = 0; i < _UI?.getClass("splide").length; i++) {
+				new Splide(_UI.getClass("splide")[i]).mount();
 			}
 		},
 	};

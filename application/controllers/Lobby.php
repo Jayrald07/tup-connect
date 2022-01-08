@@ -106,7 +106,6 @@ class Lobby extends CI_Controller
     public function groups($group_id)
     {
         if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
-
         $this->session->set_userdata(array(
             "type" => "group",
             "id" => $group_id
@@ -114,6 +113,7 @@ class Lobby extends CI_Controller
         $data = $this->get_groups();
         $data["type"] = "lobby";
         $data['group_id'] = $group_id;
+        $data["pin_post"] = $this->input->get("pin");
         $data["categories"] = $this->post_model->get_categories();
         $data["posts"] = $this->post_model->get_posts("groups", $group_id);
         $data["members"] = $this->post_model->get_group_members($group_id);
@@ -130,6 +130,7 @@ class Lobby extends CI_Controller
         $data["posts"] = [];
         $data['group_id'] = NULL;
         $data["categories"] = $this->post_model->get_categories();
+        $data["startup"] = TRUE;
 
         $this->load->view("view_post", $data);
     }
@@ -263,7 +264,8 @@ class Lobby extends CI_Controller
             "status" => 0,
             )),
             "reported_posts" => $this->post_model->get_reported_group_post($group_id),
-            "role" => $val
+            "role" => $val,
+            "permission" => $this->post_model->get_role_permissions($group_id)
         );
 
 
@@ -356,7 +358,22 @@ class Lobby extends CI_Controller
         );
 
         echo $this->post_model->update_group_user_role($data);
+    }
 
+    public function get_permission() {
+        echo json_encode($this->post_model->get_permission($this->input->post("role_id")));
+    }
+
+    public function toggle_permission() {
+        echo $this->post_model->toggle_permission(
+            $this->input->post("role_id"),
+            $this->input->post("value"),
+            $this->input->post("permission")
+        );
+    }
+
+    public function clear_permission() {
+        echo $this->post_model->clear_permission($this->input->post("role_id"));
     }
 
 }

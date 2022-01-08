@@ -59,7 +59,7 @@ class Registration_model extends CI_Model
             'course_id' => 0,
             'campus_id' => 0,
             'user_cor_id' => 'AAA',
-            'image_path' => './PATH',
+            'image_path' => 'user-1.png',
         );
 
         $user_verification = array(

@@ -25,53 +25,40 @@ class Reset extends CI_Controller
 				{
 					if($_SERVER['REQUEST_METHOD']=='POST')
 					{
-						$this->form_validation->set_rules('currentPassword','Current Password','required');
 						$this->form_validation->set_rules('password','New Password','required');
 						$this->form_validation->set_rules('cpassword','Confirm New Password','required|matches[password]');
 						if($this->form_validation->run()==TRUE)
 						{
-							$currentPassword = $this->input->post('currentPassword');
 							$newPassword = $this->input->post('password');
 
-							$validateCurrentPassword = $this->login_model->validateCurrentPassword($currentPassword,$hash);
-							if($validateCurrentPassword!=false)
-							{
-								 $newPassword = $newPassword;
+							
 								 $data = array(
 								 	'user_password'=>$newPassword,
 								 	'hash_key'=>null,
 								 	'hash_expiry'=>null
 								);
 								 $this->login_model->updateNewPassword($data,$hash);
-								 $this->session->set_flashdata('success','Successfully changed Password');
-								 redirect(base_url('index.php/login'));
-								 echo'panis';
-							}
-							else
-							{
-								$this->session->set_flashdata('error','Current Password is wrong');
-								$this->load->view('reset_password',$this->data);	
-								echo 'hotdog';
-							}
-
+								$this->load->view('reset_password',array(
+									"password_success" => TRUE
+								));	
 						}
 						else
 						{
 							$this->load->view('reset_password',$this->data);	
-							echo'ewan';
+							// echo'ewan';
 						}
 					}
 					else
 					{
 						$this->load->view('reset_password',$this->data);
-						echo 'aaaa';
+						// echo 'aaaa';
 					}
 				}
 				else
 				{
 					$this->session->set_flashdata('error','link is expired');
 					redirect(base_url('index.php/login/forgotPassword'));
-					echo'ewan q sau';
+					// echo'ewan q sau';
 				}
 			}
 			else
@@ -82,7 +69,7 @@ class Reset extends CI_Controller
 		else
 		{
 			redirect(base_url('index.php/login/forgotPassword'));
-			echo'pls gumana ka na';
+			// echo'pls gumana ka na';
 		}
 	}
 }

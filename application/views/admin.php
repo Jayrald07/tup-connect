@@ -29,15 +29,9 @@
                 <div class="account-option">
                     <ul>
                         <li>
-                            <a href="#">
+                            <a href="<?php echo base_url("index.php/account") ?>">
                                 <i class="fas fa-user"></i>
-                                Profile
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i class="fas fa-cog"></i>
-                                Settings
+                                Account
                             </a>
                         </li>
                         <li>
@@ -218,32 +212,47 @@
             <div class="manage-permission-container admin-container hidden" id="mp">
                 <div class="manage-permission-header">
                     <div class="manage-permission-select-role">
-                        <select>
-                            <option>
-                                Administrator
-                            </option>
-                            <option>
-                                Moderator
-                            </option>
+                        <select id="role-permission">
+                            <?php foreach($permission as $perm): ?>
+                                <option value="<?php echo $perm["role_id"] ?>">
+                                    <?php echo $perm["role_name"] ?>
+                                </option>
+                            <?php endforeach ?>
                         </select>
                     </div>
                     <div class="manage-permission-clear">
-                        <a href="javascript:void()">Clear Permission</a>
+                        <a href="javascript:void(0)" id="role-clear-permission">Clear Permission</a>
                     </div>
                 </div>
                 <div class="manage-permission-content">
                     <div class="manage-permission-card">
                         <h1>Manage Member Request</h1>
-                        <div class="toggler toggler-off">
-                            <div class="toggler-thumb">
+                        <div id="mpc" class="toggler <?php if (count($permission)) echo $permission[0]["permissions"][0]["member_request"] ? '' : 'toggler-off' ?>">
+                            <div class="toggler-thumb <?php if (count($permission)) echo $permission[0]["permissions"][0]["member_request"] ? 'thumb-on' : '' ?>">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="manage-permission-card">
+                        <h1>Manage Reported Content</h1>
+                        <div  id="mrc" class="toggler <?php if (count($permission)) echo $permission[0]["permissions"][0]["reported_content"] ? '' : 'toggler-off' ?>">
+                            <div class="toggler-thumb <?php if (count($permission)) echo $permission[0]["permissions"][0]["reported_content"] ? 'thumb-on' : '' ?>">
                             </div>
                         </div>
                     </div>
 
                     <div class="manage-permission-card">
                         <h1>Manage Roles</h1>
-                        <div class="toggler toggler-off">
-                            <div class="toggler-thumb">
+                        <div id="manr" class="toggler <?php if (count($permission)) echo $permission[0]["permissions"][0]["manage_roles"] ? '' : 'toggler-off' ?>">
+                            <div class="toggler-thumb <?php if (count($permission)) echo $permission[0]["permissions"][0]["manage_roles"] ? 'thumb-on' : '' ?>">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="manage-permission-card">
+                        <h1>Manage Permissions</h1>
+                        <div id="manp" class="toggler <?php if (count($permission)) echo $permission[0]["permissions"][0]["manage_permission"] ? '' : 'toggler-off' ?>">
+                            <div class="toggler-thumb <?php if (count($permission)) echo $permission[0]["permissions"][0]["manage_permission"] ? 'thumb-on' : '' ?>">
                             </div>
                         </div>
                     </div>

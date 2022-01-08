@@ -26,6 +26,8 @@ class Organization extends CI_Controller
         $data["type"] = "org";
         $data["posts"] = [];
         $data['org_id'] = NULL;
+        $data["startup"] = TRUE;
+
 
         $this->load->view("view_post", $data);
     }
@@ -43,6 +45,7 @@ class Organization extends CI_Controller
         $data = $this->get_orgs();
         $data["type"] = "org";
         $data['org_id'] = $org_id;
+        $data["pin_post"] = $this->input->get("pin");
         $data["posts"] = $this->post_model->get_posts("org", $org_id);
         $this->load->view("view_post", $data);
     }
