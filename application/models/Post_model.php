@@ -134,7 +134,7 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
         $posts = $query->result_array();
 
         for ($i = 0; $i < count($posts); $i++) {
-            $posts[$i]["comments_count"] = count($this->get_comments($posts[$i]["post_id"]));
+            $posts[$i]["comments_count"] = count($this->get_comments($posts[$i]["post_id"],$this->session->userdata("user_detaild_id")));
             $posts[$i]["post_image_path"] = count($this->get_image($posts[$i]["post_id"])) > 0 ? $this->get_image($posts[$i]["post_id"]) : [];
         }
         return $posts;
@@ -220,9 +220,31 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
         return $this->db->insert("tbl_comment", $data);
     }
 
-    public function get_comments($post_id)
+    public function insert_reply($data) {
+        return $this->db->insert("tbl_comment_reply",$data);
+    }
+
+    public function get_comments($post_id,$user_detail_id)
     {
-        return $this->db->query("SELECT tbl_comment.*, tbl_user_detail.first_name, tbl_user_detail.last_name, tbl_user_detail.image_path FROM tbl_comment, tbl_user_detail WHERE tbl_comment.post_id = '" . $post_id . "' and tbl_comment.status = 'commented' and tbl_user_detail.user_detail_id = tbl_comment.user_detail_id")->result_array();
+        $comments = $this->db->query("SELECT tbl_comment.*, tbl_user_detail.first_name, tbl_user_detail.last_name, tbl_user_detail.image_path, tbl_comment.status FROM tbl_comment, tbl_user_detail WHERE tbl_comment.post_id = '" . $post_id . "' and tbl_comment.status = 'commented' or tbl_comment.status='deleted' and tbl_user_detail.user_detail_id = tbl_comment.user_detail_id")->result_array();
+
+        foreach($comments as $index => $comment) {
+            $comment["replies"] = [];
+            $replies = $this->db->get_where("tbl_comment_reply",array(
+                "comment_id" => $comment["comment_id"]
+            ))->result_array();
+            foreach($replies as $reply) {
+                $reply_content = $this->db->query("SELECT tbl_comment.*, tbl_user_detail.first_name, tbl_user_detail.last_name, tbl_user_detail.image_path FROM tbl_comment, tbl_user_detail WHERE tbl_comment.comment_id = '" . $reply["reply_id"] . "' and tbl_comment.status = 'replied' or tbl_comment.status = 'deleted_reply' and tbl_user_detail.user_detail_id = tbl_comment.user_detail_id")->result_array();
+                $reply_content[0]["is_own"] = $user_detail_id === $reply_content[0]["user_detail_id"];
+
+                $comment["replies"][] = $reply_content[0];
+            }
+            $comments[$index]["replies"] = $comment["replies"];
+            $comments[$index]["is_own"] = $user_detail_id === $comment["user_detail_id"];
+        }
+
+        return $comments;
+
     }
 
     public function insert_image($data)
@@ -721,6 +743,17 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
 
     }
 
+    public function delete_comment($id) {
+        $this->db->set("status","deleted_reply");
+        $this->db->where("comment_id",$id);
+        return $this->db->update("tbl_comment");
+    }
+
+    public function update_comment($id,$text) {
+        $this->db->set("comment_text",$text);
+        $this->db->where("comment_id",$id);
+        return $this->db->update("tbl_comment");
+    }
 
 }
 

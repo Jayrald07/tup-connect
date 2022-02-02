@@ -83,3 +83,5 @@ $route["account"] = "account";
 $route["settings"] = "account/settings";
 $route["activities"] = "account/activities";
 $route["update_profile"] = "account/update";
+$route["delete_comment"] = "post_controller/delete_comment";
+$route["update_comment"] = "post_controller/update_comment";

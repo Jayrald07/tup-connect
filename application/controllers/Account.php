@@ -30,7 +30,9 @@ class Account extends CI_Controller {
     public function activities() {
         $data = array(
             "type" => "activities",
-            "activities" => $this->account_model->get_user_activities($this->session->userdata("user_detail_id"))
+            "activities" => $this->account_model->get_user_activities($this->session->userdata("user_detail_id")),
+            "detail" => $this->account_model->get_user_info($this->session->userdata("user_detail_id"))
+
         );
         $this->load->view("account",$data);
     }

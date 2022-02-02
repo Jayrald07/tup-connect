@@ -24,7 +24,12 @@
             </li>
             <li class="user-pic-container">
                 <a href="#">
-                    <img class="user-pic" src="<?php echo base_url() ?>/public/assets/user.png" />
+                    <?php
+                        $val = explode(".",$user_photo);
+                        $path = "uploads/";
+                        if ($val[0] === "user-1") $path = "public/assets/";
+                    ?>
+                    <img src=<?php echo base_url($path) . $user_photo ?> />
                 </a>
                 <div class="account-option">
                     <ul>
@@ -46,6 +51,17 @@
         </ul>
     </nav>
 
+    <div class="comment-option">
+        <ul>
+            <li>
+                <a href="javascript:void(0)" id="edit-comment">Edit</a>
+            </li>
+            <li>
+                <a href="javascript:void(0)" id="delete-comment">Delete</a>
+            </li>
+        </ul>
+    </div>
+
     <div class="comment-modal">
         <div class="comment-box">
             <div class="comment-header">
@@ -54,10 +70,15 @@
             </div>
             <div class="comment-body">
             </div>
+            <div class="reply-container">
+            </div>
             <div class="comment-footer">
                 <input placeholder="Type your comment/reply" id="comment-input" />
                 <button id="comment-button">
                     <i class="fas fa-paper-plane"></i>
+                </button>
+                <button id="comment-button-update">
+                    <i class="fas fa-save"></i>
                 </button>
             </div>
         </div>
@@ -246,6 +267,18 @@
             </div>
             <div class="post-modal-footer"></div>
         </section>
+    </div>
+
+    <div class="delete-modal delete-comment-modal">
+        <div class="delete-box">
+            <div class="delete-body">
+                <p>Are you sure to delete this comment?</p>
+            </div>
+            <div class="delete-footer">
+                <button id="delete-cancel">Cancel</button>
+                <button id="delete-comment-delete">Confirm</button>
+            </div>
+        </div>
     </div>
 
     <div class="delete-modal">

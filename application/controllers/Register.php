@@ -33,13 +33,24 @@ class Register extends CI_Controller
         $this->email->set_mailtype("html");
         $this->email->set_newline("\r\n");
 
-        $htmlContent = '<h1>Let\'s Verify</h1>';
-        $htmlContent .= "<p>$email_code</p>";
-
         $this->email->to($this->input->post("tupemail"));
         $this->email->from($_ENV['SMTP_FROM'], 'TUP Connect');
         $this->email->subject('Email Verfication');
-        $this->email->message($htmlContent);
+        $this->email->message("
+        <div style=\"width:100%;text-align:center;font-family: Montserrat;\">
+                <img src='https://drive.google.com/uc?export=download&id=17L0dShcQDaER8D05xyQ62QHaMG1k43kD'/>
+                <h1 style=\"font-family: Montserrat;font-size: 24pt;\">Verify Your Identity</h1>
+                <p style=\"font-size:12pt\">Please enter this confirmation code below to confirm your identity.</p>
+                <span style=\"padding: 22px 50px;background-color: #f3f3f3;display: inline-block;margin: 30px;font-size: 27pt;font-weight: bold;\">$email_code</span>
+                <p>If you did not create an account in TUP Connect, kindly ignore this email.</p>
+                <div style=\"margin-top:60px\">
+                    <img src=\"https://drive.google.com/uc?export=download&id=1OFSzQRe-1Uo2FnUJK6RU7x5lwrbSmItV\" />
+                    <p>
+                        (c) 2021 TUP Connect | All rights reserved 
+                    </p>
+                </div>
+            </div>
+        ");
 
         if ($this->email->send()) return true;
         else return false;

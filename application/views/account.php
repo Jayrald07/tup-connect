@@ -24,7 +24,13 @@
             </li>
             <li class="user-pic-container">
                 <a href="#">
-                    <img class="user-pic" src="<?php echo base_url() ?>/public/assets/user.png" />
+                    <?php
+                        $val = explode(".",$detail["image_path"]);
+                        $path = "uploads/";
+
+                        if ($val[0] === "user-1") $path = "public/assets/";
+                    ?>
+                    <img src=<?php echo base_url($path) . $detail["image_path"] ?> />
                 </a>
                 <div class="account-option">
                     <ul>
