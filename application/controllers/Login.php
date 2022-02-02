@@ -16,7 +16,10 @@ class Login extends CI_Controller
         $data = $this->login_model->authenticate();
         if (count($data)) {
             $this->session->unset_userdata(array("error_login", "error_title", "error_description"));
-            $this->session->set_userdata("user_detail_id", $data[0]["user_detail_id"]);
+            $this->session->set_userdata(array(
+                "user_detail_id" => $data[0]["user_detail_id"],
+                "user_photo" => $data[0]["image_path"]
+            ));
             redirect("groups");
         } else {
             $this->session->set_userdata(array(
@@ -64,7 +67,7 @@ class Login extends CI_Controller
 
 
                     $resetLink = base_url() . 'index.php/reset/password?hash=' . $hash_string;
-                    $message = '<p>Click your verification link here:</p>' . $resetLink;
+                    $message = $resetLink;
                     $subject = "Password Reset Link";
                     $sentStatus = $this->sendEmail($email, $subject, $message);
 
@@ -117,7 +120,22 @@ class Login extends CI_Controller
         $this->email->to($email);
         $this->email->from($_ENV['SMTP_FROM'], 'TUP Connect');
         $this->email->subject($subject);
-        $this->email->message($message);
+        $this->email->message(
+            "<div style=\"width:100%;text-align:center;font-family: Montserrat;\">
+                <img src='https://drive.google.com/uc?export=download&id=17L0dShcQDaER8D05xyQ62QHaMG1k43kD'/>
+                <h1 style=\"font-family: Montserrat;font-size: 24pt;\">Hello, TUPian!</h1>
+                <p style=\"font-size:12pt\">We have received a request for a password reset.<br/>You can reset your password by clicking the link below: </p>
+                <a href=\"$message\" style=\"padding: 10px 40px;display:inline-block;border-radius:4px;background-color: #C5203B;text-decoration: none;color: white;font-weight: bold;margin: 20px 0;\">Set a new password</a>
+                <p style=\"font-size:12pt\">If you did not request a new password,<br/> kindly ignore this email.</p>
+                <div style=\"margin-top:60px\">
+                    <img src=\"https://drive.google.com/uc?export=download&id=1OFSzQRe-1Uo2FnUJK6RU7x5lwrbSmItV\" />
+                    <p>
+                        (c) 2021 TUP Connect | All rights reserved 
+                    </p>
+                </div>
+            </div>
+            "
+        );
 
         return $this->email->send();
     }

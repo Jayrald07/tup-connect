@@ -27,6 +27,8 @@ class Organization extends CI_Controller
         $data["posts"] = [];
         $data['org_id'] = NULL;
         $data["startup"] = TRUE;
+        $data["user_photo"] = $this->session->userdata("user_photo");
+
 
 
         $this->load->view("view_post", $data);
@@ -47,6 +49,8 @@ class Organization extends CI_Controller
         $data['org_id'] = $org_id;
         $data["pin_post"] = $this->input->get("pin");
         $data["posts"] = $this->post_model->get_posts("org", $org_id);
+        $data["user_photo"] = $this->session->userdata("user_photo");
+
         $this->load->view("view_post", $data);
     }
 

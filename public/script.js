@@ -146,6 +146,12 @@ var controller = (function (_UI) {
 	let bulk_post_reported = [];
 	let delete_role_id = null;
 	let current_role_id = null;
+	let current_comments = [];
+	let is_replying = false;
+	let select_comment_id = null;
+	let hovered_comment_id = null;
+	let is_hovered_comment_reply = false;
+	let under_the_comment_of = null;
 
 	return {
 		init() {
@@ -351,7 +357,149 @@ var controller = (function (_UI) {
 				});
 			}
 		},
+		register_reply_event() {
+			const reply_button = _UI.getClass("reply");
+			for (let i = 0; i < reply_button.length; i++) {
+				reply_button[i].addEventListener("click", function () {
+					is_replying = true;
+					let [selected_comment] = current_comments.filter((item) => {
+						if (item.comment_id == this.getAttribute("x-value")) return item;
+					});
+					select_comment_id = selected_comment.comment_id;
+					_UI.getClass("reply-container")[0].textContent = null;
+					_UI.getClass("reply-container")[0].insertAdjacentHTML(
+						"afterbegin",
+						`
+						<div class="replying-to">
+							<h1>Replying to ${selected_comment.first_name} ${selected_comment.last_name}</h1>
+							<p>${selected_comment.comment_text}</p>
+						</div>
+						<a href="javascript:void(0)" class="close-reply" x-value="${selected_comment.comment_id}">
+							<i class="fas fa-times"></i>
+						</a>
+					`
+					);
+					_UI.getClass("close-reply")[0].addEventListener("click", () => {
+						is_replying = false;
+						_UI.getClass("reply-container")[0].textContent = null;
+					});
+				});
+			}
+		},
+		register_comment_event() {
+			window.addEventListener("click", () => {
+				_UI.getClass("comment-option")[0].style.display = "none";
+			});
+			for (let i = 0; i < _UI.getClass("comment-menu").length; i++) {
+				_UI.getClass("comment-menu")[i].addEventListener("click", function (e) {
+					e.stopPropagation();
+					is_hovered_comment_reply =
+						this.getAttribute("x-type") === "reply" ? true : false;
+					hovered_comment_id = this.getAttribute("x-value");
+					under_the_comment_of = this.getAttribute("x-under");
+					_UI.getClass("comment-option")[0].style.display = "block";
+					_UI.getClass("comment-option")[0].style.left = e.screenX - 80 + "px";
+					_UI.getClass("comment-option")[0].style.top =
+						e.target.offsetTop + "px";
+				});
+			}
+		},
+		edit_comment_event() {
+			let [comment_found] = current_comments.filter((item) => {
+				if (!is_hovered_comment_reply) {
+					if (item.comment_id === hovered_comment_id) return true;
+				} else {
+					if (item.comment_id === under_the_comment_of) return true;
+				}
+				return false;
+			});
+
+			if (is_hovered_comment_reply) {
+				comment_found = comment_found.replies.filter((item) => {
+					if (item.comment_id === hovered_comment_id) return true;
+					else return false;
+				});
+				[comment_found] = comment_found;
+			}
+
+			console.log(is_hovered_comment_reply);
+
+			_UI.getId("comment-input").value = comment_found.comment_text;
+			_UI.getId("comment-button").style.display = "none";
+			_UI.getId("comment-button-update").style.display = "block";
+
+			_UI.getClass("reply-container")[0].textContent = null;
+			_UI.getClass("reply-container")[0].insertAdjacentHTML(
+				"afterbegin",
+				`
+						<div class="replying-to" id="edit-container">
+							<h1>Editing your comment...</h1>
+						</div>
+						<a href="javascript:void(0)" class="close-reply" id="close-edit" x-value="${comment_found.comment_id}">
+							<i class="fas fa-times"></i>
+						</a>
+					`
+			);
+			_UI.getId("close-edit").addEventListener("click", () => {
+				_UI.getClass("reply-container")[0].textContent = null;
+				_UI.getId("comment-input").value = "";
+				_UI.getId("comment-button").style.display = "block";
+				_UI.getId("comment-button-update").style.display = "none";
+			});
+		},
 		posts_init() {
+			let _ = this;
+
+			_UI.getId("delete-comment").addEventListener("click", () => {
+				console.log(hovered_comment_id);
+				_UI.getClass("delete-comment-modal")[0].style.display = "flex";
+				_UI.getClass("delete-comment-modal")[0].style.zIndex =
+					"99999999999999999";
+			});
+
+			_UI.getId("comment-button-update").addEventListener("click", () => {
+				let comment_text = _UI.getId("comment-input");
+				if (String(comment_text.value).trim().length) {
+					$.ajax({
+						url: "http://localhost/tup-connect/index.php/update_comment",
+						type: "POST",
+						dataType: "text",
+						data: {
+							comment_id: hovered_comment_id,
+							value: comment_text.value,
+						},
+						success: (data) => {
+							if (parseInt(data)) location.reload();
+						},
+						error: (data) => {
+							console.log(data);
+						},
+					});
+				} else comment_text.value = "";
+			});
+
+			_UI.getId("edit-comment").addEventListener("click", () => {
+				this.edit_comment_event();
+			});
+
+			_UI.getId("delete-comment-delete").addEventListener("click", () => {
+				$.ajax({
+					url: "http://localhost/tup-connect/index.php/delete_comment",
+					type: "POST",
+					dataType: "text",
+					data: {
+						id: hovered_comment_id,
+					},
+					success: function (data) {
+						if (parseInt(data)) location.reload();
+						else alert("Deleting Error! Please try again.");
+					},
+					error: function (data) {
+						console.log(data);
+					},
+				});
+			});
+
 			_UI.getClass("post-modal-upload")[0].addEventListener("click", () => {
 				_UI.getId("post-modal-files").click();
 			});
@@ -396,47 +544,95 @@ var controller = (function (_UI) {
 						dataType: "json",
 						data: { "post-id": comment_post_id },
 						success: function (data) {
-							console.log(data);
+							current_comments = data;
 							if (data.length) {
 								data.forEach((item) => {
 									const val = item.image_path.split(".");
 									let path = "uploads/";
 
 									if (val[0] === "user-1") path = "public/assets/";
-
-									_UI.comment_body.insertAdjacentHTML(
-										"afterbegin",
+									if (item.status === "deleted") {
+										_UI.comment_body.insertAdjacentHTML(
+											"afterbegin",
+											`<section style="padding: 10px;text-align:center" class="comment-section" id="${item.comment_id}"><small>Deleted</small></section>`
+										);
+									} else {
+										_UI.comment_body.insertAdjacentHTML(
+											"afterbegin",
+											`
+											<section class="comment-section" id="${item.comment_id}">
+												<div class="comment-section-header">
+													<figure>
+														<img src="http://localhost/tup-connect/${path}${item.image_path}" />
+													</figure>
+													<div>
+														<h1>${item.first_name} ${item.last_name}</h1>
+														<time>${item.date_time_stamp}</time>
+													</div>
+													${
+														item.is_own
+															? `<a href="javascript:void(0)" x-type="comment" class="comment-menu" x-value="${item.comment_id}"><i class="fas fa-ellipsis-v"></i></a>`
+															: ""
+													}
+												</div>
+												<div class="comment-section-body">
+													<p>
+														${item.comment_text}
+													</p>
+												</div>
+												<div class="comment-section-footer">
+													<a href="javascript:void(0)" class="reply" x-value="${item.comment_id}">
+														<i class="fas fa-reply"></i>
+													</a>
+												</div>
+											</section>
 										`
-										<section class="comment-section">
-                    <div class="comment-section-header">
-                        <figure>
-                            <img src="http://localhost/tup-connect/${path}${item.image_path}" />
-                        </figure>
-                        <div>
-                            <h1>${item.first_name} ${item.last_name}</h1>
-                            <time>${item.date_time_stamp}</time>
-                        </div>
-                        <a href="#">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </a>
-                    </div>
-                    <div class="comment-section-body">
-                        <p>
-                            ${item.comment_text}
-                        </p>
-                    </div>
-                    <div class="comment-section-footer">
-                        <a href="#">
-                            <i class="fas fa-reply"></i>
-                        </a>
-                        <a href="#">
-                            <i class="fas fa-comment"></i>
-                        </a>
-                    </div>
-                </section>
-									`
-									);
+										);
+									}
+									item.replies.forEach((reply) => {
+										const val = reply.image_path.split(".");
+										let path = "uploads/";
+
+										if (val[0] === "user-1") path = "public/assets/";
+
+										if (reply.status === "deleted_reply") {
+											_UI.getId(item.comment_id).insertAdjacentHTML(
+												"afterend",
+												`
+											<section style="padding: 10px;text-align:center" class="comment-section reply-card"><small>Deleted</small></section>`
+											);
+										} else {
+											_UI.getId(item.comment_id).insertAdjacentHTML(
+												"afterend",
+												`
+											<section class="comment-section reply-card">
+												<div class="comment-section-header">
+													<figure>
+														<img src="http://localhost/tup-connect/${path}${reply.image_path}" />
+													</figure>
+													<div>
+														<h1>${reply.first_name} ${reply.last_name}</h1>
+														<time>${reply.date_time_stamp}</time>
+													</div>
+													${
+														reply.is_own
+															? `<a href="javascript:void(0)" x-type="reply" class="comment-menu" x-under="${item.comment_id}" x-value="${reply.comment_id}"><i class="fas fa-ellipsis-v"></i></a>`
+															: ""
+													}
+												</div>
+												<div class="comment-section-body">
+													<p>
+														${reply.comment_text}
+													</p>
+												</div>
+											</section>
+										`
+											);
+										}
+									});
 								});
+								_.register_reply_event();
+								_.register_comment_event();
 							} else
 								_UI.comment_body.innerHTML =
 									"<p align='center'><small>No Comment</small></p>";
@@ -446,6 +642,7 @@ var controller = (function (_UI) {
 						},
 					});
 				});
+
 				_UI.comment_modal_close.addEventListener("click", (e) => {
 					_UI.comment_modal.style.display = "none";
 				});
@@ -502,6 +699,8 @@ var controller = (function (_UI) {
 					data: {
 						comment: _UI.comment_input.value.trim(),
 						"post-id": comment_post_id,
+						type: is_replying ? "reply" : "comment",
+						comment_id: select_comment_id,
 					},
 					success: function (data) {
 						if (data) location.reload();

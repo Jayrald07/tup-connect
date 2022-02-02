@@ -278,6 +278,13 @@ nav ul li a img {
 	justify-content: flex-end;
 }
 
+.user-pic-container a img {
+	width: 40px;
+	height: 40px;
+	border-radius: 100%;
+	border: 2px solid var(--red);
+}
+
 .pages-navigator ul {
 	list-style-type: none;
 	padding: 0;
@@ -452,13 +459,18 @@ nav ul li a img {
 	word-break: break-all;
 }
 
-.post-option {
+.post-option,
+.comment-option {
 	position: absolute;
 	background-color: #fff;
 	border: 1px solid var(--gray);
 	border-radius: 5px;
 	display: none;
 	z-index: 99999;
+}
+
+.comment-option {
+	z-index: 99999999999;
 }
 
 .post-option-toggle {
@@ -470,13 +482,15 @@ nav ul li a img {
 	color: var(--black);
 }
 
-.post-option ul {
+.post-option ul,
+.comment-option ul {
 	padding: 0;
 	margin: 0;
 	list-style-type: none;
 }
 
-.post-option ul li a {
+.post-option ul li a,
+.comment-option ul li a {
 	font-size: 10pt;
 	color: var(--black);
 	text-decoration: none;
@@ -484,11 +498,13 @@ nav ul li a img {
 	padding: 10px;
 }
 
-.post-option ul li a:hover {
+.post-option ul li a:hover,
+.comment-option ul li a:hover {
 	background-color: #f9f9f9;
 }
 
-.post-option ul li:not(:last-child) a {
+.post-option ul li:not(:last-child) a,
+.comment-option ul li:not(:last-child) a {
 	border-bottom: 1px solid var(--gray);
 }
 
@@ -1896,6 +1912,44 @@ nav ul li a img {
 	border-radius: 4px;
 	display: inline-block;
 	margin-top: 10px;
+}
+
+.replying-to {
+	padding: 10px;
+	border-left: 5px solid #dbdbdb;
+	width: 100%;
+}
+
+.replying-to h1 {
+	font-size: 10pt;
+	margin: 0;
+	color: #555;
+	margin-bottom: 5px;
+}
+
+.replying-to p {
+	margin: 0;
+	font-size: 9pt;
+	color: #6a6a6a;
+}
+
+.reply-container {
+	display: flex;
+	align-items: center;
+}
+
+.close-reply {
+	padding: 10px;
+	text-decoration: none;
+	color: #555;
+}
+
+.reply-card {
+	margin-left: 30px;
+}
+
+#comment-button-update {
+	display: none;
 }
 
 @keyframes pop {

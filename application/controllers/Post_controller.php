@@ -180,4 +180,21 @@ class Post_controller extends CI_Controller
             } else echo "error";
         } else echo "success";
     }
+
+
+    public function delete_comment() {
+        $this->load->model("post_model");
+        $comment_id = $this->input->post("id");
+
+        echo $this->post_model->delete_comment($comment_id);
+    }
+
+    public function update_comment() {
+        $this->load->model("post_model");
+        $comment_id = $this->input->post("comment_id");
+        $comment_text = $this->input->post("value");
+
+        echo $this->post_model->update_comment($comment_id,$comment_text);
+    }
+
 }

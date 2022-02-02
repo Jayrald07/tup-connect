@@ -75,22 +75,34 @@ class Lobby extends CI_Controller
     public function insert_comment()
     {
         $date_stamp = new DateTime("now", new DateTimeZone("Asia/Manila"));
+        $comment_id = random_string("alnum", 15);
         $data = array(
-            "comment_id" => random_string("alnum", 15),
+            "comment_id" => $comment_id,
             "post_id" => $this->input->post("post-id"),
             "comment_text" => $this->input->post("comment"),
             "comment_down_vote" => 0,
             "comment_up_vote" => 0,
             "user_detail_id" => $this->session->userdata("user_detail_id"),
             "date_time_stamp" => $date_stamp->format("Y-m-d H:i:s"),
-            "status" => "commented"
+            "status" => $this->input->post("type") === "reply" ? "replied" : "commented"
         );
-        echo $this->post->insert_comment($data);
+
+
+        if ($this->post->insert_comment($data)) {
+            if($this->input->post("type") === "reply") {
+                echo $this->post_model->insert_reply(array(
+                    "comment_reply_id" => random_string("alnum", 15),
+                    "comment_id" => $this->input->post("comment_id"),
+                    "reply_id" => $comment_id
+                ));
+            } else echo true;
+        } else echo false;
+
     }
 
     public function get_comments()
     {
-        echo json_encode($this->post->get_comments($this->input->post("post-id")));
+        echo json_encode($this->post_model->get_comments($this->input->post("post-id"),$this->session->userdata("user_detail_id")));
     }
 
     private function get_groups()
@@ -117,6 +129,7 @@ class Lobby extends CI_Controller
         $data["categories"] = $this->post_model->get_categories();
         $data["posts"] = $this->post_model->get_posts("groups", $group_id);
         $data["members"] = $this->post_model->get_group_members($group_id);
+        $data["user_photo"] = $this->session->userdata("user_photo");
         $this->load->view("view_post", $data);
     }
 
@@ -131,6 +144,7 @@ class Lobby extends CI_Controller
         $data['group_id'] = NULL;
         $data["categories"] = $this->post_model->get_categories();
         $data["startup"] = TRUE;
+        $data["user_photo"] = $this->session->userdata("user_photo");
 
         $this->load->view("view_post", $data);
     }

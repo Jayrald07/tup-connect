@@ -20,6 +20,7 @@ class Forum extends CI_Controller
         $data["category_id"] = NULL;
         $data["posts"] = [];
         $data["categories"] = $this->post_model->get_category_post_count($this->post_model->get_categories());
+        $data["user_photo"] = $this->session->userdata("user_photo");
 
         $data["startup"] = TRUE;
 
@@ -39,6 +40,7 @@ class Forum extends CI_Controller
         $data["category_id"] = $category_id;
         $data["pin_post"] = $this->input->get("pin");
         $data["posts"] = $this->post_model->get_posts("forum", $category_id);
+        $data["user_photo"] = $this->session->userdata("user_photo");
         $data["categories"] = $this->post_model->get_category_post_count($this->post_model->get_categories());
         $this->load->view("view_post", $data);
     }
