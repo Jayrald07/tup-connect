@@ -85,3 +85,17 @@ $route["activities"] = "account/activities";
 $route["update_profile"] = "account/update";
 $route["delete_comment"] = "post_controller/delete_comment";
 $route["update_comment"] = "post_controller/update_comment";
+$route["add_org"] = "organization/add_org";
+$route["find_org"] = "organization/find_org";
+$route["join_org"] = "organization/join_org";
+$route["cancel_org_request"] = "organization/cancel_org_request";
+$route["organization/admin/(:any)"] = "organization/admin/$1";
+$route["org_member/delete"] = "organization/remove_org_user";
+$route["org/update_status"] = "organization/org_user_update_status";
+$route["org/add_role"] = "organization/add_role";
+$route["role/org_no_roles"] = "organization/get_org_user_hasno_roles";
+$route["role/update_org_member_role"] = "organization/update_org_user_role";
+$route["role/org_members"] = "organization/get_org_user_roles";
+
+
+

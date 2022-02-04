@@ -185,8 +185,9 @@ class Post_controller extends CI_Controller
     public function delete_comment() {
         $this->load->model("post_model");
         $comment_id = $this->input->post("id");
+        $type = $this->input->post('type');
 
-        echo $this->post_model->delete_comment($comment_id);
+        echo $this->post_model->delete_comment($comment_id,$type);
     }
 
     public function update_comment() {

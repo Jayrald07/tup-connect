@@ -113,12 +113,12 @@ WHERE tbl_group_user.user_detail_id = '" . $user_detail_id . "' and tbl_group.gr
             case 'groups':
                 $query = $this->db->query("SELECT tbl_post.* , tbl_user_detail.first_name,tbl_user_detail.last_name,tbl_user_detail.middle_name, tbl_user_detail.user_detail_id,tbl_user_detail.image_path
 FROM tbl_lobby_post, tbl_lobby, tbl_post, tbl_user_detail
-WHERE tbl_lobby.group_id = '" . $id . "' and tbl_lobby_post.lobby_id = tbl_lobby.lobby_id and tbl_post.post_id = tbl_lobby_post.post_id and tbl_post.status = 'posted' and (tbl_post.report_status = 0 or tbl_post.report_status = 1) and tbl_user_detail.user_detail_id = tbl_lobby.user_detail_id ORDER BY tbl_post.date_time_stamp desc");
+WHERE tbl_lobby.group_id = '" . $id . "' and tbl_lobby_post.lobby_id = tbl_lobby.lobby_id and tbl_post.post_id = tbl_lobby_post.post_id and (tbl_post.status = 'posted' or tbl_post.status = 'announced') and (tbl_post.report_status = 0 or tbl_post.report_status = 1) and tbl_user_detail.user_detail_id = tbl_lobby.user_detail_id ORDER BY tbl_post.date_time_stamp desc");
                 break;
             case 'org':
                 $query = $this->db->query("SELECT tbl_organization_post.organization_post_id, tbl_organization_post.user_detail_id,tbl_organization_post.organization_id, tbl_post.*, tbl_user_detail.user_detail_id,tbl_user_detail.first_name, tbl_user_detail.middle_name, tbl_user_detail.last_name,tbl_user_detail.image_path
 FROM tbl_organization_post, tbl_post, tbl_user_detail
-where tbl_organization_post.organization_id = '" . $id . "' and tbl_post.post_id = tbl_organization_post.post_id and tbl_user_detail.user_detail_id = tbl_organization_post.user_detail_id and tbl_post.status = 'posted' order  by tbl_post.date_time_stamp desc");
+where tbl_organization_post.organization_id = '" . $id . "' and tbl_post.post_id = tbl_organization_post.post_id and tbl_user_detail.user_detail_id = tbl_organization_post.user_detail_id and (tbl_post.status = 'posted' or tbl_post.status = 'announced') and (tbl_post.report_status = 0 or tbl_post.report_status = 1) order  by tbl_post.date_time_stamp desc");
                 break;
             case 'fw':
                 $query = $this->db->query("SELECT tbl_freedom_wall.fw_id, tbl_post.*,tbl_user_detail.user_detail_id,tbl_user_detail.image_path
@@ -226,7 +226,7 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
 
     public function get_comments($post_id,$user_detail_id)
     {
-        $comments = $this->db->query("SELECT tbl_comment.*, tbl_user_detail.first_name, tbl_user_detail.last_name, tbl_user_detail.image_path, tbl_comment.status FROM tbl_comment, tbl_user_detail WHERE tbl_comment.post_id = '" . $post_id . "' and tbl_comment.status = 'commented' or tbl_comment.status='deleted' and tbl_user_detail.user_detail_id = tbl_comment.user_detail_id")->result_array();
+        $comments = $this->db->query("SELECT tbl_comment.*, tbl_user_detail.first_name, tbl_user_detail.last_name, tbl_user_detail.image_path, tbl_comment.status FROM tbl_comment, tbl_user_detail WHERE tbl_comment.post_id = '" . $post_id . "' and (tbl_comment.status = 'commented' or tbl_comment.status='deleted') and tbl_user_detail.user_detail_id = tbl_comment.user_detail_id ORDER BY tbl_comment.date_time_stamp ASC")->result_array();
 
         foreach($comments as $index => $comment) {
             $comment["replies"] = [];
@@ -234,7 +234,7 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
                 "comment_id" => $comment["comment_id"]
             ))->result_array();
             foreach($replies as $reply) {
-                $reply_content = $this->db->query("SELECT tbl_comment.*, tbl_user_detail.first_name, tbl_user_detail.last_name, tbl_user_detail.image_path FROM tbl_comment, tbl_user_detail WHERE tbl_comment.comment_id = '" . $reply["reply_id"] . "' and tbl_comment.status = 'replied' or tbl_comment.status = 'deleted_reply' and tbl_user_detail.user_detail_id = tbl_comment.user_detail_id")->result_array();
+                $reply_content = $this->db->query("SELECT tbl_comment.*, tbl_user_detail.first_name, tbl_user_detail.last_name, tbl_user_detail.image_path FROM tbl_comment, tbl_user_detail WHERE tbl_comment.comment_id = '" . $reply["reply_id"] . "' and (tbl_comment.status = 'replied' or tbl_comment.status = 'deleted_reply') and tbl_user_detail.user_detail_id = tbl_comment.user_detail_id")->result_array();
                 $reply_content[0]["is_own"] = $user_detail_id === $reply_content[0]["user_detail_id"];
 
                 $comment["replies"][] = $reply_content[0];
@@ -371,7 +371,8 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
     public function get_post($post_id)
     {
         $post = $this->db->get_where("tbl_post", array(
-            "post_id" => $post_id
+            "post_id" => $post_id,
+            "status" => "posted"
         ))->result_array();
 
         $post[0]["post_image_path"] =
@@ -456,7 +457,7 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
         } else {
             return $this->db->insert("tbl_group_user",array(
                 "user_detail_id" => $data["user_detail_id"],
-                "role_id" => 0,
+                "role_id" => -1,
                 "group_id" => $data["group_id"],
                 "status" => 0
             ));
@@ -484,6 +485,7 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
             $res[$i]["firstname"] = $val[0]["first_name"];
             $res[$i]["middlename"] = $val[0]["middle_name"];
             $res[$i]["lastname"] = $val[0]["last_name"];
+            $res[$i]["image_path"] = $val[0]["image_path"];
         }
 
         return $res;
@@ -743,8 +745,8 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
 
     }
 
-    public function delete_comment($id) {
-        $this->db->set("status","deleted_reply");
+    public function delete_comment($id,$type) {
+        $this->db->set("status",$type === "reply" ? "deleted_reply" : "deleted");
         $this->db->where("comment_id",$id);
         return $this->db->update("tbl_comment");
     }
@@ -753,6 +755,14 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
         $this->db->set("comment_text",$text);
         $this->db->where("comment_id",$id);
         return $this->db->update("tbl_comment");
+    }
+
+    public function is_group_owner($id) {
+        $this->db->select("count(*) as found");
+        $this->db->where("group_owner",$id);
+        $count = $this->db->get("tbl_group")->result_array()[0]["found"];
+        if ($count > 0) return TRUE;
+        else return FALSE;
     }
 
 }
