@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@3.6.9/dist/css/splide.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@3.6.9/dist/js/splide.min.js"></script>
     <link rel="stylesheet" href="<?php echo base_url("public/style.css") ?>">
+    <script src="http://timeago.yarp.com/jquery.timeago.js"></script>
     <title>Post</title>
 </head>
 
@@ -154,9 +155,13 @@
                 else if ($type === "org") echo form_open_multipart(base_url("index.php/org/post"));
                 else if ($type === "fw") echo form_open_multipart(base_url("index.php/fw/post"));
                 else if ($type === "forum") echo form_open_multipart(base_url("index.php/frm/post"));
-
                 ?>
                 <textarea required name='post-content'></textarea>
+                <?php if (isset($is_owner) && $is_owner) {?>
+                <div class="as-announcement">
+                    <input name="is_announcement" type="checkbox" id="is_announcement"/><label for="is_announcement">Post as announcement</label>
+                </div>
+                <?php } ?>
                 <a href="javascript:void(0)" class="post-modal-upload">
                     <i class="fas fa-file-image"></i>
                 </a>
@@ -198,11 +203,46 @@
         </div>
     </div>
 
-    <div class="members-modal">
+    <div class="create-group-modal org-modal">
+        <div class="create-group-box">
+            <div class="create-group-header">
+                <h1>Create Organization</h1>
+                <a href="javascript:void(0)" id="create-org-close">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+            <div class="create-group-body">
+                <?php echo form_open(base_url("index.php/add_org")) ?>
+                    <label>Organization Name:</label>
+                    <input type="text" name="org-name" required/>
+                    <label>Organization Type:</label>
+                    <select name="org-type" required id="org-type">
+                        <option value="univ">University Wide</option>
+                        <option value="college">College Based</option>
+                    </select>
+                    <label id="college-label">College:</label>
+                    <select name="org-college" required id="college-select">
+                        <?php foreach($colleges as $college): ?>
+                            <option value=<?php echo $college["college_id"] ?>><?php echo $college["college_name"] ?></option>
+                        <?php endforeach ?>
+                    </select>
+                    <label>Category:</label>
+                    <select name="org-category" required>
+                        <?php foreach($categories as $category): ?>
+                            <option value=<?php echo $category["category_id"] ?>><?php echo $category["category_name"] ?></option>
+                        <?php endforeach ?>
+                    </select>
+                    <button>Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="members-modal members-group-modal">
         <div class="members-box">
             <div class="members-header">
                 <h1>Members</h1>
-                <a href="javascript:void(0)" id="members-close">
+                <a href="javascript:void(0)" id="members-group-close">
                     <i class="fas fa-times"></i>
                 </a>
             </div>
@@ -210,9 +250,32 @@
                 
                 <?php foreach($members as $member): ?>
                     <div class="group-members-card">
-                        <img src="<?php echo base_url("public/assets/user.png") ?>" />
+                        <img src="<?php echo base_url("public/assets/" . $member["image_path"]) ?>" />
                         <h1><?php echo $member["firstname"] . ' ' . $member["lastname"] ?></h1>
                         <a href="javascript:void(0)" class="group-members-remove" x-value=<?php echo $member["user_detail_id"] ?>>
+                            <i class="fas fa-user-minus"></i>
+                        </a>
+                    </div>
+                <?php endforeach ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="members-modal members-org-modal">
+        <div class="members-box">
+            <div class="members-header">
+                <h1>Members</h1>
+                <a href="javascript:void(0)" id="members-org-close">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+            <div class="members-body">
+                
+                <?php foreach($members as $member): ?>
+                    <div class="group-members-card">
+                        <img src="<?php echo base_url("public/assets/" . $member["image_path"]) ?>" />
+                        <h1><?php echo $member["firstname"] . ' ' . $member["lastname"] ?></h1>
+                        <a href="javascript:void(0)" class="org-members-remove" x-value=<?php echo $member["user_detail_id"] ?>>
                             <i class="fas fa-user-minus"></i>
                         </a>
                     </div>
@@ -250,6 +313,47 @@
         </div>
     </div>
 
+    <div class="search-group-modal search-org-modal">
+        <div class="search-group-box">
+            <div class="search-group-header">
+                <h1>Search Organization</h1>
+                <a href="javascript:void(0)" id="search-org-close">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+            <div class="search-group-body">
+                <div class="search-input-container">
+                    <label>Organization Name:</label>
+                    <input type="text" id="search-org-name">
+                </div>
+                <input type="checkbox" id="search-use-org-type"/><small>Use Organization Type</small>
+                <label>Organization Type:</label>
+                    <select name="org-type" required id="search-org-type">
+                        <option value="univ">University Wide</option>
+                        <option value="college">College Based</option>
+                    </select>
+                    <label id="search-college-label">College:</label>
+                    <select name="org-college" required id="search-college-select">
+                        <?php foreach($colleges as $college): ?>
+                            <option value=<?php echo $college["college_id"] ?>><?php echo $college["college_name"] ?></option>
+                        <?php endforeach ?>
+                    </select>
+                <label>Interests: </label>
+                <div class="search-interest-container">
+                    <?php foreach($categories as $category): ?>
+                        <div class="search-interest-card">
+                            <input type="checkbox" id="<?php echo $category["category_name"]  ?>" class="search-org-interest" x-value="<?php echo $category["category_id"] ?>"/>
+                            <label ><?php echo $category["category_name"] ?></label>
+                        </div>
+                    <?php endforeach ?>
+                </div>
+                <div class="search-result-container org-result-container">
+                    <h1>No Organization</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="post-modal v2-modal">
         <section class="post-modal-box">
             <div class="post-modal-header">
@@ -275,19 +379,19 @@
                 <p>Are you sure to delete this comment?</p>
             </div>
             <div class="delete-footer">
-                <button id="delete-cancel">Cancel</button>
+                <button class="delete-comment-cancel" data-target="delete-comment-modal">Cancel</button>
                 <button id="delete-comment-delete">Confirm</button>
             </div>
         </div>
     </div>
 
-    <div class="delete-modal">
+    <div class="delete-modal delete-post-modal">
         <div class="delete-box">
             <div class="delete-body">
                 <p>Are you sure to delete this post?</p>
             </div>
             <div class="delete-footer">
-                <button id="delete-cancel">Cancel</button>
+                <button class="delete-post-cancel" data-target="delete-post-modal">Cancel</button>
                 <button id="delete-delete">Confirm</button>
             </div>
         </div>
@@ -301,6 +405,18 @@
             <div class="delete-member-footer">
                 <button id="delete-member-cancel">Cancel</button>
                 <button id="delete-member-delete">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="delete-member-modal delete-org-member-modal">
+        <div class="delete-member-box">
+            <div class="delete-member-body">
+                <p>Are you sure to remove this member?</p>
+            </div>
+            <div class="delete-member-footer">
+                <button id="delete-org-member-cancel">Cancel</button>
+                <button id="delete-org-member-delete">Confirm</button>
             </div>
         </div>
     </div>
@@ -334,20 +450,24 @@
                 </div>
             
             <?php } else {?>
+
+                <?php if (isset($is_verified) AND $is_verified === "verified" OR $type !== "org") {?>
+
                 <section class="groups-action">
                     <?php if ($type !== "fw" and $type !== "forum") { ?>
                         <div>
-                            <a href="javascript:void(0)" id="members-modal-trigger" x-value="<?php if ($type === "lobby")echo $group_id; else echo null; ?>">
+                            <a href="javascript:void(0)" id=<?php if ($type === "lobby") echo "members-modal-trigger";else echo "members-org-modal-trigger" ?> x-value="<?php if ($type === "lobby")echo $group_id; else echo $org_id; ?>">
                                 <i class="fas fa-users"></i>
                                 Members
                             </a>
                         </div>
                         <div>
-                            <a href="<?php if ($type === "lobby")echo base_url("index.php/groups/admin/$group_id"); else echo null; ?>" >
+                            <a href="<?php if ($type === "lobby") echo base_url("index.php/groups/admin/$group_id"); else if ($type === "org") echo base_url("index.php/organization/admin/$org_id"); ?>" >
                                 <i class="fas fa-cogs"></i>
                                 Settings
                             </a>
                         </div>
+                        
                     <?php } ?>
                     <div class='<?php if ($type === "fw" or $type === "forum") echo "force-left fw-button" ?>'>
                         <a href="javascript:void(0)" class="post-button">
@@ -357,147 +477,229 @@
                             else echo "Post" ?>
                         </a>
                     </div>
+                    <?php if ($type !== "fw" and $type !== "forum") {?>
+                        <div>
+                            <a href="javascript:void(0)" id=<?php if ($type === "lobby") echo "announcement-group"; else echo "announcement-org"?>>
+                                <i class="fas fa-megaphone"></i>
+                                Announcement
+                            </a>
+                        </div>
+                    <?php } ?>
                 </section>
                 <?php if (count($posts)) {?>
 
-                <?php foreach ($posts as $post) : ?>
-                    <?php if ($post["post_id"] === $pin_post) {?>
-                    <section class="post-card pop">
-                        <section class="post-header">
-                            <?php if ($type !== "fw") { ?>
-                                <figure>
-                                    <?php
-                                        $val = explode(".",$post["image_path"]);
-                                        $path = "uploads/";
+                <div id="announcement-container" style="display:none">
+                    <a href="javascript:void(0)" id="back-non"><i class="fas fa-chevron-left"></i>Back</a>
+                    <?php foreach ($posts as $post) : ?>
+                        <?php if ($post["post_id"] !== $pin_post and $post["status"] === "announced") {?>
+                        <section class="post-card" style="margin-bottom:30px">
+                            <section class="post-header">
+                                <i class="fas fa-info announcement-icon"></i>
+                                <?php if ($type !== "fw") { ?>
+                                    <figure>
+                                        <?php
+                                            $val = explode(".",$post["image_path"]);
+                                            $path = "uploads/";
 
-                                        if ($val[0] === "user-1") $path = "public/assets/";
-                                    ?>
-                                    <img src=<?php echo base_url($path) . $post["image_path"] ?> />
-                                </figure>
-                            <?php } ?>
-                            <section>
-                                <h1><?php
-                                    if ($type === "fw") echo "Anonymous";
-                                    else echo $post["first_name"] . " " . $post["last_name"] ?>
-                                </h1>
-                                <time><?php
-                                        if ($type === 'fw') echo "Entry ID: " . $post["fw_id"];
-                                        else echo $post["date_time_stamp"];
-                                        ?></time>
-                            </section>
-                            <div>
-                                <a href="javascript:void(0)" class="post-option-toggle" post-value=<?php echo $post["post_id"] ?> user-value=<?php echo $post["user_detail_id"] ?>>
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </a>
-                            </div>
-                        </section>
-                        <section class="post-body">
-                            <div class="post-body-text">
-                                <?php echo $post['post_text'] ?>
-                            </div>
-                            <?php if (count($post["post_image_path"])) { ?>
-                                <div class="splide">
-                                    <div class="splide__track">
-                                        <ul class="splide__list">
-                                            <?php foreach ($post["post_image_path"] as $image_path) : ?>
-                                                <!-- <figure> -->
-                                                <li class="splide__slide">
-                                                    <img src=<?php echo base_url("uploads/") . $image_path["post_image_path"] ?> />
-                                                </li>
-                                                <!-- </figure> -->
-                                            <?php endforeach; ?>
-                                        </ul>
-                                    </div>
+                                            if ($val[0] === "user-1") $path = "public/assets/";
+                                        ?>
+                                        <img src=<?php echo base_url($path) . $post["image_path"] ?> />
+                                    </figure>
+                                <?php } ?>
+                                <section>
+                                    <h1><?php
+                                        if ($type === "fw") echo "Anonymous";
+                                        else echo $post["first_name"] . " " . $post["last_name"] ?>
+                                    </h1>
+                                    <time class="timeago" datetime="<?php echo $post["date_time_stamp"] ?>"><?php
+                                            if ($type === 'fw') echo "Entry ID: " . $post["fw_id"];
+                                            else echo $post["date_time_stamp"];
+                                            ?></time>
+                                </section>
+                                <div>
+                                    <a href="javascript:void(0)" class="post-option-toggle" post-value=<?php echo $post["post_id"] ?> user-value=<?php echo $post["user_detail_id"] ?>>
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </a>
                                 </div>
-                            <?php } ?>
-                        </section>
-                        <section class="post-footer">
-                            <a href="javascript:void(0)" class="up-vote" x-value=<?php echo $post["post_id"] ?>>
-                                <i class="fas fa-arrow-up"></i>
-                                <span class="up-vote-count"><?php echo $post['post_up_vote'] ?></span>
-                            </a>
-                            <a href="javascript:void(0)" class="down-vote" x-value=<?php echo $post["post_id"] ?>>
-                                <i class="fas fa-arrow-down"></i>
-                                <span class="down-vote-count"><?php echo $post['post_down_vote'] ?></span>
-                            </a>
-                            <a href="javascript:void(0)" class="comment" x-value=<?php echo $post["post_id"] ?>>
-                                <i class="fas fa-comment"></i>
-                                <span class="comment-count"><?php echo $post['comments_count'] ?></span>
-                            </a>
-                        </section>
-                    </section>
-                    <hr class="divider"/>
-                    <?php }?>
-                <?php endforeach; ?>
-
-                <?php foreach ($posts as $post) : ?>
-                    <?php if ($post["post_id"] !== $pin_post) {?>
-                    <section class="post-card">
-                        <section class="post-header">
-                            <?php if ($type !== "fw") { ?>
-                                <figure>
-                                    <?php
-                                        $val = explode(".",$post["image_path"]);
-                                        $path = "uploads/";
-
-                                        if ($val[0] === "user-1") $path = "public/assets/";
-                                    ?>
-                                    <img src=<?php echo base_url($path) . $post["image_path"] ?> />
-                                </figure>
-                            <?php } ?>
-                            <section>
-                                <h1><?php
-                                    if ($type === "fw") echo "Anonymous";
-                                    else echo $post["first_name"] . " " . $post["last_name"] ?>
-                                </h1>
-                                <time><?php
-                                        if ($type === 'fw') echo "Entry ID: " . $post["fw_id"];
-                                        else echo $post["date_time_stamp"];
-                                        ?></time>
                             </section>
-                            <div>
-                                <a href="javascript:void(0)" class="post-option-toggle" post-value=<?php echo $post["post_id"] ?> user-value=<?php echo $post["user_detail_id"] ?>>
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </a>
-                            </div>
-                        </section>
-                        <section class="post-body">
-                            <div class="post-body-text">
-                                <?php echo $post['post_text'] ?>
-                            </div>
-                            <?php if (count($post["post_image_path"])) { ?>
-                                <div class="splide">
-                                    <div class="splide__track">
-                                        <ul class="splide__list">
-                                            <?php foreach ($post["post_image_path"] as $image_path) : ?>
-                                                <!-- <figure> -->
-                                                <li class="splide__slide">
-                                                    <img src=<?php echo base_url("uploads/") . $image_path["post_image_path"] ?> />
-                                                </li>
-                                                <!-- </figure> -->
-                                            <?php endforeach; ?>
-                                        </ul>
-                                    </div>
+                            <section class="post-body">
+                                <div class="post-body-text">
+                                    <?php echo $post['post_text'] ?>
                                 </div>
-                            <?php } ?>
+                                <?php if (count($post["post_image_path"])) { ?>
+                                    <div class="splide">
+                                        <div class="splide__track">
+                                            <ul class="splide__list">
+                                                <?php foreach ($post["post_image_path"] as $image_path) : ?>
+                                                    <!-- <figure> -->
+                                                    <li class="splide__slide">
+                                                        <img src=<?php echo base_url("uploads/") . $image_path["post_image_path"] ?> />
+                                                    </li>
+                                                    <!-- </figure> -->
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                <?php } ?>
+                            </section>
+                            <!-- <section class="post-footer">
+                                <a href="javascript:void(0)" class="up-vote" x-value=<?php echo $post["post_id"] ?>>
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span class="up-vote-count"><?php echo $post['post_up_vote'] ?></span>
+                                </a>
+                                <a href="javascript:void(0)" class="down-vote" x-value=<?php echo $post["post_id"] ?>>
+                                    <i class="fas fa-arrow-down"></i>
+                                    <span class="down-vote-count"><?php echo $post['post_down_vote'] ?></span>
+                                </a>
+                                <a href="javascript:void(0)" class="comment" x-value=<?php echo $post["post_id"] ?>>
+                                    <i class="fas fa-comment"></i>
+                                    <span class="comment-count"><?php echo $post['comments_count'] ?></span>
+                                </a>
+                            </section> -->
                         </section>
-                        <section class="post-footer">
-                            <a href="javascript:void(0)" class="up-vote" x-value=<?php echo $post["post_id"] ?>>
-                                <i class="fas fa-arrow-up"></i>
-                                <span class="up-vote-count"><?php echo $post['post_up_vote'] ?></span>
-                            </a>
-                            <a href="javascript:void(0)" class="down-vote" x-value=<?php echo $post["post_id"] ?>>
-                                <i class="fas fa-arrow-down"></i>
-                                <span class="down-vote-count"><?php echo $post['post_down_vote'] ?></span>
-                            </a>
-                            <a href="javascript:void(0)" class="comment" x-value=<?php echo $post["post_id"] ?>>
-                                <i class="fas fa-comment"></i>
-                                <span class="comment-count"><?php echo $post['comments_count'] ?></span>
-                            </a>
+                        <?php }?>
+                    <?php endforeach; ?>
+                </div>
+                <div id="non-announcement-container">
+                    <?php foreach ($posts as $post) : ?>
+                        <?php if ($post["post_id"] === $pin_post) {?>
+                        <section class="post-card pop">
+                            <section class="post-header">
+                                <?php if ($type !== "fw") { ?>
+                                    <figure>
+                                        <?php
+                                            $val = explode(".",$post["image_path"]);
+                                            $path = "uploads/";
+
+                                            if ($val[0] === "user-1") $path = "public/assets/";
+                                        ?>
+                                        <img src=<?php echo base_url($path) . $post["image_path"] ?> />
+                                    </figure>
+                                <?php } ?>
+                                <section>
+                                    <h1><?php
+                                        if ($type === "fw") echo "Anonymous";
+                                        else echo $post["first_name"] . " " . $post["last_name"] ?>
+                                    </h1>
+                                    <time class="timeago" datetime="<?php echo $post["date_time_stamp"] ?>"><?php
+                                            if ($type === 'fw') echo "Entry ID: " . $post["fw_id"];
+                                            else echo $post["date_time_stamp"];
+                                            ?></time>
+                                </section>
+                                <div>
+                                    <a href="javascript:void(0)" class="post-option-toggle" post-value=<?php echo $post["post_id"] ?> user-value=<?php echo $post["user_detail_id"] ?>>
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </a>
+                                </div>
+                            </section>
+                            <section class="post-body">
+                                <div class="post-body-text">
+                                    <?php echo $post['post_text'] ?>
+                                </div>
+                                <?php if (count($post["post_image_path"])) { ?>
+                                    <div class="splide">
+                                        <div class="splide__track">
+                                            <ul class="splide__list">
+                                                <?php foreach ($post["post_image_path"] as $image_path) : ?>
+                                                    <!-- <figure> -->
+                                                    <li class="splide__slide">
+                                                        <img src=<?php echo base_url("uploads/") . $image_path["post_image_path"] ?> />
+                                                    </li>
+                                                    <!-- </figure> -->
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                <?php } ?>
+                            </section>
+                            <section class="post-footer">
+                                <a href="javascript:void(0)" class="up-vote" x-value=<?php echo $post["post_id"] ?>>
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span class="up-vote-count"><?php echo $post['post_up_vote'] ?></span>
+                                </a>
+                                <a href="javascript:void(0)" class="down-vote" x-value=<?php echo $post["post_id"] ?>>
+                                    <i class="fas fa-arrow-down"></i>
+                                    <span class="down-vote-count"><?php echo $post['post_down_vote'] ?></span>
+                                </a>
+                                <a href="javascript:void(0)" class="comment" x-value=<?php echo $post["post_id"] ?>>
+                                    <i class="fas fa-comment"></i>
+                                    <span class="comment-count"><?php echo $post['comments_count'] ?></span>
+                                </a>
+                            </section>
                         </section>
-                    </section>
-                    <?php }?>
-                <?php endforeach; ?>
+                        <hr class="divider"/>
+                        <?php }?>
+                    <?php endforeach; ?>
+
+                    <?php foreach ($posts as $post) : ?>
+                        <?php if ($post["post_id"] !== $pin_post and $post["status"] === "posted") {?>
+                        <section class="post-card">
+                            <section class="post-header">
+                                <?php if ($type !== "fw") { ?>
+                                    <figure>
+                                        <?php
+                                            $val = explode(".",$post["image_path"]);
+                                            $path = "uploads/";
+
+                                            if ($val[0] === "user-1") $path = "public/assets/";
+                                        ?>
+                                        <img src=<?php echo base_url($path) . $post["image_path"] ?> />
+                                    </figure>
+                                <?php } ?>
+                                <section>
+                                    <h1><?php
+                                        if ($type === "fw") echo "Anonymous";
+                                        else echo $post["first_name"] . " " . $post["last_name"] ?>
+                                    </h1>
+                                    <time class="timeago" datetime="<?php echo $post["date_time_stamp"] ?>"><?php
+                                            if ($type === 'fw') echo "Entry ID: " . $post["fw_id"];
+                                            else echo $post["date_time_stamp"];
+                                            ?></time>
+                                </section>
+                                <div>
+                                    <a href="javascript:void(0)" class="post-option-toggle" post-value=<?php echo $post["post_id"] ?> user-value=<?php echo $post["user_detail_id"] ?>>
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </a>
+                                </div>
+                            </section>
+                            <section class="post-body">
+                                <div class="post-body-text">
+                                    <?php echo $post['post_text'] ?>
+                                </div>
+                                <?php if (count($post["post_image_path"])) { ?>
+                                    <div class="splide">
+                                        <div class="splide__track">
+                                            <ul class="splide__list">
+                                                <?php foreach ($post["post_image_path"] as $image_path) : ?>
+                                                    <!-- <figure> -->
+                                                    <li class="splide__slide">
+                                                        <img src=<?php echo base_url("uploads/") . $image_path["post_image_path"] ?> />
+                                                    </li>
+                                                    <!-- </figure> -->
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                <?php } ?>
+                            </section>
+                            <section class="post-footer">
+                                <a href="javascript:void(0)" class="up-vote" x-value=<?php echo $post["post_id"] ?>>
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span class="up-vote-count"><?php echo $post['post_up_vote'] ?></span>
+                                </a>
+                                <a href="javascript:void(0)" class="down-vote" x-value=<?php echo $post["post_id"] ?>>
+                                    <i class="fas fa-arrow-down"></i>
+                                    <span class="down-vote-count"><?php echo $post['post_down_vote'] ?></span>
+                                </a>
+                                <a href="javascript:void(0)" class="comment" x-value=<?php echo $post["post_id"] ?>>
+                                    <i class="fas fa-comment"></i>
+                                    <span class="comment-count"><?php echo $post['comments_count'] ?></span>
+                                </a>
+                            </section>
+                        </section>
+                        <?php }?>
+                    <?php endforeach; ?>
+                </div>
 
                 <?php } else { ?>
                     <div class="select-group-container">
@@ -507,6 +709,9 @@
                         <?php } else if ($type === "lobby") {?>
                             <img src="<?php echo base_url("public/assets/start-post.svg") ?>" id="select-group-image"/>
                             <p>Start sharing your thoughts </p>
+                        <?php } else if ($type === "org") {?>
+                            <img src="<?php echo base_url("public/assets/start-post.svg") ?>" id="select-group-image"/>
+                            <p>Start dropping a topic </p>
                         <?php } else if ($type === "fw") {?>
                             <img src="<?php echo base_url("public/assets/start-fw.svg") ?>" id="select-group-image"/>
                             <p>Share your thoughts and feelings freely!</p>
@@ -515,6 +720,25 @@
                         <?php } ?>
                     </div>
                 <?php } ?>
+                
+                <?php } else if (isset($is_verified) AND $is_verified === "not-verified") {?>
+                    <div class="not-verified">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h1>Not Verified</h1>
+                        <p>This newly created organization is still on review by the administrators.</p>
+                        <p>It will automatically open once verified.</p>
+                    </div>
+                <?php } else {?>
+                    <div class="not-verified">
+                        <i class="fas fa-frown"></i>
+                        <h1>Uh Oh!</h1>
+                        <p>Unfortunately, this organization has not been approved by the administrators</p>
+                        <p>Just click the "Verify again" for re-verifying this organization</p>
+                        <a href="javascript:void(0)" class="verify-again">Verify again</a>
+                        <a href="javascript:void(0)" class="delete-org-not">Delete Organization Instead</a>
+                    </div>
+                <?php }?>
+
             <?php }?>
 
         </main>
@@ -528,7 +752,7 @@
                                 <a href="#" id="search-group-trigger"><i class="fas fa-search"></i> Search</a>
                                 <a href="#" id="create-group-trigger"><i class="fas fa-plus"></i> Create</a>
                             <?php } else { ?>
-                                <a href="#"><i class="fas fa-search"></i> Search</a>
+                                <a href="#" id="search-org-trigger"><i class="fas fa-search"></i> Search</a>
                                 <a href="#" id="create-org-trigger"><i class="fas fa-plus"></i> Create</a>
                             <?php } ?>
                         </section>
@@ -550,6 +774,13 @@
                             <?php } else if ($type === "org") { ?>
                                 <?php foreach ($org_owned as $org) : ?>
                                     <a href=<?php echo base_url("index.php/organizations/") . $org["organization_id"] ?> class="container-card <?php echo $org["organization_id"] === $org_id ? 'active-page' : '' ?>">
+                                        <?php if ($org["status"] == 0) {?>
+                                            <i class="fas fa-exclamation-circle"></i>
+                                        <?php } else if ($org["status"] == 1) {?>
+                                            <i class="fas fa-check-circle"></i>
+                                        <?php } else {?>
+                                            <i class="fas fa-times-circle"></i>
+                                        <?php }?>
                                         <?php echo $org["organization_name"] ?>
                                     </a>
                                 <?php endforeach; ?>
@@ -603,6 +834,11 @@
         controller.posts_init()
         CKEDITOR.replace('post-content')
         CKEDITOR.replace('post-content-edit')
+
+        $(document).ready(function() {
+            $("time.timeago").timeago();
+        })
+
     </script>
 </body>
 

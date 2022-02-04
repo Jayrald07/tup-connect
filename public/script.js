@@ -152,6 +152,7 @@ var controller = (function (_UI) {
 	let hovered_comment_id = null;
 	let is_hovered_comment_reply = false;
 	let under_the_comment_of = null;
+	let org_id = null;
 
 	return {
 		init() {
@@ -279,6 +280,46 @@ var controller = (function (_UI) {
 					});
 			}
 		},
+		join_org_event() {
+			let elm = _UI.getClass("search-org-join");
+			let _ = this;
+			for (let i = 0; i < elm.length; i++) {
+				_UI
+					.getClass("join-org-trigger")
+					?.[i]?.addEventListener("click", function () {
+						$.ajax({
+							url: `http://localhost/tup-connect/index.php/join_org`,
+							type: "POST",
+							dataType: "text",
+							data: {
+								organization_id: this.getAttribute("x-value"),
+							},
+							success: (data) => {
+								if (data) _.search_org();
+							},
+							error: (data) => console.log(data),
+						});
+					});
+
+				_UI
+					.getClass("cancel-org-trigger")
+					?.[i]?.addEventListener("click", function () {
+						$.ajax({
+							url: `http://localhost/tup-connect/index.php/cancel_org_request`,
+							type: "POST",
+							dataType: "text",
+							data: {
+								organization_id: this.getAttribute("x-value"),
+							},
+							success: (data) => {
+								console.log(data);
+								if (data) _.search_org();
+							},
+							error: (data) => console.log(data),
+						});
+					});
+			}
+		},
 		join_action(data) {
 			if (data.is_owner) {
 				return (
@@ -298,6 +339,30 @@ var controller = (function (_UI) {
 					return (
 						'<a href="javascript:void(0)" class="search-group-join cancel-group-trigger" x-value="' +
 						data.group_id +
+						'" >Cancel Requested</a>'
+					);
+				}
+			}
+		},
+		join_org_action(data) {
+			if (data.is_owner) {
+				return (
+					'<a href="http://localhost/tup-connect/index.php/organizations/' +
+					data.organization_id +
+					'" class="search-org-join" >View</a>'
+				);
+			} else {
+				console.log(data.status);
+				if (data.status === -1 || data.status == 2) {
+					return (
+						'<a href="javascript:void(0)" class="search-org-join join-org-trigger" x-value="' +
+						data.organization_id +
+						'" >Join</a>'
+					);
+				} else {
+					return (
+						'<a href="javascript:void(0)" class="search-org-join cancel-org-trigger" x-value="' +
+						data.organization_id +
 						'" >Cancel Requested</a>'
 					);
 				}
@@ -447,8 +512,163 @@ var controller = (function (_UI) {
 				_UI.getId("comment-button-update").style.display = "none";
 			});
 		},
+		search_org() {
+			_UI.getClass("org-result-container")[0].textContent = null;
+			console.log(
+				_UI.getId("search-use-org-type").checked,
+				_UI.getId("search-org-type").value,
+				_UI.getId("search-college-select").value
+			);
+			if (
+				_UI.getId("search-org-name").value.trim() == false &&
+				search_categories.length == 0
+			) {
+				_UI
+					.getClass("org-result-container")[0]
+					.insertAdjacentHTML("afterbegin", `<h1>No Organization</h1>`);
+			} else {
+				_UI.getClass("org-result-container")[0].textContent = null;
+				$.ajax({
+					url: `http://localhost/tup-connect/index.php/find_org`,
+					type: "POST",
+					dataType: "json",
+					data: {
+						org_name: _UI.getId("search-org-name").value,
+						use_org_type: _UI.getId("search-use-org-type").checked ? 1 : 0,
+						org_type: _UI.getId("search-org-type").value,
+						college_id: _UI.getId("search-college-select").value,
+						interests: search_categories,
+					},
+					success: (data) => {
+						_UI.getClass("org-result-container")[0].textContent = null;
+						console.log(data);
+						if (data.length) {
+							for (let i = 0; i < data.length; i++) {
+								_UI.getClass("org-result-container")[0].insertAdjacentHTML(
+									"afterbegin",
+									`
+									<div class="search-group-card">
+										<section>
+											<h1>${data[i].organization_name}</h1>
+											 <small>Members: <span>${data[i].members}</span></small>
+										</section>
+										${this.join_org_action(data[i])}
+									</div>
+								`
+								);
+							}
+							this.join_org_event();
+						} else {
+							_UI.getClass("org-result-container")[0].insertAdjacentHTML(
+								"afterbegin",
+								`
+									<h1>No Organization</h1>
+								`
+							);
+						}
+					},
+					error: function (data) {
+						console.log(data);
+					},
+				});
+			}
+		},
 		posts_init() {
 			let _ = this;
+
+			_UI.getId("announcement-group")?.addEventListener("click", () => {
+				_UI.getId("announcement-container").style.display = "block";
+				_UI.getId("non-announcement-container").style.display = "none";
+			});
+
+			_UI.getId("announcement-org")?.addEventListener("click", () => {
+				_UI.getId("announcement-container").style.display = "block";
+				_UI.getId("non-announcement-container").style.display = "none";
+			});
+
+			_UI.getId("back-non")?.addEventListener("click", () => {
+				_UI.getId("announcement-container").style.display = "none";
+				_UI.getId("non-announcement-container").style.display = "block";
+			});
+
+			_UI
+				.getClass("delete-comment-cancel")[0]
+				?.addEventListener("click", function () {
+					_UI.getClass("delete-comment-modal")[0].style.display = "none";
+				});
+
+			_UI
+				.getClass("delete-post-cancel")[0]
+				?.addEventListener("click", function () {
+					console.log("as");
+					_UI.getClass("delete-post-modal")[0].style.display = "none";
+				});
+
+			_UI.getId("search-org-close").addEventListener("click", () => {
+				_UI.getClass("search-org-modal")[0].style.display = "none";
+			});
+
+			_UI.getId("search-org-name").addEventListener("keyup", () => {
+				this.search_org();
+			});
+
+			_UI.getId("search-use-org-type").addEventListener("change", () => {
+				this.search_org();
+			});
+
+			_UI.getId("search-org-type").addEventListener("change", () => {
+				if (_UI.getId("search-use-org-type").checked) this.search_org();
+			});
+
+			_UI.getId("search-college-select").addEventListener("change", () => {
+				if (_UI.getId("search-use-org-type").checked) this.search_org();
+			});
+
+			let org_interest = _UI.getClass("search-org-interest");
+
+			for (let i = 0; i < org_interest.length; i++) {
+				org_interest[i].addEventListener("change", function () {
+					console.log("VAL:", this.getAttribute("x-value"));
+					if (search_categories.indexOf(this.getAttribute("x-value")) > -1) {
+						search_categories = search_categories.filter((item) => {
+							return item === this.getAttribute("x-value") ? false : true;
+						});
+						console.log(search_categories);
+					} else search_categories.push(this.getAttribute("x-value"));
+					console.log("val", search_categories);
+					_.search_org();
+				});
+			}
+
+			_UI.getId("search-org-trigger")?.addEventListener("click", () => {
+				_UI.getClass("search-org-modal")[0].style.display = "flex";
+			});
+
+			_UI.getId("search-org-type").addEventListener("change", function () {
+				let status = "none";
+				if (this.value === "college") status = "block";
+				else status = "none";
+				_UI.getId("search-college-select").style.display = status;
+				_UI.getId("search-college-label").style.display = status;
+			});
+
+			_UI.getId("org-type").addEventListener("change", function () {
+				if (this.value === "college") {
+					_UI.getId("college-select").style.display = "block";
+					_UI.getId("college-label").style.display = "block";
+				} else {
+					_UI.getId("college-select").style.display = "none";
+					_UI.getId("college-label").style.display = "none";
+				}
+			});
+
+			_UI.getId("create-org-trigger")?.addEventListener("click", () => {
+				_UI.getClass("org-modal")[0].style.display = "flex";
+			});
+
+			_UI.getId("create-org-close").addEventListener("click", () => {
+				_UI.getClass("org-modal")[0].style.display = "none";
+			});
 
 			_UI.getId("delete-comment").addEventListener("click", () => {
 				console.log(hovered_comment_id);
@@ -489,6 +709,7 @@ var controller = (function (_UI) {
 					dataType: "text",
 					data: {
 						id: hovered_comment_id,
+						type: is_hovered_comment_reply ? "reply" : "comment",
 					},
 					success: function (data) {
 						if (parseInt(data)) location.reload();
@@ -534,16 +755,18 @@ var controller = (function (_UI) {
 						},
 					});
 				});
-				_UI.comment[i].addEventListener("click", function (e) {
+				_UI.comment[i]?.addEventListener("click", function (e) {
 					_UI.comment_modal.style.display = "block";
 					comment_post_id = this.getAttribute("x-value");
 					_UI.comment_body.textContent = null;
+					console.log(comment_post_id);
 					$.ajax({
 						url: "http://localhost/tup-connect/index.php/comment/get",
 						type: "POST",
 						dataType: "json",
 						data: { "post-id": comment_post_id },
 						success: function (data) {
+							console.log(data);
 							current_comments = data;
 							if (data.length) {
 								data.forEach((item) => {
@@ -594,7 +817,7 @@ var controller = (function (_UI) {
 										let path = "uploads/";
 
 										if (val[0] === "user-1") path = "public/assets/";
-
+										console.log(reply);
 										if (reply.status === "deleted_reply") {
 											_UI.getId(item.comment_id).insertAdjacentHTML(
 												"afterend",
@@ -647,7 +870,7 @@ var controller = (function (_UI) {
 					_UI.comment_modal.style.display = "none";
 				});
 
-				_UI.up_vote[i].addEventListener("click", async () => {
+				_UI.up_vote[i]?.addEventListener("click", async () => {
 					let res = await this.vote(
 						_UI.up_vote[i].getAttribute("x-value"),
 						"up"
@@ -657,7 +880,7 @@ var controller = (function (_UI) {
 						_UI.down_vote[i].children[1].textContent = res[0].post_down_vote;
 					}
 				});
-				_UI.down_vote[i].addEventListener("click", async () => {
+				_UI.down_vote[i]?.addEventListener("click", async () => {
 					let res = await this.vote(
 						_UI.down_vote[i].getAttribute("x-value"),
 						"down"
@@ -759,12 +982,9 @@ var controller = (function (_UI) {
 			});
 			_UI.post_delete.addEventListener(
 				"click",
-				(e) => (_UI.delete_modal.style.display = "flex")
+				(e) => (_UI.getClass("delete-post-modal")[0].style.display = "flex")
 			);
-			_UI.delete_cancel.addEventListener(
-				"click",
-				(e) => (_UI.delete_modal.style.display = "none")
-			);
+
 			_UI.delete_delete.addEventListener("click", (e) => {
 				$.ajax({
 					url: "http://localhost/tup-connect/index.php/post/delete",
@@ -893,12 +1113,23 @@ var controller = (function (_UI) {
 			_UI
 				.getId("members-modal-trigger")
 				?.addEventListener("click", function () {
-					_UI.getClass("members-modal")[0].style.display = "flex";
+					_UI.getClass("members-group-modal")[0].style.display = "flex";
 					group_id = this.getAttribute("x-value");
 				});
 
-			_UI.getId("members-close").addEventListener("click", () => {
-				_UI.getClass("members-modal")[0].style.display = "none";
+			_UI
+				.getId("members-org-modal-trigger")
+				?.addEventListener("click", function () {
+					_UI.getClass("members-org-modal")[0].style.display = "flex";
+					org_id = this.getAttribute("x-value");
+				});
+
+			_UI.getId("members-group-close").addEventListener("click", () => {
+				_UI.getClass("members-group-modal")[0].style.display = "none";
+			});
+
+			_UI.getId("members-org-close").addEventListener("click", () => {
+				_UI.getClass("members-org-modal")[0].style.display = "none";
 			});
 
 			for (let i = 0; i < _UI.getClass("group-members-remove").length; i++) {
@@ -910,11 +1141,28 @@ var controller = (function (_UI) {
 					});
 			}
 
+			for (let i = 0; i < _UI.getClass("org-members-remove").length; i++) {
+				_UI
+					.getClass("org-members-remove")
+					[i].addEventListener("click", function () {
+						delete_member_id = this.getAttribute("x-value");
+						_UI.getClass("delete-org-member-modal")[0].style.display = "flex";
+					});
+			}
+
 			_UI
 				.getId("delete-member-cancel")
 				.addEventListener(
 					"click",
 					() => (_UI.getClass("delete-member-modal")[0].style.display = "none")
+				);
+
+			_UI
+				.getId("delete-org-member-cancel")
+				.addEventListener(
+					"click",
+					() =>
+						(_UI.getClass("delete-org-member-modal")[0].style.display = "none")
 				);
 
 			_UI.getId("delete-member-delete").addEventListener("click", (e) => {
@@ -934,10 +1182,62 @@ var controller = (function (_UI) {
 					},
 				});
 			});
+
+			_UI.getId("delete-org-member-delete").addEventListener("click", (e) => {
+				$.ajax({
+					url: "http://localhost/tup-connect/index.php/org_member/delete",
+					type: "POST",
+					dataType: "text",
+					data: {
+						user_detail_id: delete_member_id,
+						org_id,
+					},
+					success: function (data) {
+						if (data) location.reload();
+					},
+					error: function (data) {
+						console.log(data);
+					},
+				});
+			});
 		},
 		group_user_update_status(status, ref, isBulk) {
 			$.ajax({
 				url: "http://localhost/tup-connect/index.php/group/update_status",
+				type: "POST",
+				dataType: "text",
+				data: {
+					user_detail_id: !isBulk
+						? ref.getAttribute("x-value")
+						: bulk_group_user_update.map((item) => item.id),
+					status,
+					isBulk,
+				},
+				success: (data) => {
+					console.log(data);
+					if (isBulk) {
+						if (data) {
+							bulk_group_user_update.map((item) => {
+								_UI.getId(item.ref.getAttribute("data-target")).remove();
+							});
+							bulk_group_user_update = [];
+						}
+					} else {
+						if (data) {
+							_UI.getId(ref.getAttribute("data-target")).remove();
+							bulk_group_user_update = [];
+						}
+					}
+					_UI.getId("select-all").checked = false;
+				},
+				error: function (data) {
+					console.log(data);
+				},
+			});
+		},
+		org_user_update_status(status, ref, isBulk) {
+			$.ajax({
+				url: "http://localhost/tup-connect/index.php/org/update_status",
 				type: "POST",
 				dataType: "text",
 				data: {
@@ -1026,12 +1326,61 @@ var controller = (function (_UI) {
 				});
 			}
 		},
+		member_org_add_role(role_id) {
+			let addrole = _UI.getClass("member-org-add-role");
+			for (let i = 0; i < addrole.length; i++) {
+				addrole[i].addEventListener("click", function () {
+					$.ajax({
+						url: "http://localhost/tup-connect/index.php/role/update_org_member_role",
+						type: "POST",
+						dataType: "json",
+						data: {
+							role_id,
+							user_detail_id: this.getAttribute("x-value"),
+						},
+						success: (data) => {
+							if (data) {
+								_UI.getId(`rm-${this.getAttribute("x-value")}`).remove();
+								_UI.getClass("members-modal")[0].style.display = "none";
+								_UI.getId(`rm-count-${role_id}`).textContent = data;
+							}
+						},
+						error: (data) => console.log(data),
+					});
+				});
+			}
+		},
 		member_remove_role(role_id, og_id) {
 			let removerole = _UI.getClass("member-remove-role");
 			for (let i = 0; i < removerole.length; i++) {
 				removerole[i].addEventListener("click", function () {
 					$.ajax({
 						url: "http://localhost/tup-connect/index.php/role/update_member_role",
+						type: "POST",
+						dataType: "json",
+						data: {
+							role_id,
+							user_detail_id: this.getAttribute("x-value"),
+						},
+						success: (data) => {
+							console.log(data);
+							if (data) {
+								_UI.getId(`rmr-${this.getAttribute("x-value")}`).remove();
+								_UI.getClass("members-modal")[0].style.display = "none";
+								_UI.getId(`rm-count-${og_id}`).textContent = data - 1;
+							}
+						},
+						error: (data) => console.log(data),
+					});
+				});
+			}
+		},
+		member_org_remove_role(role_id, og_id) {
+			let removerole = _UI.getClass("member-org-remove-role");
+			for (let i = 0; i < removerole.length; i++) {
+				removerole[i].addEventListener("click", function () {
+					$.ajax({
+						url: "http://localhost/tup-connect/index.php/role/update_org_member_role",
 						type: "POST",
 						dataType: "json",
 						data: {
@@ -1117,6 +1466,32 @@ var controller = (function (_UI) {
 					.getClass("member-request-decline")
 					[i].addEventListener("click", function (e) {
 						_.group_user_update_status(2, this, false);
+					});
+
+				_UI
+					.getClass("check-member-request")
+					[i].addEventListener("click", function () {
+						bulk_group_user_update = bulk_group_user_update.filter((item) => {
+							return item.id !== this.getAttribute("x-value");
+						});
+						if (this.checked)
+							bulk_group_user_update.push({
+								id: this.getAttribute("x-value"),
+								ref: this,
+							});
+					});
+			}
+			let mreq_org_app = _UI.getClass("member-org-request-approve");
+
+			for (let i = 0; i < mreq_org_app.length; i++) {
+				mreq_org_app[i].addEventListener("click", function (e) {
+					_.org_user_update_status(1, this, false);
+				});
+
+				_UI
+					.getClass("member-org-request-decline")
+					[i].addEventListener("click", function (e) {
+						_.org_user_update_status(2, this, false);
 					});
 
 				_UI
@@ -1234,6 +1609,40 @@ var controller = (function (_UI) {
 					error: (data) => console.log(data),
 				});
 			});
+
+			_UI.getId("add-org-role-trigger")?.addEventListener("click", () => {
+				$.ajax({
+					url: "http://localhost/tup-connect/index.php/org/add_role",
+					type: "POST",
+					dataType: "json",
+					data: {
+						role_name: _UI.getId("role-name").value,
+					},
+					success: (data) => {
+						if (data.length) {
+							_UI.getId("role-container").insertAdjacentHTML(
+								"afterbegin",
+								`
+								<tr>
+                                    <td>${data[0].role_name}</td>
+                                    <td>
+                                        <i class="fas fa-user"></i>
+                                        <span>0</span>
+                                    </td>
+                                    <td>
+                                        <a href="javascript:void(0)" class="role-add-member" x-value="${data[0].role_id}">Add Members</a>
+                                        <a href="javascript:void(0)" class="role-delete-member" x-value="${data[0].role_id}">Delete</a>
+                                    </td>
+                                </tr>
+							`
+							);
+							_UI.getId("role-name").value = "";
+						}
+					},
+					error: (data) => console.log(data),
+				});
+			});
+
 			let delete_role = _UI.getClass("role-delete-member");
 
 			for (let i = 0; i < delete_role.length; i++) {
@@ -1262,13 +1671,6 @@ var controller = (function (_UI) {
 			});
 
 			_UI
-				.getId("delete-cancel")
-				?.addEventListener(
-					"click",
-					() => (_UI.getClass("delete-modal")[0].style.display = "none")
-				);
-
-			_UI
 				.getId("members-modal-close")
 				?.addEventListener(
 					"click",
@@ -1276,8 +1678,10 @@ var controller = (function (_UI) {
 				);
 
 			let mems = _UI.getClass("role-members");
+			let org_mems = _UI.getClass("role-org-members");
+
 			for (let i = 0; i < mems.length; i++) {
-				mems[i].addEventListener("click", function () {
+				mems[i]?.addEventListener("click", function () {
 					_UI.getClass("members-modal-body")[0].textContent = null;
 					$.ajax({
 						url: "http://localhost/tup-connect/index.php/role/members",
@@ -1298,7 +1702,6 @@ var controller = (function (_UI) {
 										<h1>${item.first_name} ${item.middle_name} ${item.last_name}</h1>
 										<a href="javascript:void(0)" class="member-remove-role" x-value="${item.user_detail_id}">Remove</a>
 									</div>
-									
 									`
 									);
 								});
@@ -1311,13 +1714,14 @@ var controller = (function (_UI) {
 
 				_UI
 					.getClass("role-add-member")
-					[i].addEventListener("click", function () {
+					[i]?.addEventListener("click", function () {
 						_UI.getClass("members-modal-body")[0].textContent = null;
 						$.ajax({
 							url: "http://localhost/tup-connect/index.php/role/no_roles",
 							type: "POST",
 							dataType: "json",
 							success: (data) => {
+								console.log(data);
 								if (data) {
 									_UI.getClass("members-modal")[0].style.display = "flex";
 									data.map((item) => {
@@ -1334,6 +1738,104 @@ var controller = (function (_UI) {
 										);
 									});
 									_.member_add_role(this.getAttribute("x-value"));
+								}
+							},
+							error: (data) => console.log(data),
+						});
+					});
+
+				_UI
+					.getClass("role-org-add-member")
+					[i]?.addEventListener("click", function () {
+						_UI.getClass("members-modal-body")[0].textContent = null;
+						$.ajax({
+							url: "http://localhost/tup-connect/index.php/role/org_no_roles",
+							type: "POST",
+							dataType: "json",
+							success: (data) => {
+								console.log(data);
+								if (data) {
+									_UI.getClass("members-modal")[0].style.display = "flex";
+									data.map((item) => {
+										_UI.getClass("members-modal-body")[0].insertAdjacentHTML(
+											"afterbegin",
+											`
+										<div class="role-member-card" id="rm-${item.user_detail_id}">
+											<img src="http://localhost/tup-connect/public/assets/user.png" />
+											<h1>${item.first_name} ${item.middle_name} ${item.last_name}</h1>
+											<a href="javascript:void(0)" class="member-org-add-role" x-value="${item.user_detail_id}">Add</a>
+										</div>
+											
+										`
+										);
+									});
+									_.member_org_add_role(this.getAttribute("x-value"));
+								}
+							},
+							error: (data) => console.log(data),
+						});
+					});
+			}
+
+			for (let i = 0; i < org_mems.length; i++) {
+				org_mems[i]?.addEventListener("click", function () {
+					_UI.getClass("members-modal-body")[0].textContent = null;
+					$.ajax({
+						url: "http://localhost/tup-connect/index.php/role/org_members",
+						type: "POST",
+						dataType: "json",
+						data: {
+							role_id: this.getAttribute("x-value"),
+						},
+						success: (data) => {
+							if (data) {
+								_UI.getClass("members-modal")[0].style.display = "flex";
+								data.map((item) => {
+									_UI.getClass("members-modal-body")[0].insertAdjacentHTML(
+										"afterbegin",
+										`
+									<div class="role-member-card" id="rmr-${item.user_detail_id}">
+										<img src="http://localhost/tup-connect/public/assets/user.png" />
+										<h1>${item.first_name} ${item.middle_name} ${item.last_name}</h1>
+										<a href="javascript:void(0)" class="member-org-remove-role" x-value="${item.user_detail_id}">Remove</a>
+									</div>
+
+									`
+									);
+								});
+								_.member_org_remove_role(0, this.getAttribute("x-value"));
+							}
+						},
+						error: (data) => console.log(data),
+					});
+				});
+
+				_UI
+					.getClass("role-org-add-member")
+					[i]?.addEventListener("click", function () {
+						_UI.getClass("members-modal-body")[0].textContent = null;
+						$.ajax({
+							url: "http://localhost/tup-connect/index.php/role/org_no_roles",
+							type: "POST",
+							dataType: "json",
+							success: (data) => {
+								console.log(data);
+								if (data) {
+									_UI.getClass("members-modal")[0].style.display = "flex";
+									data.map((item) => {
+										_UI.getClass("members-modal-body")[0].insertAdjacentHTML(
+											"afterbegin",
+											`
+										<div class="role-member-card" id="rm-${item.user_detail_id}">
+											<img src="http://localhost/tup-connect/public/assets/user.png" />
+											<h1>${item.first_name} ${item.middle_name} ${item.last_name}</h1>
+											<a href="javascript:void(0)" class="member-org-add-role" x-value="${item.user_detail_id}">Add</a>
+										</div>
+											
+										`
+										);
+									});
+									_.member_org_add_role(this.getAttribute("x-value"));
 								}
 							},
 							error: (data) => console.log(data),

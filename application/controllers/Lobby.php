@@ -15,7 +15,8 @@ class Lobby extends CI_Controller
     public function post()
     {
 
-        $date_stamp = new DateTime("now", new DateTimeZone("Asia/Manila"));
+        $date_stamp = new DateTime("now");
+        $date_stamp->setTimezone(new DateTimeZone("Asia/Manila"));
         $post_id = random_string("alnum", 15);
         $lobby_id = random_string("alnum", 15);
         $i = 0;
@@ -30,6 +31,10 @@ class Lobby extends CI_Controller
             }
         }
 
+        $status_post = "posted";
+
+        if ($this->input->post("is_announcement")) $status_post = "announced";
+
         $data = array(
             "type" => "lobby",
             "lobby_id" => $lobby_id,
@@ -41,7 +46,7 @@ class Lobby extends CI_Controller
             "post_id" => $post_id,
             "post_text" => $this->input->post("post-content"),
             "date_time_stamp" => $date_stamp->format("Y-m-d H:i:s"),
-            "status" => "posted",
+            "status" => $status_post,
             "post_up_vote" => 0,
             "post_down_vote" => 0,
             "post_image_path" => $post_images,
@@ -130,6 +135,8 @@ class Lobby extends CI_Controller
         $data["posts"] = $this->post_model->get_posts("groups", $group_id);
         $data["members"] = $this->post_model->get_group_members($group_id);
         $data["user_photo"] = $this->session->userdata("user_photo");
+        $data["is_owner"] = $this->post_model->is_group_owner($this->session->userdata("user_detail_id"));
+
         $this->load->view("view_post", $data);
     }
 
@@ -279,7 +286,8 @@ class Lobby extends CI_Controller
             )),
             "reported_posts" => $this->post_model->get_reported_group_post($group_id),
             "role" => $val,
-            "permission" => $this->post_model->get_role_permissions($group_id)
+            "permission" => $this->post_model->get_role_permissions($group_id),
+            "type" => "group"
         );
 
 

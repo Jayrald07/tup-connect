@@ -7,6 +7,7 @@ class Organization extends CI_Controller
         parent::__construct();
         $this->load->library(array('post', 'session'));
         $this->load->model("organization_model");
+        $this->load->helper("string");
     }
 
     public function get_orgs()
@@ -28,7 +29,8 @@ class Organization extends CI_Controller
         $data['org_id'] = NULL;
         $data["startup"] = TRUE;
         $data["user_photo"] = $this->session->userdata("user_photo");
-
+        $data["colleges"] = $this->organization_model->get_colleges();
+        $data["categories"] = $this->post_model->get_categories();
 
 
         $this->load->view("view_post", $data);
@@ -50,6 +52,11 @@ class Organization extends CI_Controller
         $data["pin_post"] = $this->input->get("pin");
         $data["posts"] = $this->post_model->get_posts("org", $org_id);
         $data["user_photo"] = $this->session->userdata("user_photo");
+        $data["colleges"] = $this->organization_model->get_colleges();
+        $data["categories"] = $this->post_model->get_categories();
+        $data["members"] = $this->organization_model->get_members($org_id);
+        $data["is_owner"] = $this->organization_model->is_org_owner($this->session->userdata("user_detail_id"));
+        $data["is_verified"] = $this->organization_model->is_verified($org_id);
 
         $this->load->view("view_post", $data);
     }
@@ -72,6 +79,10 @@ class Organization extends CI_Controller
             }
         }
 
+        $status_post = "posted";
+
+        if ($this->input->post("is_announcement")) $status_post = "announced";
+
         $data = array(
             "type" => "org",
             "organization_post_id" => $organization_post_id,
@@ -80,7 +91,7 @@ class Organization extends CI_Controller
             "post_id" => $post_id,
             "post_text" => $this->input->post("post-content"),
             "date_time_stamp" => $date_stamp->format("Y-m-d H:i:s"),
-            "status" => "posted",
+            "status" => $status_post,
             "post_up_vote" => 0,
             "post_down_vote" => 0,
             "post_image_path" => $post_images,
@@ -110,4 +121,133 @@ class Organization extends CI_Controller
             } else redirect(base_url("index.php/organizations/") . $this->session->userdata("id"));
         }
     }
+
+
+    public function add_org() {
+        $data = array(
+            "organization_id" => random_string("alnum",15),
+            "organization_name" => $this->input->post("org-name"),
+            "category_id" => $this->input->post("org-category"),
+            "organization_image" => "../",
+            "organization_owner" => $this->session->userdata("user_detail_id"),
+            "organization_type" => $this->input->post("org-type"),
+        );
+        if ($this->organization_model->add_org($data)) redirect(base_url("index.php/organization"));
+        else redirect(base_url("index.php/organization"));
+    }
+
+    public function find_org() {
+        $this->load->model("organization_model");
+        $data = array(
+            "organization_name" => $this->input->post("org_name"),
+            "use_org_type" => $this->input->post("use_org_type"),
+            "org_type" => $this->input->post("org_type"),
+            "college_id" => $this->input->post("college_id"),
+            "interests" => $this->input->post("interests")
+        );
+        echo json_encode($this->organization_model->find_org($data));
+    }
+
+    public function join_org() {
+        echo $this->organization_model->join_org(array("organization_id" => $this->input->post("organization_id")));
+    }
+
+    public function cancel_org_request() {
+        $data = array(
+            "organization_id" => $this->input->post("organization_id"),
+            "user_detail_id" => $this->session->userdata("user_detail_id")
+        );
+        echo $this->organization_model->cancel_org_request($data);
+    }
+
+    public function admin($org_id) {
+        $this->session->set_userdata("organization_id",$org_id);
+
+        $val = $this->post_model->get_roles($org_id);
+        for($i = 0;$i < count($val);$i++) {
+            $r = $this->organization_model->get_user_role($org_id,$val[$i]["role_id"]);
+            if (count($r)) $val[$i]["count"] = $r[0]["count"];
+        }
+
+        $data = array(
+            "org_id" => $org_id,
+            "org_details" => $this->organization_model->get_org($org_id),
+            "member_request" => $this->organization_model->get_org_user(array(
+            "organization_id" => $org_id,
+            "status" => 0,
+            )),
+            "reported_posts" => $this->organization_model->get_reported_org_post($org_id),
+            "role" => $val,
+            "permission" => $this->organization_model->get_role_permissions($org_id),
+            "type" => "org"
+        );
+
+
+        $this->load->view("admin",$data);
+    }
+
+    public function remove_org_user() {
+        $data = array(
+            "organization_id" => $this->input->post("org_id"),
+            "user_detail_id" => $this->input->post("user_detail_id")
+        );
+        echo $this->organization_model->remove_group_user($data);
+    }
+
+    public function org_user_update_status() {
+
+        if ($this->input->post("isBulk") === true) {
+            $val = $this->input->post("user_detail_id");
+            $i = 0;
+            foreach($val as $v) {
+                $data = array(
+                    "organization_id" => $this->session->userdata("organization_id"),
+                    "user_detail_id" => $v,
+                );
+
+                $status = $this->input->post("status");
+
+                if ($this->organization_model->org_user_update_status($data,$status)) $i++;
+            }
+
+            if ($i === count($val)) echo true;
+            else echo false;
+
+        } else {
+            $data = array(
+                "organization_id" => $this->session->userdata("organization_id"),
+                "user_detail_id" => $this->input->post("user_detail_id"),
+            );
+    
+            $status = $this->input->post("status");
+    
+            echo $this->organization_model->org_user_update_status($data,$status);
+
+        }
+
+
+    }
+
+    public function add_role() {
+        echo json_encode($this->organization_model->add_role($this->session->userdata("organization_id"),$this->input->post("role_name")));
+    }
+
+    public function get_org_user_hasno_roles() {
+        echo json_encode($this->organization_model->get_org_user_hasno_roles($this->session->userdata("organization_id")));
+    }
+
+    public function update_org_user_role() {
+        $data = array(
+            "organization_id" => $this->session->userdata("organization_id"),
+            "user_detail_id" => $this->input->post("user_detail_id"),
+            "role_id" => $this->input->post("role_id")
+        );
+
+        echo $this->organization_model->update_org_user_role($data);
+    }
+
+    public function get_org_user_roles() {
+        echo json_encode($this->organization_model->get_org_user_roles($this->input->post("role_id"),$this->session->userdata("organization_id")));
+    }
+
 }

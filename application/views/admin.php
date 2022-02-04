@@ -71,10 +71,14 @@
             </div>
         </div>
     </div>
-
     <main class="admin-panel">
         <section class="admin-action-panel">
-            <a href="<?php echo  base_url("index.php/groups/$group_id") ?>"><?php echo $group_details[0]["group_name"] ?></a>
+            <a href="<?php 
+                if ($type === "group")
+                    echo base_url("index.php/groups/$group_id");
+                else 
+                    echo base_url("index.php/organizations/$org_id")
+            ?>"><?php if ($type === "group") echo $group_details[0]["group_name"]; else echo $org_details[0]["organization_name"]; ?></a>
             <ul>
                 <li><a href="javascript:void(0)" class="admin-trigger admin-panel-selected" data-target="mr"><i class="fas fa-user-clock"></i><span>Member Request</span></a></li>
                 <li><a href="javascript:void(0)" class="admin-trigger" data-target="rc"><i class="fas fa-user-times"></i><span>Reported Content</span></a></li>
@@ -108,8 +112,8 @@
                                     </div>
                                 </div>
                                 <div class="member-request-action">
-                                    <a href="javascript:void(0)" data-target="<?php echo $mr["user_detail_id"] ?>" class="member-request-approve" x-value="<?php echo $mr["user_detail_id"] ?>">Approve</a>
-                                    <a href="javascript:void(0)" data-target="<?php echo $mr["user_detail_id"] ?>" class="member-request-decline" x-value="<?php echo $mr["user_detail_id"] ?>">Decline</a>
+                                    <a href="javascript:void(0)" data-target="<?php echo $mr["user_detail_id"] ?>" class=<?php if ($type === "group") echo "member-request-approve"; else echo "member-org-request-approve" ?> x-value="<?php echo $mr["user_detail_id"] ?>">Approve</a>
+                                    <a href="javascript:void(0)" data-target="<?php echo $mr["user_detail_id"] ?>" class=<?php if ($type === "group") echo "member-request-decline"; else echo "member-org-request-decline" ?> x-value="<?php echo $mr["user_detail_id"] ?>">Decline</a>
                                 </div>
                             </div>
                         </div>
@@ -177,7 +181,7 @@
             </div>
             <div class="manage-roles-container admin-container hidden" id="mrr">
                 <div class="manage-roles-header">
-                    <a href="javascript:void(0)" id="add-role-trigger">Create</a>
+                    <a href="javascript:void(0)" id=<?php if ($type === "group") echo "add-role-trigger"; else echo "add-org-role-trigger" ?>>Create</a>
                     <input type="text" placeholder="Input new role" id="role-name"/>
                 </div>
                 <div class="manage-roles-content">
@@ -194,13 +198,13 @@
                                 <tr id="role-c-<?php echo $r["role_id"] ?>">
                                     <td><?php echo $r["role_name"] ?></td>
                                     <td>
-                                        <a href="javascript:void(0)" x-value="<?php echo $r["role_id"] ?>" class="role-members">
+                                        <a href="javascript:void(0)" x-value="<?php echo $r["role_id"] ?>" class=<?php if ($type === "group") echo "role-members"; else echo "role-org-members"?>>
                                             <i class="fas fa-eye"></i>
                                             <span id="rm-count-<?php echo $r["role_id"] ?>"><?php echo $r["count"] ?></span>
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="javascript:void(0)" class="role-add-member" x-value="<?php echo $r["role_id"] ?>">Add Members</a>
+                                        <a href="javascript:void(0)" class=<?php if ($type === "group") echo "role-add-member"; else echo "role-org-add-member"?> x-value="<?php echo $r["role_id"] ?>">Add Members</a>
                                         <a href="javascript:void(0)" class="role-delete-member" x-value="<?php echo $r["role_id"] ?>">Delete</a>
                                     </td>
                                 </tr>

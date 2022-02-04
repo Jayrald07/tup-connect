@@ -162,6 +162,8 @@ class Register extends CI_Controller
             "interests" => $this->input->post("user-interests"),
         );
 
+        $this->session->set_userdata("user_photo","user-1.png");
+
         if ($this->registration_model->final_insert($data)) redirect("lobby");
     }
 }
