@@ -159,6 +159,7 @@ WHERE tbl_organization_user.user_detail_id = '" . $user_detail_id . "' and tbl_o
             $res[$i]["firstname"] = $val[0]["first_name"];
             $res[$i]["middlename"] = $val[0]["middle_name"];
             $res[$i]["lastname"] = $val[0]["last_name"];
+            $res[$i]["image_path"] = $val[0]["image_path"];
         }
         return $res;
     }
@@ -330,9 +331,33 @@ WHERE tbl_organization_user.user_detail_id = '" . $user_detail_id . "' and tbl_o
         $this->db->where(array(
             "organization_id" => $id,
         ));
-        if ($this->db->get("tbl_organization")->result_array()[0]["status"] == 0) return "not-verified";
-        else if ($this->db->get("tbl_organization")->result_array()[0]["status"] == 1) return "verified";
+        $status = $this->db->get("tbl_organization")->result_array()[0]["status"];
+        if ($status == 0) return "not-verified";
+        else if ($status == 1) return "verified";
         else return "not-qualified";
+    }
+
+    public function get_org_by_status($status) {
+        $this->db->select("campus_id");
+        $this->db->where("user_detail_id",$this->session->userdata("user_detail_id"));
+        $campus_id = $this->db->get("tbl_user_detail")->result_array()[0]["campus_id"];
+
+
+        return $this->db->query("SELECT tbl_organization.*, tbl_user_detail.*, tbl_category.* FROM tbl_organization, tbl_user_detail, tbl_category WHERE tbl_organization.status = $status and tbl_user_detail.user_detail_id = tbl_organization.organization_owner and tbl_category.category_id = tbl_organization.category_id and tbl_user_detail.campus_id = $campus_id")->result_array();
+    }
+
+    public function delete_org($id) {
+        return $this->db->delete("tbl_organization",array(
+            "organization_id" => $id
+        ));
+    }
+
+    public function update_org_status($id,$status) {
+        $this->db->set(array(
+            "status" => $status
+        ));
+        $this->db->where("organization_id",$id);
+        return $this->db->update("tbl_organization");
     }
 
 }

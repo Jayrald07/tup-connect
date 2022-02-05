@@ -136,6 +136,7 @@ class Lobby extends CI_Controller
         $data["members"] = $this->post_model->get_group_members($group_id);
         $data["user_photo"] = $this->session->userdata("user_photo");
         $data["is_owner"] = $this->post_model->is_group_owner($this->session->userdata("user_detail_id"));
+        $data["is_admin"] = $this->session->userdata("is_admin");
 
         $this->load->view("view_post", $data);
     }
@@ -152,6 +153,8 @@ class Lobby extends CI_Controller
         $data["categories"] = $this->post_model->get_categories();
         $data["startup"] = TRUE;
         $data["user_photo"] = $this->session->userdata("user_photo");
+        $data["is_admin"] = $this->session->userdata("is_admin");
+
 
         $this->load->view("view_post", $data);
     }
@@ -287,7 +290,8 @@ class Lobby extends CI_Controller
             "reported_posts" => $this->post_model->get_reported_group_post($group_id),
             "role" => $val,
             "permission" => $this->post_model->get_role_permissions($group_id),
-            "type" => "group"
+            "type" => "group",
+            "user_photo" => $this->session->userdata("user_photo")
         );
 
 

@@ -1917,5 +1917,26 @@ var controller = (function (_UI) {
 				new Splide(_UI.getClass("splide")[i]).mount();
 			}
 		},
+		org_admin() {
+			let val = _UI.getClass("org-validate");
+
+			for (let i = 0; i < val.length; i++) {
+				val[i].addEventListener("click", function () {
+					$.ajax({
+						url: "http://localhost/tup-connect/index.php/org_validate",
+						type: "POST",
+						dataType: "text",
+						data: {
+							id: this.getAttribute("x-value"),
+							type: this.getAttribute("x-type"),
+						},
+						success: (data) => {
+							if (parseInt(data)) location.reload();
+						},
+						error: (data) => console.log(data),
+					});
+				});
+			}
+		},
 	};
 })(ui);

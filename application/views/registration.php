@@ -82,8 +82,8 @@
                         </section>
                     </div>
                 </div>
-                <a class="login-instead" href="./login">Login instead</a>
                 <button type="submit" class="input-button" value="register">Next</button>
+                <a class="login-instead" href="./login">Login instead</a>
         </div>
 
     <?php } else { ?>
