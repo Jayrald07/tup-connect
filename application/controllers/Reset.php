@@ -57,7 +57,7 @@ class Reset extends CI_Controller
 				else
 				{
 					$this->session->set_flashdata('error','link is expired');
-					redirect(base_url('index.php/login/forgotPassword'));
+					redirect(base_url()."login/forgotPassword");
 					// echo'ewan q sau';
 				}
 			}
@@ -68,7 +68,7 @@ class Reset extends CI_Controller
 		}
 		else
 		{
-			redirect(base_url('index.php/login/forgotPassword'));
+			redirect(base_url()."login/forgotPassword");
 			// echo'pls gumana ka na';
 		}
 	}

@@ -72,8 +72,8 @@ class Lobby extends CI_Controller
                     if (!$this->upload->do_upload('p-image')) echo $this->upload->display_errors();
                     $done++;
                 }
-                if (count($post_images) == $done) redirect(base_url("index.php/groups/") . $this->session->userdata("id"));
-            } else redirect(base_url("index.php/groups/") . $this->session->userdata("id"));
+                if (count($post_images) == $done) redirect(base_url()."groups/" . $this->session->userdata("id"));
+            } else redirect(base_url()."groups/" . $this->session->userdata("id"));
         }
     }
 
@@ -122,7 +122,7 @@ class Lobby extends CI_Controller
 
     public function groups($group_id)
     {
-        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect(base_url()."login");
         $this->session->set_userdata(array(
             "type" => "group",
             "id" => $group_id
@@ -144,7 +144,7 @@ class Lobby extends CI_Controller
 
     public function index()
     {
-        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect(base_url()."login");
 
         $data = $this->get_groups();
 
@@ -184,14 +184,14 @@ class Lobby extends CI_Controller
             "content" => $this->input->post("content"),
             "post_id" => $this->input->post("post_id")
 
-        ))) redirect(base_url("index.php/") . "lobby");
+        ))) redirect(base_url() . "lobby");
     }
 
 
 
     public function remove($post_id)
     {
-        if ($this->post->remove_post($post_id)) redirect(base_url("index.php/") . "lobby");
+        if ($this->post->remove_post($post_id)) redirect(base_url() . "lobby");
     }
 
     public function submit()
@@ -220,8 +220,8 @@ class Lobby extends CI_Controller
             "category_id" => $this->input->post("category")
         );
 
-        if ($this->post->submit($data)) redirect(base_url("index.php/") . "lobby");
-        else redirect(base_url("index.php/") . "lobby/create");
+        if ($this->post->submit($data)) redirect(base_url() . "lobby");
+        else redirect(base_url() . "lobby/create");
     }
 
     public function add_group() {
@@ -232,8 +232,8 @@ class Lobby extends CI_Controller
             "group_owner" => $this->session->userdata("user_detail_id")
         );
 
-        if ($this->post_model->add_group($data)) redirect(base_url("index.php/groups"));
-        else "error";
+        if ($this->post_model->add_group($data)) redirect(base_url()."groups");
+        else redirect(base_url()."groups");
     }
 
     public function search_group() {
@@ -274,7 +274,7 @@ class Lobby extends CI_Controller
 
     public function admin($group_id) {
 
-        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect(base_url()."login");
 
 
         $this->session->set_userdata("group_id",$group_id);

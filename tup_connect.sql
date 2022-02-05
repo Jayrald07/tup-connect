@@ -1,11 +1,11 @@
 -- Project: TUP Connect
 -- Created On: Nov. 11, 2021
 
-CREATE DATABASE db_tupconnect
-    CHARACTER SET utf8
-    COLLATE utf8_general_ci;
+-- CREATE DATABASE db_tupconnect
+--     CHARACTER SET utf8
+--     COLLATE utf8_general_ci;
 
-USE db_tupconnect;
+-- USE db_tupconnect;
 
 -- phpMyAdmin SQL Dump
 -- version 5.0.2

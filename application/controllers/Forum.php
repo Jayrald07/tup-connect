@@ -2,8 +2,6 @@
 class Forum extends CI_Controller
 {
 
-    private $mock_session_data = array('user_id' => 'u123');
-
     public function __construct()
     {
         parent::__construct();
@@ -14,7 +12,7 @@ class Forum extends CI_Controller
 
     public function index()
     {
-        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect(base_url()."login");
 
         $data["type"] = "forum";
         $data["category_id"] = NULL;
@@ -32,7 +30,7 @@ class Forum extends CI_Controller
     public function forum($category_id)
     {
 
-        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect(base_url()."login");
 
 
         $this->session->set_userdata(array(
@@ -100,8 +98,8 @@ class Forum extends CI_Controller
                     if (!$this->upload->do_upload('p-image')) echo $this->upload->display_errors();
                     $done++;
                 }
-                if (count($post_images) == $done) redirect(base_url("index.php/forum/") . $this->session->userdata("category_id"));
-            } else redirect(base_url("index.php/forum/") . $this->session->userdata("category_id"));
+                if (count($post_images) == $done) redirect(base_url()."forum/" . $this->session->userdata("category_id"));
+            } else redirect(base_url()."forum/" . $this->session->userdata("category_id"));
         }
     }
 }

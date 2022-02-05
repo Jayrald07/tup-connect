@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
-    <link rel="stylesheet" href="../public/style.css">
+    <link rel="stylesheet" href="<?php echo base_url() . "public/style.css" ?>">
 
     <title>Verify</title>
 </head>
@@ -14,7 +14,7 @@
 <body>
     <main class="verification-container">
         <div>
-            <img src="../public/assets/logo.svg" />
+            <img src="<?php echo "public/assets/logo.svg" ?>" />
             <?php
             // print_r($_SESSION);
             if (isset($error) && $error) {
@@ -32,7 +32,7 @@
                 <p>
                     <i class="fas fa-envelope"></i> Enter the 6-digit code we sent to your email
                 </p>
-                <?php echo form_open("./verify_email"); ?>
+                <?php echo form_open(base_url()."verify_email"); ?>
                 <section class="code-box">
                     <input class="input-code-box" maxlength="1" required type="text" name="code[]" />
                     <input class="input-code-box" maxlength="1" required type="text" name="code[]" />
@@ -49,7 +49,7 @@
             </div>
         </div>
     </main>
-    <script src=<?php echo base_url("public/script.js") ?>></script>
+    <script src=<?php echo base_url() . "public/script.js" ?>></script>
     <script>
         controller.verify();
     </script>

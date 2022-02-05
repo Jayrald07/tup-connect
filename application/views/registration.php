@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../public/style.css">
+    <link rel="stylesheet" href="<?php echo base_url() . "public/style.css" ?>">
 
     <title>TUP Connect Registration</title>
 </head>
@@ -14,7 +14,7 @@
     <main class="sign-up-container">
         <div>
             <figure>
-                <img src="../public/assets/logo.svg" />
+                <img src="<?php echo base_url() . "public/assets/logo.svg" ?>" />
             </figure>
 
             <?php echo form_error(); ?>
@@ -83,7 +83,7 @@
                     </div>
                 </div>
                 <button type="submit" class="input-button" value="register">Next</button>
-                <a class="login-instead" href="./login">Login instead</a>
+                <a class="login-instead" href="<?php echo base_url() . "login" ?>">Login instead</a>
         </div>
 
     <?php } else { ?>
@@ -129,7 +129,7 @@
 
     </form>
     </main>
-    <script src=<?php echo  base_url("public/script.js") ?>></script>
+    <script src=<?php echo  base_url() . "public/script.js" ?>></script>
     <script>
         controller.init()
     </script>

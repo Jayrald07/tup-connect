@@ -14,33 +14,36 @@ class Login extends CI_Controller
     public function authenticate()
     {
         $data = $this->login_model->authenticate();
+
+        
         if (count($data)) {
-            $this->session->unset_userdata(array("error_login", "error_title", "error_description"));
-            $this->session->set_userdata(array(
-                "user_detail_id" => $data[0]["user_detail_id"],
-                "user_photo" => $data[0]["image_path"],
-                "is_admin" => $data[0]["is_admin"]
-            ));
-            redirect("groups");
-        } else {
-            $this->session->set_userdata(array(
-                "error_login" => true,
-                "error_title" => "Invalid Credentials",
-                "error_description" => "Incorrect Username/Password"
-            ));
-            redirect("login");
+            if (password_verify($this->input->post("password"),$data[0]["user_password"])) {
+                $this->session->unset_userdata(array("error_login", "error_title", "error_description"));
+                $this->session->set_userdata(array(
+                    "user_detail_id" => $data[0]["user_detail_id"],
+                    "user_photo" => $data[0]["image_path"],
+                    "is_admin" => $data[0]["is_admin"]
+                ));
+                redirect(base_url()."groups");
+            }
         }
+        $this->session->set_userdata(array(
+            "error_login" => true,
+            "error_title" => "Invalid Credentials",
+            "error_description" => "Incorrect Username/Password"
+        ));
+        redirect(base_url()."login");
     }
 
     public function signout()
     {
         $this->session->sess_destroy();
-        redirect("login");
+        redirect(base_url()."login");
     }
 
     public function index()
     {
-        if (!empty(trim($this->session->userdata("user_detail_id")))) redirect("groups");
+        if (!empty(trim($this->session->userdata("user_detail_id")))) redirect(base_url()."groups");
 
         $this->load->view('login', $this->session->userdata());
     }

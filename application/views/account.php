@@ -10,7 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@3.6.9/dist/css/splide.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@3.6.9/dist/js/splide.min.js"></script>
-    <link rel="stylesheet" href="<?php echo base_url("public/style.css") ?>">
+    <link rel="stylesheet" href="<?php echo base_url() . "public/style.css" ?>">
     <title>Post</title>
 </head>
 
@@ -18,13 +18,13 @@
     <nav>
         <ul>
             <li>
-                <a href="<?php echo base_url("index.php") ?>">
-                    <img src="<?php echo base_url() ?>/public/assets/logo.svg" />
+                <a href="<?php echo base_url() ?>">
+                    <img src="<?php echo base_url() . "public/assets/logo.svg" ?>" />
                 </a>
             </li>
             <?php if ($is_admin) {?>
             <li>
-                <a href=<?php echo base_url("index.php/org_verification/0") ?> class="admin-lock">
+                <a href=<?php echo base_url() . "org_verification/0" ?> class="admin-lock">
                     <i class="fas fa-lock"></i>
                 </a>
             </li>
@@ -37,7 +37,7 @@
 
                         if ($val[0] === "user-1") $path = "public/assets/";
                     ?>
-                    <img src=<?php echo base_url($path) . $detail["image_path"] ?> />
+                    <img src=<?php echo base_url() . $path . $detail["image_path"] ?> />
                 </a>
                 <div class="account-option">
                     <ul>
@@ -48,7 +48,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="<?php echo base_url("index.php/signout") ?>">
+                            <a href="<?php echo base_url() . "signout" ?>">
                                 <i class="fas fa-sign-out"></i>
                                 Sign Out
                             </a>
@@ -65,13 +65,13 @@
             <div class="account-action">
                 <ul>
                     <li>
-                        <a href="<?php echo base_url("index.php/account") ?>" class="<?php if ($type === "profile") echo "account-active-option" ?>"><i class="fas fa-user"></i> Profile</a>
+                        <a href="<?php echo base_url() . "account" ?>" class="<?php if ($type === "profile") echo "account-active-option" ?>"><i class="fas fa-user"></i> Profile</a>
                     </li>
                     <li>
-                        <a href="<?php echo base_url("index.php/activities") ?>" class="<?php if ($type === "activities") echo "account-active-option" ?>"><i class="fas fa-pen"></i> Activities</a>
+                        <a href="<?php echo base_url() . "activities" ?>" class="<?php if ($type === "activities") echo "account-active-option" ?>"><i class="fas fa-pen"></i> Activities</a>
                     </li>
                     <li>
-                        <a href="<?php echo base_url("index.php/settings") ?>" class="<?php if ($type === "settings") echo "account-active-option" ?>"><i class="fas fa-cog"></i> Settings</a>
+                        <a href="<?php echo base_url() . "settings" ?>" class="<?php if ($type === "settings") echo "account-active-option" ?>"><i class="fas fa-cog"></i> Settings</a>
                     </li>
                 </ul>
                 <!-- <img src="<?php echo base_url() ?>/public/assets/user.png"/> -->
@@ -89,7 +89,7 @@
 
                             if ($val[0] === "user-1") $path = "public/assets/";
                         ?>
-                        <img src="<?php echo base_url($path).$detail["image_path"] ?>" >
+                        <img src="<?php echo base_url().$path.$detail["image_path"] ?>" >
                         <h1><?php echo $detail["first_name"] . ' ' . $detail["middle_name"] . ' ' . $detail["last_name"] ?></h1>
                         <p>
                             <b>Campus:</b> <?php echo $detail["campus_code"] ?>
@@ -142,9 +142,9 @@
                             );
 
                             if ($activity["type"] == "3") {
-                                echo base_url("index.php/".$val[$activity["type"]]) . '?pin=' . $activity["post_id"];
+                                echo base_url() . $val[$activity["type"]] . '?pin=' . $activity["post_id"];
                             } else {
-                                echo base_url("index.php/".$val[$activity["type"]]) . '/' . $activity["reference_id"] . '?pin=' . $activity["post_id"];
+                                echo base_url().$val[$activity["type"]] . '/' . $activity["reference_id"] . '?pin=' . $activity["post_id"];
                             }
 
                             
@@ -160,7 +160,7 @@
                                     <ul class="splide__list">
                                         <?php foreach($activity["images"] as $image): ?>
                                             <li class="splide__slide">
-                                                <img src=<?php echo base_url("uploads/") . $image["post_image_path"]?> />
+                                                <img src=<?php echo base_url() . "uploads/" . $image["post_image_path"]?> />
                                             </li>
                                         <?php endforeach; ?>
                                     </ul>
@@ -174,7 +174,7 @@
             <?php } else if ($type === "settings") { ?>
             <div class="account-settings">
                 <div class="account-update">
-                    <?php echo form_open_multipart(base_url("index.php/update_profile")) ?>
+                    <?php echo form_open_multipart(base_url() . "update_profile") ?>
                         <div class="account-image-container">
                             <?php
                                 $val = explode(".",$detail["image_path"]);
@@ -182,7 +182,7 @@
 
                                 if ($val[0] === "user-1") $path = "public/assets/";
                             ?>
-                            <img src="<?php echo base_url($path) . $detail["image_path"] ?>" id="account-image-source">
+                            <img src="<?php echo base_url() . $path . $detail["image_path"] ?>" id="account-image-source">
                             <div class="account-image-action">
                                 <a href="javascript:void(0)" id="account-image-select" class="solid-button">Select Picture</a>
                                 <a href="javascript:void(0)" id="account-image-cancel" role="button" class="solid-button shallow">Cancel</a>
@@ -214,7 +214,7 @@
             <?php } ?>
         </section>
     </main>
-    <script src="<?php echo base_url("public/script.js") ?>"></script>
+    <script src="<?php echo base_url() . "public/script.js" ?>"></script>
     <script>
         controller.account()
 
