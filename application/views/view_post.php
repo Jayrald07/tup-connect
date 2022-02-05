@@ -174,9 +174,6 @@
                 </a>
                 <small id="post-modal-upload-details">
                     <span id="upload-details">0 picture/s</span> 
-                    <a href="javascript:void(0)" class="cancel-upload-files">
-                        <i class="fas fa-times"></i>
-                    </a>
                 </small>
                 <input type="file" name="post-image[]" accept=".png,.jpg" multiple id="post-modal-files"/>
                 <button type="submit">Submit</button>
@@ -282,9 +279,12 @@
                     <div class="group-members-card">
                         <img src="<?php echo base_url("public/assets/" . $member["image_path"]) ?>" />
                         <h1><?php echo $member["firstname"] . ' ' . $member["lastname"] ?></h1>
+                        <?php if ($is_owner) {?>
                         <a href="javascript:void(0)" class="org-members-remove" x-value=<?php echo $member["user_detail_id"] ?>>
                             <i class="fas fa-user-minus"></i>
                         </a>
+                        <?php }?>
+
                     </div>
                 <?php endforeach ?>
             </div>
@@ -567,6 +567,7 @@
                     <?php endforeach; ?>
                 </div>
                 <div id="non-announcement-container">
+
                     <?php foreach ($posts as $post) : ?>
                         <?php if ($post["post_id"] === $pin_post) {?>
                         <section class="post-card pop">
@@ -636,7 +637,6 @@
                         <hr class="divider"/>
                         <?php }?>
                     <?php endforeach; ?>
-
                     <?php foreach ($posts as $post) : ?>
                         <?php if ($post["post_id"] !== $pin_post and $post["status"] === "posted") {?>
                         <section class="post-card">
@@ -734,14 +734,21 @@
                         <p>This newly created organization is still on review by the administrators.</p>
                         <p>It will automatically open once verified.</p>
                     </div>
-                <?php } else {?>
+                <?php } else if (isset($is_verified) AND $is_verified === "not-qualified"){?>
                     <div class="not-verified">
                         <i class="fas fa-frown"></i>
                         <h1>Uh Oh!</h1>
                         <p>Unfortunately, this organization has not been approved by the administrators</p>
                         <p>Just click the "Verify again" for re-verifying this organization</p>
-                        <a href="javascript:void(0)" class="verify-again">Verify again</a>
-                        <a href="javascript:void(0)" class="delete-org-not">Delete Organization Instead</a>
+                        <a href="javascript:void(0)" class="verify-again org-validate" x-value=<?php echo $org_id ?> x-type="reval">Verify again</a>
+                        <a href="javascript:void(0)" class="delete-org-not org-validate" x-value=<?php echo $org_id ?> x-type="del">Delete Organization Instead</a>
+                    </div>
+                <?php } else if (isset($is_verified) AND $is_verified === "revoked"){?>
+                    <div class="not-verified">
+                        <i class="fas fa-frown"></i>
+                        <h1>Closed!</h1>
+                        <p>The administrators revoked the active status of this organization</p>
+                        <p>Please contact the administrator for further details</p>
                     </div>
                 <?php }?>
 
@@ -840,6 +847,7 @@
         controller.posts_init()
         CKEDITOR.replace('post-content')
         CKEDITOR.replace('post-content-edit')
+        controller.org_admin();
 
         $(document).ready(function() {
             $("time.timeago").timeago();

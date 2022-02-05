@@ -92,13 +92,25 @@
                     echo base_url("index.php/organizations/$org_id")
             ?>"><?php if ($type === "group") echo $group_details[0]["group_name"]; else echo $org_details[0]["organization_name"]; ?></a>
             <ul>
+                <?php if (count($permissions) and $permissions[0]["member_request"] OR $is_owner) {?>
+
                 <li><a href="javascript:void(0)" class="admin-trigger admin-panel-selected" data-target="mr"><i class="fas fa-user-clock"></i><span>Member Request</span></a></li>
+            <?php }?>
+            <?php if (count($permissions) and $permissions[0]["reported_content"] OR $is_owner) {?>
+
                 <li><a href="javascript:void(0)" class="admin-trigger" data-target="rc"><i class="fas fa-user-times"></i><span>Reported Content</span></a></li>
+                <?php }?>
+            <?php if (count($permissions) and $permissions[0]["manage_roles"] OR $is_owner) {?>
                 <li><a href="javascript:void(0)" class="admin-trigger" data-target="mrr"><i class="fas fa-user-cog"></i><span>Manage Roles</span></a></li>
+                <?php }?>
+            <?php if (count($permissions) and $permissions[0]["manage_permission"] OR $is_owner) {?>
                 <li><a href="javascript:void(0)" class="admin-trigger" data-target="mp"><i class="fas fa-user-edit"></i><span>Manage Permissions</span></a></li>
+            <?php }?>
+
             </ul>
         </section>
         <section class="admin-content-panel">
+            <?php if (count($permissions) and $permissions[0]["member_request"] OR $is_owner) {?>
             <div class="member-request-container admin-container" id="mr">
                 <div class="member-request-header">
                     <div class="select-all-container">
@@ -118,7 +130,12 @@
                                     <input id="select-all" data-target="<?php echo $mr["user_detail_id"] ?>" type="checkbox" class="check-member-request" x-value="<?php echo $mr["user_detail_id"] ?>"/>
                                 </div>
                                 <div class="mr-card-header">
-                                    <img src="<?php echo base_url("public/assets/" . $mr["image_path"]) ?>" />
+                                    <?php
+                                        $val = explode(".",$mr["image_path"]);
+                                        $path = "uploads/";
+                                        if ($val[0] === "user-1") $path = "public/assets/";
+                                    ?>
+                                    <img src="<?php echo base_url($path) . $mr["image_path"] ?>" />
                                     <div class="mr-card-header-author">
                                         <h1><?php echo $mr["firstname"] . ' ' . $mr["middlename"] . ' ' . $mr["lastname"]?></h1>
                                     </div>
@@ -132,6 +149,9 @@
                     <?php endforeach; ?>
                 </div>
             </div>
+            <?php }?>
+            <?php if (count($permissions) and $permissions[0]["reported_content"] OR $is_owner) {?>
+
             <div class="reported-content-container admin-container hidden" id="rc">
                 <div class="member-request-header">
                     <div class="select-all-container">
@@ -191,6 +211,9 @@
                     <?php endforeach ?>
                 </div>
             </div>
+            <?php }?>
+            <?php if (count($permissions) and $permissions[0]["manage_roles"] OR $is_owner) {?>
+
             <div class="manage-roles-container admin-container hidden" id="mrr">
                 <div class="manage-roles-header">
                     <a href="javascript:void(0)" id=<?php if ($type === "group") echo "add-role-trigger"; else echo "add-org-role-trigger" ?>>Create</a>
@@ -225,6 +248,9 @@
                     </table>
                 </div>
             </div>
+            <?php }?>
+            <?php if (count($permissions) and $permissions[0]["manage_permission"] OR $is_owner) {?>
+
             <div class="manage-permission-container admin-container hidden" id="mp">
                 <div class="manage-permission-header">
                     <div class="manage-permission-select-role">
@@ -274,6 +300,8 @@
                     </div>
                 </div>
             </div>
+            <?php }?>
+
         </section>
     </main>
     <script src="<?php echo base_url("public/script.js") ?>"></script>

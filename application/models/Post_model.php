@@ -516,6 +516,8 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
             $res[$i]["firstname"] = $val[0]["first_name"];
             $res[$i]["middlename"] = $val[0]["middle_name"];
             $res[$i]["lastname"] = $val[0]["last_name"];
+            $res[$i]["image_path"] = $val[0]["image_path"];
+
         }
         return $res;
     }
@@ -763,6 +765,13 @@ WHERE tbl_post.post_id = tbl_forum.post_id and tbl_post.status = 'posted' and tb
         $count = $this->db->get("tbl_group")->result_array()[0]["found"];
         if ($count > 0) return TRUE;
         else return FALSE;
+    }
+
+    public function get_user_permissions($id) {
+        $res = $this->db->query("SELECT tbl_role.* FROM tbl_role, tbl_group_user WHERE tbl_group_user.user_detail_id = '$id' AND tbl_role.role_id = tbl_group_user.role_id")->result_array();
+
+        return $res;
+
     }
 
 }
