@@ -273,6 +273,10 @@ class Lobby extends CI_Controller
     }
 
     public function admin($group_id) {
+
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+
+
         $this->session->set_userdata("group_id",$group_id);
 
         $val = $this->post_model->get_roles($group_id);

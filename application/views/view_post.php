@@ -254,11 +254,19 @@
                 
                 <?php foreach($members as $member): ?>
                     <div class="group-members-card">
-                        <img src="<?php echo base_url("public/assets/" . $member["image_path"]) ?>" />
+                        <?php
+                            $val = explode(".",$member["image_path"]);
+                            $path = "uploads/";
+                            if ($val[0] === "user-1") $path = "public/assets/";
+                        ?>
+                        <img src=<?php echo base_url($path) . $member["image_path"] ?> />
                         <h1><?php echo $member["firstname"] . ' ' . $member["lastname"] ?></h1>
+                        <?php if ($is_owner) {?>
                         <a href="javascript:void(0)" class="group-members-remove" x-value=<?php echo $member["user_detail_id"] ?>>
                             <i class="fas fa-user-minus"></i>
                         </a>
+                        <?php }?>
+
                     </div>
                 <?php endforeach ?>
             </div>
@@ -277,7 +285,12 @@
                 
                 <?php foreach($members as $member): ?>
                     <div class="group-members-card">
-                        <img src="<?php echo base_url("public/assets/" . $member["image_path"]) ?>" />
+                        <?php
+                            $val = explode(".",$member["image_path"]);
+                            $path = "uploads/";
+                            if ($val[0] === "user-1") $path = "public/assets/";
+                        ?>
+                        <img src=<?php echo base_url($path) . $member["image_path"] ?> />
                         <h1><?php echo $member["firstname"] . ' ' . $member["lastname"] ?></h1>
                         <?php if ($is_owner) {?>
                         <a href="javascript:void(0)" class="org-members-remove" x-value=<?php echo $member["user_detail_id"] ?>>

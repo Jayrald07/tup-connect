@@ -10,6 +10,8 @@ class Account extends CI_Controller {
     }
 
     public function index() {
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+
         $data = array(
             "type" => "profile",
             "detail" => $this->account_model->get_user_info($this->session->userdata("user_detail_id"))
