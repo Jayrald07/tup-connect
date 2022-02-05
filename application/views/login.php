@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
 
-    <link rel="stylesheet" href="../public/style.css">
+    <link rel="stylesheet" href=<?php echo base_url("public/style.css") ?>>
     <title>TUP Connect Log in</title>
 </head>
 
@@ -16,7 +16,7 @@
 
     <main class="login-container">
         <div>
-            <img src="../public/assets/logo.svg" />
+            <img src="<?php echo base_url() . "public/assets/logo.svg" ?>"/>
             <?php
             if (isset($error_login) && $error_login) {
             ?>
@@ -38,8 +38,8 @@
             <label for="password" class="input-label">Password</label>
             <input type="password" class="<?php echo isset($error_login) && $error_login ? "error-input" : null ?> input-input" id="password" name="password" required placeholder="------">
             <section class="login-features">
-                <a href="<?= base_url() ?>index.php/login/forgotPassword" class="forgot-password">Forgot Password?</a>
-                <a href="./register" class="create-account-button">Create an account</a><br /><br />
+                <a href="<?= base_url() . "login/forgotPassword" ?>" class="forgot-password">Forgot Password?</a>
+                <a href=<?php echo base_url() . "register" ?> class="create-account-button">Create an account</a><br /><br />
             </section>
             <input type="submit" class="input-button" value="Log in">
 

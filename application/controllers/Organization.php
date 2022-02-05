@@ -20,7 +20,7 @@ class Organization extends CI_Controller
 
     public function index()
     {
-        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect(base_url()."login");
 
         $data = $this->get_orgs();
 
@@ -42,7 +42,7 @@ class Organization extends CI_Controller
     public function org($org_id)
     {
 
-        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect(base_url() . "login");
 
         $this->session->set_userdata(array(
             "type" => "org",
@@ -123,8 +123,8 @@ class Organization extends CI_Controller
                     if (!$this->upload->do_upload('p-image')) echo $this->upload->display_errors();
                     $done++;
                 }
-                if (count($post_images) == $done) redirect(base_url("index.php/organizations/") . $this->session->userdata("id"));
-            } else redirect(base_url("index.php/organizations/") . $this->session->userdata("id"));
+                if (count($post_images) == $done) redirect(base_url()."organizations/" . $this->session->userdata("id"));
+            } else redirect(base_url()."organizations/" . $this->session->userdata("id"));
         }
     }
 
@@ -138,8 +138,8 @@ class Organization extends CI_Controller
             "organization_owner" => $this->session->userdata("user_detail_id"),
             "organization_type" => $this->input->post("org-type"),
         );
-        if ($this->organization_model->add_org($data)) redirect(base_url("index.php/organization"));
-        else redirect(base_url("index.php/organization"));
+        if ($this->organization_model->add_org($data)) redirect(base_url()."organization");
+        else redirect(base_url()."organization");
     }
 
     public function find_org() {
@@ -261,7 +261,7 @@ class Organization extends CI_Controller
 
     public function org_verification($status) {
 
-        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect(base_url()."login");
 
 
         $data["user_photo"] = $this->session->userdata("user_photo");

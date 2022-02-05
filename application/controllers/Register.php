@@ -13,7 +13,7 @@ class Register extends CI_Controller
     public function index()
     {
 
-        if (!empty(trim($this->session->userdata("user_detail_id")))) redirect("groups");
+        if (!empty(trim($this->session->userdata("user_detail_id")))) redirect(base_url()."groups");
 
         $this->_verify("register");
     }
@@ -67,9 +67,9 @@ class Register extends CI_Controller
                 "user_detail_id" => $data['user_detail_id']
             ));
 
-            if ($this->sendVerifiication($data['email_code'])) redirect("./verify");
-            else echo "Lah!";
-        } else echo "Error!";
+            if ($this->sendVerifiication($data['email_code'])) redirect(base_url()."verify");
+            else echo "Error Sending The Code";
+        } else echo "Can't register at this time";
     }
 
     public function _verify($type)
@@ -96,13 +96,13 @@ class Register extends CI_Controller
                                 "courses" => $course,
                                 "categories" => $category
                             ));
-                        } else redirect("./register");
+                        } else redirect(base_url()."register");
                         break;
                 }
             } else {
                 $gender = $this->registration_model->get_gender_details();
                 $this->load->view("registration", array(
-                    "action" => "/register/validation",
+                    "action" => base_url() . "register/validation",
                     "type" => "first",
                     "genders" => $gender
                 ));
@@ -112,11 +112,11 @@ class Register extends CI_Controller
                 $gender = $this->registration_model->get_gender_details();
 
                 $this->load->view("registration", array(
-                    "action" => "/register/validation",
+                    "action" => base_url() . "register/validation",
                     "type" => "first",
                     "genders" => $gender
                 ));
-            } else  redirect("./register");
+            } else  redirect(base_url()."register");
         };
     }
 
@@ -142,12 +142,12 @@ class Register extends CI_Controller
                     "error_description" => "Please Try Again"
                 )
             );
-            redirect("./verify");
+            redirect(base_url()."verify");
         } else {
             if ($this->registration_model->update_code($res[0]['user_verification_id'])) {
                 $this->session->unset_userdata(array("error", "error_title", "error_description"));
                 $this->_verify("register");
-            } else echo "may error gagi";
+            } else echo "can't process this request at this time";
         }
     }
 
@@ -164,6 +164,6 @@ class Register extends CI_Controller
 
         $this->session->set_userdata("user_photo","user-1.png");
 
-        if ($this->registration_model->final_insert($data)) redirect("lobby");
+        if ($this->registration_model->final_insert($data)) redirect(base_url()."lobby");
     }
 }

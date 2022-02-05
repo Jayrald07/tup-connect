@@ -12,7 +12,7 @@ class Freedom_wall extends CI_Controller
 
     public function index()
     {
-        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect(base_url()."login");
 
         $data["type"] = "fw";
         $data["posts"] = $this->post_model->get_posts("fw", '');
@@ -74,8 +74,8 @@ class Freedom_wall extends CI_Controller
                     if (!$this->upload->do_upload('p-image')) echo $this->upload->display_errors();
                     $done++;
                 }
-                if (count($post_images) == $done) redirect(base_url("index.php/fw"));
-            } else redirect(base_url("index.php/fw"));
+                if (count($post_images) == $done) redirect(base_url()."fw");
+            } else redirect(base_url()."fw");
         }
     }
 }

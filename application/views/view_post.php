@@ -10,7 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@3.6.9/dist/css/splide.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@3.6.9/dist/js/splide.min.js"></script>
-    <link rel="stylesheet" href="<?php echo base_url("public/style.css") ?>">
+    <link rel="stylesheet" href="<?php echo base_url() . "public/style.css" ?>">
     <script src="http://timeago.yarp.com/jquery.timeago.js"></script>
     <title>Post</title>
 </head>
@@ -20,12 +20,12 @@
         <ul>
             <li>
                 <a href="#">
-                    <img src="<?php echo base_url() ?>/public/assets/logo.svg" />
+                    <img src="<?php echo base_url() . "public/assets/logo.svg" ?>" />
                 </a>
             </li>
             <?php if ($is_admin) {?>
             <li>
-                <a href=<?php echo base_url("index.php/org_verification/0") ?> class="admin-lock">
+                <a href=<?php echo base_url() . "org_verification/0" ?> class="admin-lock">
                     <i class="fas fa-lock"></i>
                 </a>
             </li>
@@ -37,18 +37,18 @@
                         $path = "uploads/";
                         if ($val[0] === "user-1") $path = "public/assets/";
                     ?>
-                    <img src=<?php echo base_url($path) . $user_photo ?> />
+                    <img src=<?php echo base_url() . $path . $user_photo ?> />
                 </a>
                 <div class="account-option">
                     <ul>
                         <li>
-                            <a href="<?php echo base_url("index.php/account") ?>">
+                            <a href="<?php echo base_url() . "account" ?>">
                                 <i class="fas fa-user"></i>
                                 Account
                             </a>
                         </li>
                         <li>
-                            <a href="<?php echo base_url("index.php/signout") ?>">
+                            <a href="<?php echo base_url() . "signout" ?>">
                                 <i class="fas fa-sign-out"></i>
                                 Sign Out
                             </a>
@@ -158,10 +158,10 @@
             </div>
             <div class="post-modal-body">
                 <?php
-                if ($type === "lobby") echo form_open_multipart(base_url("index.php/post"));
-                else if ($type === "org") echo form_open_multipart(base_url("index.php/org/post"));
-                else if ($type === "fw") echo form_open_multipart(base_url("index.php/fw/post"));
-                else if ($type === "forum") echo form_open_multipart(base_url("index.php/frm/post"));
+                if ($type === "lobby") echo form_open_multipart(base_url()."post");
+                else if ($type === "org") echo form_open_multipart(base_url()."org/post");
+                else if ($type === "fw") echo form_open_multipart(base_url()."fw/post");
+                else if ($type === "forum") echo form_open_multipart(base_url()."frm/post");
                 ?>
                 <textarea required name='post-content'></textarea>
                 <?php if (isset($is_owner) && $is_owner) {?>
@@ -192,7 +192,7 @@
                 </a>
             </div>
             <div class="create-group-body">
-                <?php echo form_open(base_url("index.php/add_group")) ?>
+                <?php echo form_open(base_url()."add_group") ?>
                     <label>Group Name:</label>
                     <input type="text" name="group-name" required/>
                     <label>Category:</label>
@@ -216,7 +216,7 @@
                 </a>
             </div>
             <div class="create-group-body">
-                <?php echo form_open(base_url("index.php/add_org")) ?>
+                <?php echo form_open(base_url()."add_org") ?>
                     <label>Organization Name:</label>
                     <input type="text" name="org-name" required/>
                     <label>Organization Type:</label>
@@ -259,7 +259,7 @@
                             $path = "uploads/";
                             if ($val[0] === "user-1") $path = "public/assets/";
                         ?>
-                        <img src=<?php echo base_url($path) . $member["image_path"] ?> />
+                        <img src=<?php echo base_url().$path . $member["image_path"] ?> />
                         <h1><?php echo $member["firstname"] . ' ' . $member["lastname"] ?></h1>
                         <?php if ($is_owner) {?>
                         <a href="javascript:void(0)" class="group-members-remove" x-value=<?php echo $member["user_detail_id"] ?>>
@@ -290,7 +290,7 @@
                             $path = "uploads/";
                             if ($val[0] === "user-1") $path = "public/assets/";
                         ?>
-                        <img src=<?php echo base_url($path) . $member["image_path"] ?> />
+                        <img src=<?php echo base_url().$path . $member["image_path"] ?> />
                         <h1><?php echo $member["firstname"] . ' ' . $member["lastname"] ?></h1>
                         <?php if ($is_owner) {?>
                         <a href="javascript:void(0)" class="org-members-remove" x-value=<?php echo $member["user_detail_id"] ?>>
@@ -445,10 +445,10 @@
         <div style="position:relative">
             <aside class="pages-navigator">
                 <ul>
-                    <li><a href=<?php echo base_url("index.php/groups") ?> class=<?php if ($type === "lobby") echo "active-page" ?>><i class="fas fa-th-large"></i> Groups</a></li>
-                    <li><a href=<?php echo base_url("index.php/organizations") ?> class=<?php if ($type === "org") echo "active-page" ?>><i class="fas fa-users"></i> Organization</a></li>
-                    <li><a href=<?php echo base_url("index.php/fw") ?> class=<?php if ($type === "fw") echo "active-page" ?>><i class=" fas fa-volume-up"></i> Freedom Wall</a></li>
-                    <li><a href=<?php echo base_url("index.php/forum") ?> class=<?php if ($type === "forum") echo "active-page" ?>><i class="fas fa-comments"></i> Forum</a></li>
+                    <li><a href=<?php echo base_url()."groups" ?> class=<?php if ($type === "lobby") echo "active-page" ?>><i class="fas fa-th-large"></i> Groups</a></li>
+                    <li><a href=<?php echo base_url()."organizations" ?> class=<?php if ($type === "org") echo "active-page" ?>><i class="fas fa-users"></i> Organization</a></li>
+                    <li><a href=<?php echo base_url()."fw" ?> class=<?php if ($type === "fw") echo "active-page" ?>><i class=" fas fa-volume-up"></i> Freedom Wall</a></li>
+                    <li><a href=<?php echo base_url()."forum" ?> class=<?php if ($type === "forum") echo "active-page" ?>><i class="fas fa-comments"></i> Forum</a></li>
                 </ul>
             </aside>
         </div>
@@ -456,13 +456,13 @@
             <?php if (isset($startup) AND $startup) {?>
                 <div class="select-group-container">
                     <?php if ($type === "forum") {?>
-                        <img src="<?php echo base_url("public/assets/choose-category.svg") ?>" id="select-group-image"/>
+                        <img src="<?php echo base_url()."public/assets/choose-category.svg" ?>" id="select-group-image"/>
                         <p>Choose a category</p>
                     <?php } else if ($type === "lobby") {?>
-                        <img src="<?php echo base_url("public/assets/select-group.svg") ?>" id="select-group-image"/>
+                        <img src="<?php echo base_url()."public/assets/select-group.svg" ?>" id="select-group-image"/>
                         <p>Select groups to start connecting to your peers</p>
                     <?php } else if ($type === "org") {?>
-                        <img src="<?php echo base_url("public/assets/choose-org.svg") ?>" id="select-group-image"/>
+                        <img src="<?php echo base_url()."public/assets/choose-org.svg" ?>" id="select-group-image"/>
                         <p>Select organization to start connecting to your peers</p>
                     <?php } else {?>
                         
@@ -481,7 +481,7 @@
                             </a>
                         </div>
                         <div>
-                            <a href="<?php if ($type === "lobby") echo base_url("index.php/groups/admin/$group_id"); else if ($type === "org") echo base_url("index.php/organization/admin/$org_id"); ?>" >
+                            <a href="<?php if ($type === "lobby") echo base_url()."groups/admin/$group_id"; else if ($type === "org") echo base_url()."organization/admin/$org_id"; ?>" >
                                 <i class="fas fa-cogs"></i>
                                 Settings
                             </a>
@@ -522,7 +522,7 @@
 
                                             if ($val[0] === "user-1") $path = "public/assets/";
                                         ?>
-                                        <img src=<?php echo base_url($path) . $post["image_path"] ?> />
+                                        <img src=<?php echo base_url().$path . $post["image_path"] ?> />
                                     </figure>
                                 <?php } ?>
                                 <section>
@@ -593,7 +593,7 @@
 
                                             if ($val[0] === "user-1") $path = "public/assets/";
                                         ?>
-                                        <img src=<?php echo base_url($path) . $post["image_path"] ?> />
+                                        <img src=<?php echo base_url().$path . $post["image_path"] ?> />
                                     </figure>
                                 <?php } ?>
                                 <section>
@@ -662,7 +662,7 @@
 
                                             if ($val[0] === "user-1") $path = "public/assets/";
                                         ?>
-                                        <img src=<?php echo base_url($path) . $post["image_path"] ?> />
+                                        <img src=<?php echo base_url().$path . $post["image_path"] ?> />
                                     </figure>
                                 <?php } ?>
                                 <section>
@@ -692,7 +692,7 @@
                                                 <?php foreach ($post["post_image_path"] as $image_path) : ?>
                                                     <!-- <figure> -->
                                                     <li class="splide__slide">
-                                                        <img src=<?php echo base_url("uploads/") . $image_path["post_image_path"] ?> />
+                                                        <img src=<?php echo base_url()."uploads/" . $image_path["post_image_path"] ?> />
                                                     </li>
                                                     <!-- </figure> -->
                                                 <?php endforeach; ?>
@@ -723,16 +723,16 @@
                 <?php } else { ?>
                     <div class="select-group-container">
                         <?php if ($type === "forum") {?>
-                            <img src="<?php echo base_url("public/assets/start-ask.svg") ?>" id="select-group-image"/>
+                            <img src="<?php echo base_url()."public/assets/start-ask.svg" ?>" id="select-group-image"/>
                             <p>Start asking or answer anyone's questions </p>
                         <?php } else if ($type === "lobby") {?>
-                            <img src="<?php echo base_url("public/assets/start-post.svg") ?>" id="select-group-image"/>
+                            <img src="<?php echo base_url()."public/assets/start-post.svg" ?>" id="select-group-image"/>
                             <p>Start sharing your thoughts </p>
                         <?php } else if ($type === "org") {?>
-                            <img src="<?php echo base_url("public/assets/start-post.svg") ?>" id="select-group-image"/>
+                            <img src="<?php echo base_url()."public/assets/start-post.svg" ?>" id="select-group-image"/>
                             <p>Start dropping a topic </p>
                         <?php } else if ($type === "fw") {?>
-                            <img src="<?php echo base_url("public/assets/start-fw.svg") ?>" id="select-group-image"/>
+                            <img src="<?php echo base_url()."public/assets/start-fw.svg" ?>" id="select-group-image"/>
                             <p>Share your thoughts and feelings freely!</p>
                         <?php } else {?>
 
@@ -790,7 +790,7 @@
                                         else echo "Groups"; ?></h1>
                             <?php if ($type === "lobby") { ?>
                                 <?php foreach ($owned_groups as $group) : ?>
-                                    <a href=<?php echo base_url("index.php/groups/") . $group["group_id"] ?> class="container-card <?php echo $group["group_id"] === $group_id ? 'active-page' : '' ?>">
+                                    <a href=<?php echo base_url()."groups/" . $group["group_id"] ?> class="container-card <?php echo $group["group_id"] === $group_id ? 'active-page' : '' ?>">
                                         <?php echo $group["group_name"] ?>
                                     </a>
                                 <?php endforeach; ?>
@@ -799,7 +799,7 @@
                                 <?php }?>
                             <?php } else if ($type === "org") { ?>
                                 <?php foreach ($org_owned as $org) : ?>
-                                    <a href=<?php echo base_url("index.php/organizations/") . $org["organization_id"] ?> class="container-card <?php echo $org["organization_id"] === $org_id ? 'active-page' : '' ?>">
+                                    <a href=<?php echo base_url()."organizations/" . $org["organization_id"] ?> class="container-card <?php echo $org["organization_id"] === $org_id ? 'active-page' : '' ?>">
                                         <?php if ($org["status"] == 0) {?>
                                             <i class="fas fa-exclamation-circle"></i>
                                         <?php } else if ($org["status"] == 1) {?>
@@ -817,7 +817,7 @@
                         <?php } else { ?>
                             <h1>Categories</h1>
                             <?php foreach ($categories as $category) : ?>
-                                <a href=<?php echo base_url("index.php/forum/") . $category["category_id"] ?> class="container-card <?php echo $category["category_id"] === $category_id ? 'active-page' : '' ?>">
+                                <a href=<?php echo base_url()."forum/" . $category["category_id"] ?> class="container-card <?php echo $category["category_id"] === $category_id ? 'active-page' : '' ?>">
                                     <?php echo $category["category_name"] . ' ('.$category["count"].')' ?>
                                 </a>
                             <?php endforeach; ?>
@@ -831,7 +831,7 @@
                                         else echo "Groups"; ?></h1>
                             <?php if ($type === "lobby") { ?>
                                 <?php foreach ($joined_groups as $group) : ?>
-                                    <a href=<?php echo base_url("index.php/groups/") . $group["group_id"] ?> class="container-card <?php echo $group["group_id"] === $group_id ? 'active-page' : '' ?>">
+                                    <a href=<?php echo base_url()."groups/" . $group["group_id"] ?> class="container-card <?php echo $group["group_id"] === $group_id ? 'active-page' : '' ?>">
                                         <?php echo $group["group_name"] ?>
                                     </a>
                                 <?php endforeach; ?>
@@ -840,7 +840,7 @@
                                 <?php }?>
                             <?php } else if ($type === "org") { ?>
                                 <?php foreach ($org_joined as $org) : ?>
-                                    <a href=<?php echo base_url("index.php/organizations/") . $org["organization_id"] ?> class="container-card <?php echo $org["organization_id"] === $org_id ? 'active-page' : '' ?>">
+                                    <a href=<?php echo base_url()."organizations/" . $org["organization_id"] ?> class="container-card <?php echo $org["organization_id"] === $org_id ? 'active-page' : '' ?>">
                                         <?php echo $org["organization_name"] ?>
                                     </a>
                                 <?php endforeach; ?>
@@ -855,7 +855,7 @@
             </div>
         <?php } ?>
     </div>
-    <script src=<?php echo base_url("public/script.js") ?>></script>
+    <script src=<?php echo base_url()."public/script.js" ?>></script>
     <script>
         controller.posts_init()
         CKEDITOR.replace('post-content')

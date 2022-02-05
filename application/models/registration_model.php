@@ -42,7 +42,7 @@ class Registration_model extends CI_Model
             "user_id" => $data['user_id'],
             "user_email" => $data['tupemail'],
             "user_name" => $data['username'],
-            "user_password" => $data['password'],
+            "user_password" => password_hash($data['password'], PASSWORD_DEFAULT),
             "user_detail_id" => $data['user_detail_id'],
             "status" => "verifying"
         );

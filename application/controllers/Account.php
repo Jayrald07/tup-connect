@@ -10,7 +10,7 @@ class Account extends CI_Controller {
     }
 
     public function index() {
-        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect(base_url()."login");
 
         $data = array(
             "type" => "profile",
@@ -22,6 +22,8 @@ class Account extends CI_Controller {
     }
 
     public function settings() {
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect(base_url()."login");
+
         $data = array(
             "type" => "settings",
             "detail" => $this->account_model->get_info($this->session->userdata("user_detail_id")),
@@ -34,6 +36,8 @@ class Account extends CI_Controller {
     }
 
     public function activities() {
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect(base_url()."login");
+
         $data = array(
             "type" => "activities",
             "activities" => $this->account_model->get_user_activities($this->session->userdata("user_detail_id")),
@@ -95,8 +99,8 @@ class Account extends CI_Controller {
                 }
                 
             }
-            redirect(base_url("index.php/settings"));
-        } else redirect(base_url("index.php/settings"));
+            redirect(base_url()."settings");
+        } else redirect(base_url()."settings");
 
     }
 

@@ -10,7 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@3.6.9/dist/css/splide.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@3.6.9/dist/js/splide.min.js"></script>
-    <link rel="stylesheet" href="<?php echo base_url("public/style.css") ?>">
+    <link rel="stylesheet" href="<?php echo base_url() . "public/style.css" ?>">
     <title>Post</title>
 </head>
 
@@ -19,12 +19,12 @@
         <ul>
             <li>
                 <a href="#">
-                    <img src="<?php echo base_url() ?>/public/assets/logo.svg" />
+                    <img src="<?php echo base_url() . "public/assets/logo.svg"?>" />
                 </a>
             </li>
             <?php if ($is_admin) {?>
             <li>
-                <a href=<?php echo base_url("index.php/org_verification/0") ?> class="admin-lock">
+                <a href=<?php echo base_url() . "org_verification/0" ?> class="admin-lock">
                     <i class="fas fa-lock"></i>
                 </a>
             </li>
@@ -36,18 +36,18 @@
                         $path = "uploads/";
                         if ($val[0] === "user-1") $path = "public/assets/";
                     ?>
-                    <img src=<?php echo base_url($path) . $user_photo ?> />
+                    <img src=<?php echo base_url() . $path . $user_photo ?> />
                 </a>
                 <div class="account-option">
                     <ul>
                         <li>
-                            <a href="<?php echo base_url("index.php/account") ?>">
+                            <a href="<?php echo base_url() . "account" ?>">
                                 <i class="fas fa-user"></i>
                                 Account
                             </a>
                         </li>
                         <li>
-                            <a href="<?php echo base_url("index.php/signout") ?>">
+                            <a href="<?php echo base_url() . "signout" ?>">
                                 <i class="fas fa-sign-out"></i>
                                 Sign Out
                             </a>
@@ -87,9 +87,9 @@
         <section class="admin-action-panel">
             <a href="<?php 
                 if ($type === "group")
-                    echo base_url("index.php/groups/$group_id");
+                    echo base_url() . "groups/$group_id";
                 else 
-                    echo base_url("index.php/organizations/$org_id")
+                    echo base_url() . "organizations/$org_id";
             ?>"><?php if ($type === "group") echo $group_details[0]["group_name"]; else echo $org_details[0]["organization_name"]; ?></a>
             <ul>
                 <?php if (count($permissions) and $permissions[0]["member_request"] OR $is_owner) {?>
@@ -135,7 +135,7 @@
                                         $path = "uploads/";
                                         if ($val[0] === "user-1") $path = "public/assets/";
                                     ?>
-                                    <img src="<?php echo base_url($path) . $mr["image_path"] ?>" />
+                                    <img src="<?php echo base_url() . $path . $mr["image_path"] ?>" />
                                     <div class="mr-card-header-author">
                                         <h1><?php echo $mr["firstname"] . ' ' . $mr["middlename"] . ' ' . $mr["lastname"]?></h1>
                                     </div>
@@ -171,7 +171,12 @@
                                     <input class="select-reported-check" type="checkbox"  data-target="<?php echo $post["post"][0]["post_id"] ?>" x-value="<?php echo $post["post"][0]["post_id"] ?>"/>
                                 </div>
                                 <div class="mr-card-header">
-                                    <img src="<?php echo base_url("public/assets/user.png") ?>" />
+                                    <?php
+                                        $val = explode(".",$post["user"][0]["image_path"]);
+                                        $path = "uploads/";
+                                        if ($val[0] === "user-1") $path = "public/assets/";
+                                    ?>
+                                    <img src="<?php echo base_url() . $path . $post["user"][0]["image_path"] ?>" />
                                     <div class="mr-card-header-author">
                                         <h1><?php echo $post["user"][0]["first_name"] . ' ' . $post["user"][0]["middle_name"] . ' ' .  $post["user"][0]["last_name"]?></h1>
                                         <time><?php echo $post["post"][0]["date_time_stamp"] ?></time>
@@ -200,7 +205,7 @@
                                         <div class="splide__track">
                                             <ul class="splide__list">
                                                 <li class="splide__slide">
-                                                    <img src=<?php echo base_url("uploads/") . $image["post_image_path"] ?> />
+                                                    <img src=<?php echo base_url() . "uploads/" . $image["post_image_path"] ?> />
                                                 </li>
                                             </ul>
                                         </div>
@@ -304,7 +309,7 @@
 
         </section>
     </main>
-    <script src="<?php echo base_url("public/script.js") ?>"></script>
+    <script src="<?php echo base_url() . "public/script.js" ?>"></script>
     <script>
         controller.admin();
         var splide = new Splide( '.splide' );
