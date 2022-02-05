@@ -18,7 +18,8 @@ class Login extends CI_Controller
             $this->session->unset_userdata(array("error_login", "error_title", "error_description"));
             $this->session->set_userdata(array(
                 "user_detail_id" => $data[0]["user_detail_id"],
-                "user_photo" => $data[0]["image_path"]
+                "user_photo" => $data[0]["image_path"],
+                "is_admin" => $data[0]["is_admin"]
             ));
             redirect("groups");
         } else {

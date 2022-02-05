@@ -14,6 +14,8 @@ class Account extends CI_Controller {
             "type" => "profile",
             "detail" => $this->account_model->get_user_info($this->session->userdata("user_detail_id"))
         );
+        $data["is_admin"] = $this->session->userdata("is_admin");
+
         $this->load->view("account",$data);
     }
 
@@ -23,6 +25,8 @@ class Account extends CI_Controller {
             "detail" => $this->account_model->get_info($this->session->userdata("user_detail_id")),
             "genders" => $this->account_model->get_genders()
         );
+        $data["is_admin"] = $this->session->userdata("is_admin");
+
 
         $this->load->view("account",$data);
     }
@@ -34,6 +38,8 @@ class Account extends CI_Controller {
             "detail" => $this->account_model->get_user_info($this->session->userdata("user_detail_id"))
 
         );
+        $data["is_admin"] = $this->session->userdata("is_admin");
+
         $this->load->view("account",$data);
     }
 

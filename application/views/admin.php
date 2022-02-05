@@ -22,9 +22,21 @@
                     <img src="<?php echo base_url() ?>/public/assets/logo.svg" />
                 </a>
             </li>
+            <?php if ($is_admin) {?>
+            <li>
+                <a href=<?php echo base_url("index.php/org_verification/0") ?> class="admin-lock">
+                    <i class="fas fa-lock"></i>
+                </a>
+            </li>
+            <?php  }?>
             <li class="user-pic-container">
                 <a href="#">
-                    <img class="user-pic" src="<?php echo base_url() ?>/public/assets/user.png" />
+                    <?php
+                        $val = explode(".",$user_photo);
+                        $path = "uploads/";
+                        if ($val[0] === "user-1") $path = "public/assets/";
+                    ?>
+                    <img src=<?php echo base_url($path) . $user_photo ?> />
                 </a>
                 <div class="account-option">
                     <ul>
@@ -106,7 +118,7 @@
                                     <input id="select-all" data-target="<?php echo $mr["user_detail_id"] ?>" type="checkbox" class="check-member-request" x-value="<?php echo $mr["user_detail_id"] ?>"/>
                                 </div>
                                 <div class="mr-card-header">
-                                    <img src="<?php echo base_url("public/assets/user.png") ?>" />
+                                    <img src="<?php echo base_url("public/assets/" . $mr["image_path"]) ?>" />
                                     <div class="mr-card-header-author">
                                         <h1><?php echo $mr["firstname"] . ' ' . $mr["middlename"] . ' ' . $mr["lastname"]?></h1>
                                     </div>

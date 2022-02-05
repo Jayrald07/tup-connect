@@ -23,6 +23,13 @@
                     <img src="<?php echo base_url() ?>/public/assets/logo.svg" />
                 </a>
             </li>
+            <?php if ($is_admin) {?>
+            <li>
+                <a href=<?php echo base_url("index.php/org_verification/0") ?> class="admin-lock">
+                    <i class="fas fa-lock"></i>
+                </a>
+            </li>
+            <?php }?>
             <li class="user-pic-container">
                 <a href="#">
                     <?php
@@ -450,7 +457,6 @@
                 </div>
             
             <?php } else {?>
-
                 <?php if (isset($is_verified) AND $is_verified === "verified" OR $type !== "org") {?>
 
                 <section class="groups-action">

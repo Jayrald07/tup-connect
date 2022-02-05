@@ -96,6 +96,8 @@ $route["org/add_role"] = "organization/add_role";
 $route["role/org_no_roles"] = "organization/get_org_user_hasno_roles";
 $route["role/update_org_member_role"] = "organization/update_org_user_role";
 $route["role/org_members"] = "organization/get_org_user_roles";
+$route["org_verification/(:any)"] = "organization/org_verification/$1";
+$route["org_validate"] = "organization/org_validate";
 
 
 

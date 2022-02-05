@@ -10,7 +10,7 @@ class login_model extends CI_Model
 
 	public function authenticate()
 	{
-		$query = $this->db->query("SELECT tbl_user.user_detail_id, tbl_user_detail.image_path from tbl_user, tbl_user_detail where (tbl_user.user_name ='" . $this->input->post("username") . "' or tbl_user.user_email = '" . $this->input->post("username") . "') and tbl_user.user_password = '" . $this->input->post("password") . "' and tbl_user_detail.user_detail_id = tbl_user.user_detail_id");
+		$query = $this->db->query("SELECT tbl_user.user_detail_id, tbl_user_detail.image_path, tbl_user.is_admin from tbl_user, tbl_user_detail where (tbl_user.user_name ='" . $this->input->post("username") . "' or tbl_user.user_email = '" . $this->input->post("username") . "') and tbl_user.user_password = '" . $this->input->post("password") . "' and tbl_user_detail.user_detail_id = tbl_user.user_detail_id");
 
 		return $query->result_array();
 	}

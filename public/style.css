@@ -64,11 +64,23 @@ html {
 	flex-direction: column;
 }
 
-.login-features a,
-.login-instead {
+.login-features a {
 	font-size: 10pt;
 	color: rgb(139, 139, 139);
 	margin-bottom: 10px;
+}
+
+.login-instead {
+	display: block;
+	padding: 10px;
+	color: var(--red) !important;
+	border: 1px solid var(--red);
+	text-decoration: none;
+	border-radius: 4px;
+	font-size: 10pt;
+	font-weight: bold;
+	margin-top: 10px;
+	text-align: center;
 }
 
 .input-button {
@@ -119,7 +131,6 @@ html {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	height: 100vh;
 	margin: 90px 0;
 }
 
@@ -127,6 +138,7 @@ html {
 	border: 1px solid var(--gray);
 	padding: 30px 40px;
 	border-radius: 5px;
+	margin-bottom: 30px;
 }
 
 .sign-up-container figure {
@@ -2061,6 +2073,69 @@ body::-webkit-scrollbar-track {
 
 #search-use-org-type {
 	margin-bottom: 20px;
+}
+
+.admin-lock {
+	padding: 0 20px;
+	color: var(--black);
+}
+
+.flex-display {
+	display: flex;
+	justify-content: center;
+}
+
+.org-card-container {
+	margin-top: 40px;
+}
+
+.org-card-container ul {
+	display: flex;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	margin-bottom: 15px;
+}
+
+.org-card-container ul li a {
+	display: inline-block;
+	padding: 10px;
+	text-decoration: none;
+	color: var(--black);
+	font-size: 10pt;
+}
+
+.org-card-container ul li:not(:last-child) {
+	margin-right: 20px;
+}
+
+.org-card-container ul li a:hover {
+	background-color: #f9f9f9;
+	border-radius: 4px;
+	font-weight: bold;
+}
+
+.org-card {
+	border: 1px solid var(--gray);
+	border-radius: 4px;
+	font-size: 10pt;
+	padding: 15px 20px;
+	margin-bottom: 15px;
+}
+
+.org-approve,
+.org-decline {
+	display: inline-block;
+	text-decoration: none;
+	padding: 10px 20px;
+	color: var(--black);
+	margin-top: 10px;
+	border-radius: 4px;
+}
+
+.org-approve {
+	background-color: var(--red);
+	color: #fff;
 }
 
 @keyframes pop {

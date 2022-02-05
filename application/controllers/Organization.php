@@ -31,6 +31,8 @@ class Organization extends CI_Controller
         $data["user_photo"] = $this->session->userdata("user_photo");
         $data["colleges"] = $this->organization_model->get_colleges();
         $data["categories"] = $this->post_model->get_categories();
+        $data["is_admin"] = $this->session->userdata("is_admin");
+
 
 
         $this->load->view("view_post", $data);
@@ -57,6 +59,8 @@ class Organization extends CI_Controller
         $data["members"] = $this->organization_model->get_members($org_id);
         $data["is_owner"] = $this->organization_model->is_org_owner($this->session->userdata("user_detail_id"));
         $data["is_verified"] = $this->organization_model->is_verified($org_id);
+        $data["is_admin"] = $this->session->userdata("is_admin");
+
 
         $this->load->view("view_post", $data);
     }
@@ -179,7 +183,9 @@ class Organization extends CI_Controller
             "reported_posts" => $this->organization_model->get_reported_org_post($org_id),
             "role" => $val,
             "permission" => $this->organization_model->get_role_permissions($org_id),
-            "type" => "org"
+            "type" => "org",
+            "user_photo" => $this->session->userdata("user_photo"),
+            "is_admin" => $this->session->userdata("is_admin")
         );
 
 
@@ -248,6 +254,41 @@ class Organization extends CI_Controller
 
     public function get_org_user_roles() {
         echo json_encode($this->organization_model->get_org_user_roles($this->input->post("role_id"),$this->session->userdata("organization_id")));
+    }
+
+    public function org_verification($status) {
+        $data["user_photo"] = $this->session->userdata("user_photo");
+        $data["orgs"] = $this->organization_model->get_org_by_status($status);
+        $data["status"] = $status;
+        $data["is_admin"] = $this->session->userdata("is_admin");
+
+
+        $this->load->view("org_verification",$data);
+    }
+
+    public function org_validate() {
+        $id = $this->input->post("id");
+        $type = $this->input->post("type");
+
+        if ($type === "del") {
+            if ($this->organization_model->delete_org($id)) echo TRUE;
+            else echo FALSE;
+        } else {
+            $status_details = array(
+                "approve" => 1,
+                "reval" => 0,
+                "revoke" => 3,
+                "decline" => 2
+            );
+    
+            $status = $status_details[$type];
+
+            if ($this->organization_model->update_org_status($id,$status)) echo TRUE;
+            else echo FALSE;
+        }
+
+
+
     }
 
 }

@@ -12,7 +12,7 @@ USE db_tupconnect;
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 15, 2021 at 01:29 PM
+-- Generation Time: Feb 05, 2022 at 03:10 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.10
 
@@ -289,14 +289,6 @@ CREATE TABLE `tbl_group` (
   `group_owner` varchar(15) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `tbl_group`
---
-
-INSERT INTO `tbl_group` (`group_id`, `group_name`, `category_id`, `group_owner`) VALUES
-('ASJ44KPWMC93KW0', 'thatsprogramming', 1, 'yDN5qmsOAvcw4Ua'),
-('ASJ44KPWMC93KW1', 'COS-memes', 6, 'yDN5qmsOAvcw4U1');
-
 -- --------------------------------------------------------
 
 --
@@ -307,7 +299,8 @@ CREATE TABLE `tbl_group_user` (
   `group_user_id` int(11) NOT NULL,
   `user_detail_id` varchar(15) NOT NULL,
   `role_id` varchar(15) NOT NULL,
-  `group_id` varchar(15) NOT NULL
+  `group_id` varchar(15) NOT NULL,
+  `status` int(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -345,19 +338,14 @@ CREATE TABLE `tbl_lobby_post` (
 
 CREATE TABLE `tbl_organization` (
   `organization_id` varchar(15) NOT NULL,
-  `organization_name` varchar(15) NOT NULL,
+  `organization_name` varchar(50) NOT NULL,
   `category_id` int(11) NOT NULL,
   `organization_image` varchar(100) NOT NULL,
-  `organization_owner` varchar(15) NOT NULL
+  `organization_owner` varchar(15) NOT NULL,
+  `organization_type` varchar(10) NOT NULL,
+  `ref_id` int(5) NOT NULL,
+  `status` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `tbl_organization`
---
-
-INSERT INTO `tbl_organization` (`organization_id`, `organization_name`, `category_id`, `organization_image`, `organization_owner`) VALUES
-('HD37UE93UFI30F3', 'GDSC TUPM', 1, '', 'yDN5qmsOAvcw4Ua'),
-('HD37UE93UFI30F4', 'Gearhawks', 2, '', 'yDN5qmsOAvcw4Ub');
 
 -- --------------------------------------------------------
 
@@ -385,13 +373,6 @@ CREATE TABLE `tbl_organization_user` (
   `role_id` int(11) NOT NULL,
   `status` varchar(15) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `tbl_organization_user`
---
-
-INSERT INTO `tbl_organization_user` (`ou_id`, `organization_id`, `user_detail_id`, `role_id`, `status`) VALUES
-(2, 'HD37UE93UFI30F4', 'yDN5qmsOAvcw4Ua', 1, 'joined');
 
 -- --------------------------------------------------------
 
@@ -421,7 +402,8 @@ CREATE TABLE `tbl_post` (
   `post_up_vote` int(3) NOT NULL,
   `post_down_vote` int(3) NOT NULL,
   `date_time_stamp` datetime NOT NULL,
-  `status` varchar(15) NOT NULL
+  `status` varchar(15) NOT NULL,
+  `report_status` int(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -458,7 +440,8 @@ CREATE TABLE `tbl_post_report` (
 
 CREATE TABLE `tbl_report` (
   `report_id` varchar(15) NOT NULL,
-  `report_description` varchar(100) NOT NULL
+  `report_description` varchar(100) NOT NULL,
+  `status` int(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -469,16 +452,13 @@ CREATE TABLE `tbl_report` (
 
 CREATE TABLE `tbl_role` (
   `role_id` int(11) NOT NULL,
-  `role_name` varchar(50) NOT NULL
+  `role_name` varchar(50) NOT NULL,
+  `member_request` tinyint(1) NOT NULL,
+  `reported_content` tinyint(1) NOT NULL,
+  `manage_roles` tinyint(1) NOT NULL,
+  `manage_permission` tinyint(1) NOT NULL,
+  `id_ref` varchar(15) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `tbl_role`
---
-
-INSERT INTO `tbl_role` (`role_id`, `role_name`) VALUES
-(1, 'user'),
-(2, 'admin');
 
 -- --------------------------------------------------------
 
@@ -492,16 +472,20 @@ CREATE TABLE `tbl_user` (
   `user_name` varchar(20) NOT NULL,
   `user_password` varchar(20) NOT NULL,
   `user_detail_id` varchar(15) NOT NULL,
-  `status` varchar(15) NOT NULL
+  `status` varchar(15) NOT NULL,
+  `hash_key` varchar(255) NOT NULL,
+  `hash_expiry` varchar(50) NOT NULL,
+  `pass_status` enum('1','0') NOT NULL,
+  `date_created` varchar(40) NOT NULL,
+  `is_admin` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `tbl_user`
 --
 
-INSERT INTO `tbl_user` (`user_id`, `user_email`, `user_name`, `user_password`, `user_detail_id`, `status`) VALUES
-('685wfjCHNy7Xh9i', 'jayrald.empino@tup.edu.ph', 'jayrald07', 'jayrald07', 'yDN5qmsOAvcw4Ua', 'registered'),
-('685wfjCHNy7Xh9j', 'gerald.empino@tup.edu.ph', 'jayrald27', 'jayrald07', 'yDN5qmsOAvcw4Ub', 'registered');
+INSERT INTO `tbl_user` (`user_id`, `user_email`, `user_name`, `user_password`, `user_detail_id`, `status`, `hash_key`, `hash_expiry`, `pass_status`, `date_created`, `is_admin`) VALUES
+('rl8DBaEbVy1k9oc', 'admin.admin@tup.edu.ph', 'admin', 'admin123', 'ghktiHAwfTeRaK2', 'registered', 'e7a36746e0df99976d149cdf2258bb6872ae366345311459ed3e27585e9301d4', '2022-02-05 14:0', '1', '', 1);
 
 -- --------------------------------------------------------
 
@@ -554,8 +538,7 @@ CREATE TABLE `tbl_user_detail` (
 --
 
 INSERT INTO `tbl_user_detail` (`user_detail_id`, `first_name`, `middle_name`, `last_name`, `birthday`, `year_level`, `gender_id`, `college_id`, `campus_id`, `course_id`, `user_cor_id`, `image_path`) VALUES
-('yDN5qmsOAvcw4Ua', 'Jayrald', 'Bulleser', 'Empino', '2001-04-27', 3, 5, 1, 1, 1, 'AAA', './PATH'),
-('yDN5qmsOAvcw4Ub', 'Gerald', 'Bulleser', 'Empino', '2001-04-27', 3, 5, 1, 1, 1, 'AAA', './PATH');
+('ghktiHAwfTeRaK2', 'Jayrald', 'Bulleser', 'Empino', '2001-04-27', 3, 1, 1, 1, 1, 'AAA', 'XFSd0uAIgGJYzpl.jpg');
 
 -- --------------------------------------------------------
 
@@ -569,37 +552,20 @@ CREATE TABLE `tbl_user_interest` (
   `category_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `tbl_user_interest`
+-- Table structure for table `tbl_user_post`
 --
 
-INSERT INTO `tbl_user_interest` (`user_interest_id`, `user_detail_id`, `category_id`) VALUES
-(15, 'HcpLPK6sYxXwbJR', 2),
-(16, 'HcpLPK6sYxXwbJR', 5),
-(17, 'HcpLPK6sYxXwbJR', 7),
-(18, 'HcpLPK6sYxXwbJR', 8),
-(19, 'HcpLPK6sYxXwbJR', 9),
-(20, 'nYtz7ov0ELsXgAP', 3),
-(21, 'nYtz7ov0ELsXgAP', 6),
-(22, 'nYtz7ov0ELsXgAP', 8),
-(23, 'nYtz7ov0ELsXgAP', 9),
-(24, 'M1BCcsnQUzxwtFD', 2),
-(25, 'M1BCcsnQUzxwtFD', 7),
-(26, 'M1BCcsnQUzxwtFD', 8),
-(27, 'M1BCcsnQUzxwtFD', 9),
-(28, 'mD7OlJsWweoStPX', 2),
-(29, 'mD7OlJsWweoStPX', 7),
-(30, 'mD7OlJsWweoStPX', 9),
-(31, 'mD7OlJsWweoStPX', 11),
-(32, 'mD7OlJsWweoStPX', 12),
-(33, 'z1J0LFpIeYDamwc', 1),
-(34, 'z1J0LFpIeYDamwc', 3),
-(35, 'z1J0LFpIeYDamwc', 5),
-(36, 'yDN5qmsOAvcw4Ua', 2),
-(37, 'yDN5qmsOAvcw4Ua', 7),
-(38, 'yDN5qmsOAvcw4Ua', 8),
-(39, 'yDN5qmsOAvcw4Ua', 9),
-(40, 'yDN5qmsOAvcw4Ua', 11);
+CREATE TABLE `tbl_user_post` (
+  `user_post_id` int(11) NOT NULL,
+  `post_id` varchar(15) NOT NULL,
+  `user_detail_id` varchar(15) NOT NULL,
+  `reference_id` varchar(15) NOT NULL,
+  `type` int(1) NOT NULL,
+  `date_time_stamp` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -837,6 +803,12 @@ ALTER TABLE `tbl_user_interest`
   ADD PRIMARY KEY (`user_interest_id`);
 
 --
+-- Indexes for table `tbl_user_post`
+--
+ALTER TABLE `tbl_user_post`
+  ADD PRIMARY KEY (`user_post_id`);
+
+--
 -- Indexes for table `tbl_user_report`
 --
 ALTER TABLE `tbl_user_report`
@@ -892,19 +864,19 @@ ALTER TABLE `tbl_gender`
 -- AUTO_INCREMENT for table `tbl_group_user`
 --
 ALTER TABLE `tbl_group_user`
-  MODIFY `group_user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `group_user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `tbl_lobby_post`
 --
 ALTER TABLE `tbl_lobby_post`
-  MODIFY `lobby_post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `lobby_post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
 
 --
 -- AUTO_INCREMENT for table `tbl_organization_user`
 --
 ALTER TABLE `tbl_organization_user`
-  MODIFY `ou_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ou_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `tbl_pass_manage`
@@ -916,25 +888,37 @@ ALTER TABLE `tbl_pass_manage`
 -- AUTO_INCREMENT for table `tbl_post_image`
 --
 ALTER TABLE `tbl_post_image`
-  MODIFY `post_image_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
+  MODIFY `post_image_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=103;
+
+--
+-- AUTO_INCREMENT for table `tbl_role`
+--
+ALTER TABLE `tbl_role`
+  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `tbl_user_interest`
 --
 ALTER TABLE `tbl_user_interest`
-  MODIFY `user_interest_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `user_interest_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
+
+--
+-- AUTO_INCREMENT for table `tbl_user_post`
+--
+ALTER TABLE `tbl_user_post`
+  MODIFY `user_post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT for table `tbl_user_verification`
 --
 ALTER TABLE `tbl_user_verification`
-  MODIFY `user_verification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `user_verification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT for table `tbl_user_vote`
 --
 ALTER TABLE `tbl_user_vote`
-  MODIFY `user_vote_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `user_vote_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

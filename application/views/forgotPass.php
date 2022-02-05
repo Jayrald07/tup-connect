@@ -35,8 +35,8 @@
             <h1>Forgot Password</h1>
             <form action="<?=base_url('index.php/login/forgotPassword')?>" method="post">
                 <input type="email" required name="email" class="form-control" placeholder="Email">
-                <a href="<?php echo base_url("index.php/login") ?>">Login Instead</a>
                 <button type="submit" class="forgot-pass-btn">Send Verification Email</button>
+                <a class="login-instead" href="<?php echo base_url("index.php/login") ?>">Login Instead</a>
             </form>
         </div>
 
