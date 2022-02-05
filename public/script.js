@@ -1417,7 +1417,7 @@ var controller = (function (_UI) {
 		},
 		toggle_role_permission(id) {
 			let _ = this;
-			_UI.getId(id).addEventListener("click", function () {
+			_UI.getId(id)?.addEventListener("click", function () {
 				$.ajax({
 					url: "http://localhost/tup-connect/index.php/role/toggle_permission",
 					type: "POST",
@@ -1444,7 +1444,7 @@ var controller = (function (_UI) {
 					this.classList.add("admin-panel-selected");
 					_UI
 						.getId(this.getAttribute("data-target"))
-						.classList.remove("hidden");
+						?.classList.remove("hidden");
 				});
 			}
 
@@ -1694,6 +1694,7 @@ var controller = (function (_UI) {
 							if (data) {
 								_UI.getClass("members-modal")[0].style.display = "flex";
 								data.map((item) => {
+									console.log(item.image_path);
 									_UI.getClass("members-modal-body")[0].insertAdjacentHTML(
 										"afterbegin",
 										`
@@ -1875,7 +1876,7 @@ var controller = (function (_UI) {
 			this.toggle_role_permission("manr");
 			this.toggle_role_permission("manp");
 
-			current_role_id = _UI.getId("role-permission").value;
+			current_role_id = _UI.getId("role-permission")?.value;
 
 			_UI.getId("role-clear-permission")?.addEventListener("click", () => {
 				$.ajax({

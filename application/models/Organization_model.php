@@ -334,7 +334,8 @@ WHERE tbl_organization_user.user_detail_id = '" . $user_detail_id . "' and tbl_o
         $status = $this->db->get("tbl_organization")->result_array()[0]["status"];
         if ($status == 0) return "not-verified";
         else if ($status == 1) return "verified";
-        else return "not-qualified";
+        else if ($status == 2) return "not-qualified";
+        else return "revoked";
     }
 
     public function get_org_by_status($status) {
@@ -358,6 +359,13 @@ WHERE tbl_organization_user.user_detail_id = '" . $user_detail_id . "' and tbl_o
         ));
         $this->db->where("organization_id",$id);
         return $this->db->update("tbl_organization");
+    }
+
+    public function get_user_permissions($id) {
+        $res = $this->db->query("SELECT tbl_role.* FROM tbl_role, tbl_organization_user WHERE tbl_organization_user.user_detail_id = '$id' AND tbl_role.role_id = tbl_organization_user.role_id")->result_array();
+
+        return $res;
+
     }
 
 }

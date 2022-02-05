@@ -57,9 +57,11 @@ class Organization extends CI_Controller
         $data["colleges"] = $this->organization_model->get_colleges();
         $data["categories"] = $this->post_model->get_categories();
         $data["members"] = $this->organization_model->get_members($org_id);
+        $data["permissions"] = $this->organization_model->get_user_permissions($this->session->userdata("user_detail_id"));
         $data["is_owner"] = $this->organization_model->is_org_owner($this->session->userdata("user_detail_id"));
         $data["is_verified"] = $this->organization_model->is_verified($org_id);
         $data["is_admin"] = $this->session->userdata("is_admin");
+        
 
 
         $this->load->view("view_post", $data);
@@ -187,7 +189,11 @@ class Organization extends CI_Controller
             "user_photo" => $this->session->userdata("user_photo"),
             "is_admin" => $this->session->userdata("is_admin")
         );
+        $data["permissions"] = $this->organization_model->get_user_permissions($this->session->userdata("user_detail_id"));
+        $data["is_owner"] = $this->organization_model->is_org_owner($this->session->userdata("user_detail_id"));
 
+        print_r($data["permissions"]);
+        print_r($data["is_owner"]);
 
         $this->load->view("admin",$data);
     }
