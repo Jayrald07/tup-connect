@@ -1694,12 +1694,13 @@ var controller = (function (_UI) {
 							if (data) {
 								_UI.getClass("members-modal")[0].style.display = "flex";
 								data.map((item) => {
-									console.log(item.image_path);
+									let val = item.image_path.split(".");
+									let path = val[0] == "user-1" ? "public/assets/" : "uploads/";
 									_UI.getClass("members-modal-body")[0].insertAdjacentHTML(
 										"afterbegin",
 										`
 									<div class="role-member-card" id="rmr-${item.user_detail_id}">
-										<img src="http://localhost/tup-connect/public/assets/user.png" />
+										<img src="http://localhost/tup-connect/${path}${item.image_path}" />
 										<h1>${item.first_name} ${item.middle_name} ${item.last_name}</h1>
 										<a href="javascript:void(0)" class="member-remove-role" x-value="${item.user_detail_id}">Remove</a>
 									</div>
@@ -1726,11 +1727,14 @@ var controller = (function (_UI) {
 								if (data) {
 									_UI.getClass("members-modal")[0].style.display = "flex";
 									data.map((item) => {
+										let val = item.image_path.split(".");
+										let path =
+											val[0] == "user-1" ? "public/assets/" : "uploads/";
 										_UI.getClass("members-modal-body")[0].insertAdjacentHTML(
 											"afterbegin",
 											`
 										<div class="role-member-card" id="rm-${item.user_detail_id}">
-											<img src="http://localhost/tup-connect/public/assets/user.png" />
+											<img src="http://localhost/tup-connect/${path}${item.image_path}" />
 											<h1>${item.first_name} ${item.middle_name} ${item.last_name}</h1>
 											<a href="javascript:void(0)" class="member-add-role" x-value="${item.user_detail_id}">Add</a>
 										</div>
@@ -1758,11 +1762,14 @@ var controller = (function (_UI) {
 								if (data) {
 									_UI.getClass("members-modal")[0].style.display = "flex";
 									data.map((item) => {
+										let val = item.image_path.split(".");
+										let path =
+											val[0] == "user-1" ? "public/assets/" : "uploads/";
 										_UI.getClass("members-modal-body")[0].insertAdjacentHTML(
 											"afterbegin",
 											`
 										<div class="role-member-card" id="rm-${item.user_detail_id}">
-											<img src="http://localhost/tup-connect/public/assets/user.png" />
+											<img src="http://localhost/tup-connect/${path}${item.image_path}" />
 											<h1>${item.first_name} ${item.middle_name} ${item.last_name}</h1>
 											<a href="javascript:void(0)" class="member-org-add-role" x-value="${item.user_detail_id}">Add</a>
 										</div>
@@ -1792,11 +1799,13 @@ var controller = (function (_UI) {
 							if (data) {
 								_UI.getClass("members-modal")[0].style.display = "flex";
 								data.map((item) => {
+									let val = item.image_path.split(".");
+									let path = val[0] == "user-1" ? "public/assets/" : "uploads/";
 									_UI.getClass("members-modal-body")[0].insertAdjacentHTML(
 										"afterbegin",
 										`
 									<div class="role-member-card" id="rmr-${item.user_detail_id}">
-										<img src="http://localhost/tup-connect/public/assets/user.png" />
+										<img src="http://localhost/tup-connect/${path}${item.image_path}" />
 										<h1>${item.first_name} ${item.middle_name} ${item.last_name}</h1>
 										<a href="javascript:void(0)" class="member-org-remove-role" x-value="${item.user_detail_id}">Remove</a>
 									</div>
@@ -1824,11 +1833,14 @@ var controller = (function (_UI) {
 								if (data) {
 									_UI.getClass("members-modal")[0].style.display = "flex";
 									data.map((item) => {
+										let val = item.image_path.split(".");
+										let path =
+											val[0] == "user-1" ? "public/assets/" : "uploads/";
 										_UI.getClass("members-modal-body")[0].insertAdjacentHTML(
 											"afterbegin",
 											`
 										<div class="role-member-card" id="rm-${item.user_detail_id}">
-											<img src="http://localhost/tup-connect/public/assets/user.png" />
+											<img src="http://localhost/tup-connect/${path}${item.image_path}" />
 											<h1>${item.first_name} ${item.middle_name} ${item.last_name}</h1>
 											<a href="javascript:void(0)" class="member-org-add-role" x-value="${item.user_detail_id}">Add</a>
 										</div>

@@ -192,9 +192,6 @@ class Organization extends CI_Controller
         $data["permissions"] = $this->organization_model->get_user_permissions($this->session->userdata("user_detail_id"));
         $data["is_owner"] = $this->organization_model->is_org_owner($this->session->userdata("user_detail_id"));
 
-        print_r($data["permissions"]);
-        print_r($data["is_owner"]);
-
         $this->load->view("admin",$data);
     }
 
@@ -263,6 +260,10 @@ class Organization extends CI_Controller
     }
 
     public function org_verification($status) {
+
+        if (empty(trim($this->session->userdata("user_detail_id")))) redirect("login");
+
+
         $data["user_photo"] = $this->session->userdata("user_photo");
         $data["orgs"] = $this->organization_model->get_org_by_status($status);
         $data["status"] = $status;
