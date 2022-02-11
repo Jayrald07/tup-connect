@@ -129,4 +129,19 @@ class Registration_model extends CI_Model
         $query = $this->db->get("tbl_gender");
         return $query->result_array();
     }
+
+    public function is_email_exist($email) {
+        if (count($this->db->get_where("tbl_user",array(
+            "user_email" => $email
+        ))->result_array())) return TRUE;
+        else return FALSE;
+    }
+
+    public function is_username_exist($email) {
+        if (count($this->db->get_where("tbl_user",array(
+            "user_name" => $email
+        ))->result_array())) return TRUE;
+        else return FALSE;
+    }
+
 }

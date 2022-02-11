@@ -42,13 +42,15 @@
                     <input class="input-code-box" maxlength="1" required type="text" name="code[]" />
                 </section>
                 <div class="resend-container">
-                    <a href="javascript:void(0)">Resend(<span class="resend-left-time">0</span>)</a>
                 </div>
                 <button class="input-button">Verify</button>
                 </form>
             </div>
         </div>
     </main>
+    <script>
+        var base_url = "<?php echo base_url() ?>"
+    </script>
     <script src=<?php echo base_url() . "public/script.js" ?>></script>
     <script>
         controller.verify();

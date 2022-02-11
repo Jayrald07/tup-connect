@@ -309,6 +309,9 @@
 
         </section>
     </main>
+    <script>
+        var base_url = "<?php echo base_url() ?>"
+    </script>
     <script src="<?php echo base_url() . "public/script.js" ?>"></script>
     <script>
         controller.admin();

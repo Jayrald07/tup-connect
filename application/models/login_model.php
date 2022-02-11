@@ -40,6 +40,7 @@ class login_model extends CI_Model
 	function updatePassword($password)
 	{
 		$userid = $this->session->userdata('LoginSession')['id'];
+		$password = password_hash($password,PASSWORD_DEFAULT);
 		$query = $this->db->query("UPDATE tbl_user set user_password='$password' WHERE user_id='$userid' ");
 	}
 
@@ -61,7 +62,7 @@ class login_model extends CI_Model
 
 	function getHashDetails($hash)
 	{
-		$query = $this->db->query("SELECT * from tbl_user WHERE hash_key='$hash'");
+		$query = $this->db->query("SELECT * from tbl_user WHERE hash_key=\"$hash\"");
 		if ($query->num_rows() == 1) {
 			return $query->row();
 		} else {
@@ -71,7 +72,7 @@ class login_model extends CI_Model
 
 	function validateCurrentPassword($currentPassword, $hash)
 	{
-		$query = $this->db->query("SELECT * from tbl_user WHERE user_password = '$currentPassword' AND hash_key='$hash'");
+		$query = $this->db->query("SELECT * from tbl_user WHERE user_password = \"$currentPassword\" AND hash_key=\"$hash\"");
 		if ($query->num_rows() == 1) {
 			return true;
 		} else {
