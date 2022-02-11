@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 11, 2022 at 07:04 AM
+-- Generation Time: Feb 11, 2022 at 09:39 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.10
 
@@ -193,24 +193,36 @@ CREATE TABLE `tbl_comment_report` (
 
 CREATE TABLE `tbl_course` (
   `course_id` int(11) NOT NULL,
-  `course_name` varchar(60) NOT NULL,
-  `course_code` varchar(10) NOT NULL
+  `course_name` varchar(120) NOT NULL,
+  `course_code` varchar(10) NOT NULL,
+  `college_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `tbl_course`
 --
 
-INSERT INTO `tbl_course` (`course_id`, `course_name`, `course_code`) VALUES
-(1, 'Bachelor of Science in Civil Engineering', 'BSCE'),
-(2, 'Bachelor of Science in Electrical Engineering', 'BSEE'),
-(3, 'Bachelor of Science in Mechanical Engineering', 'BSME'),
-(4, 'Bachelor of Science in Electronics Engineering', 'BSEE'),
-(5, 'Bachelor of Applied Science in Laboratory Technology', 'BASLT'),
-(6, 'Bachelor of Science in Computer Science', 'BSCS'),
-(7, 'Bachelor of Science in Environmental Science', 'BSES'),
-(8, 'Bachelor of Science in Information System', 'BSIS'),
-(9, 'Bachelor of Science in Information Technology', 'BSIT');
+INSERT INTO `tbl_course` (`course_id`, `course_name`, `course_code`, `college_id`) VALUES
+(1, 'Bachelor of Science in Civil Engineering', 'BSCE', 3),
+(2, 'Bachelor of Science in Electrical Engineering', 'BSEE', 3),
+(3, 'Bachelor of Science in Mechanical Engineering', 'BSME', 3),
+(4, 'Bachelor of Science in Electronics Engineering', 'BSEE', 3),
+(5, 'Bachelor of Applied Science in Laboratory Technology', 'BASLT', 1),
+(6, 'Bachelor of Science in Computer Science', 'BSCS', 1),
+(7, 'Bachelor of Science in Environmental Science', 'BSES', 1),
+(8, 'Bachelor of Science in Information System', 'BSIS', 1),
+(9, 'Bachelor of Science in Information Technology', 'BSIT', 1),
+(10, 'Bachelor of Science in Food Technology', 'BSFT', 5),
+(11, 'Bachelor of Science in Hotel and Restaurant Management', 'BSHRM', 5),
+(12, 'Bachelor of Science in Architecture', 'BSA', 2),
+(13, 'Bachelor of Fine Arts', 'BFA', 2),
+(14, 'Bachelor of Science in Food Technology', 'BSFT', 5),
+(15, 'Bachelor of Science in Hotel and Restaurant Management', 'BSHRM', 5),
+(16, 'Bachelor of Science in Architecture', 'BSA', 2),
+(17, 'Bachelor of Fine Arts', 'BFA', 2),
+(18, 'Bachelor of Technical Vocational Teachers Education Major in Animation', 'BTVTE-A', 4),
+(19, 'Bachelor of Technical Teacher Education', 'BTTE', 4),
+(20, 'Bachelor of Science in Entrepreneurship Management', 'BSEM', 6);
 
 -- --------------------------------------------------------
 
@@ -476,7 +488,7 @@ CREATE TABLE `tbl_user` (
 --
 
 INSERT INTO `tbl_user` (`user_id`, `user_email`, `user_name`, `user_password`, `user_detail_id`, `status`, `hash_key`, `hash_expiry`, `pass_status`, `date_created`, `is_admin`) VALUES
-('GkPAOzCw8NLVab7', 'jayrald.empino@tup.edu.ph', 'admin123', '$2y$10$3KEf6lg5DwQfm.fZyV855OtqqkdlCr9CnXJkiGu0wjGu4Vn66MfJG', 'WSNR5hvoxIgyODt', 'registered', '', '', '1', '', 1);
+('i6nWt2M4pHIE0Ne', 'jayrald.empino@tup.edu.ph', 'admin123', '$2y$10$JjMyriAfsyijo7rUWJ9IcO.n8I130TEB9nlCtGEDAKeySrFT5p4/y', 'VQOT5FN3avnkS8r', 'registered', '', '', '1', '', 1);
 
 -- --------------------------------------------------------
 
@@ -529,7 +541,7 @@ CREATE TABLE `tbl_user_detail` (
 --
 
 INSERT INTO `tbl_user_detail` (`user_detail_id`, `first_name`, `middle_name`, `last_name`, `birthday`, `year_level`, `gender_id`, `college_id`, `campus_id`, `course_id`, `user_cor_id`, `image_path`) VALUES
-('WSNR5hvoxIgyODt', 'Jayrald', 'Bulleser', 'Empino', '2001-04-27', 3, 1, 1, 1, 6, 'AAA', 'user-1.png');
+('VQOT5FN3avnkS8r', 'Jayrald', 'Bulleser', 'Empino', '2001-04-27', 3, 1, 1, 1, 6, 'AAA', 'user-1.png');
 
 -- --------------------------------------------------------
 
@@ -542,6 +554,16 @@ CREATE TABLE `tbl_user_interest` (
   `user_detail_id` varchar(15) NOT NULL,
   `category_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `tbl_user_interest`
+--
+
+INSERT INTO `tbl_user_interest` (`user_interest_id`, `user_detail_id`, `category_id`) VALUES
+(100, '6c2s1X0ZOByK4xD', 1),
+(101, '6c2s1X0ZOByK4xD', 7),
+(102, 'VQOT5FN3avnkS8r', 1),
+(103, 'VQOT5FN3avnkS8r', 4);
 
 -- --------------------------------------------------------
 
@@ -843,7 +865,7 @@ ALTER TABLE `tbl_college`
 -- AUTO_INCREMENT for table `tbl_course`
 --
 ALTER TABLE `tbl_course`
-  MODIFY `course_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `course_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `tbl_gender`
@@ -891,7 +913,7 @@ ALTER TABLE `tbl_role`
 -- AUTO_INCREMENT for table `tbl_user_interest`
 --
 ALTER TABLE `tbl_user_interest`
-  MODIFY `user_interest_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
+  MODIFY `user_interest_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
 
 --
 -- AUTO_INCREMENT for table `tbl_user_post`
@@ -903,7 +925,7 @@ ALTER TABLE `tbl_user_post`
 -- AUTO_INCREMENT for table `tbl_user_verification`
 --
 ALTER TABLE `tbl_user_verification`
-  MODIFY `user_verification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `user_verification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT for table `tbl_user_vote`

@@ -153,10 +153,24 @@ var controller = (function (_UI) {
 	let is_hovered_comment_reply = false;
 	let under_the_comment_of = null;
 	let org_id = null;
+	let ninja_ = false;
 
 	return {
 		init() {
-			_UI.input_email.addEventListener("keyup", function (e) {
+			_UI.getId("college")?.addEventListener("change", function () {
+				ninja_ = true;
+				let courses = _UI.getClass("course-option");
+				for (let i = 0; i < courses.length; i++) {
+					if (courses[i].getAttribute("x-ref") !== this.value)
+						courses[i].hidden = true;
+					else {
+						courses[i].hidden = false;
+					}
+				}
+				_UI.getId("course").value = null;
+			});
+
+			_UI.input_email?.addEventListener("keyup", function (e) {
 				if (!tup_email_parser.test(this.value)) {
 					this.classList.add("error-input");
 					is_basic_good = false;
@@ -165,7 +179,7 @@ var controller = (function (_UI) {
 					this.classList.remove("error-input");
 				}
 			});
-			_UI.regconfirmpass.addEventListener("keyup", function (e) {
+			_UI.regconfirmpass?.addEventListener("keyup", function (e) {
 				console.log(this.value);
 				if (this.value.trim() !== _UI.regpass.value.trim()) {
 					this.classList.add("error-input");
@@ -177,8 +191,9 @@ var controller = (function (_UI) {
 					is_password_good = true;
 				}
 			});
-			_UI.basicprofile.addEventListener("submit", function (e) {
-				if (!is_basic_good || !is_password_good) e.preventDefault();
+			_UI.basicprofile?.addEventListener("submit", function (e) {
+				if (!is_basic_good || !is_password_good)
+					if (!ninja_) e.preventDefault();
 			});
 		},
 		verify() {
