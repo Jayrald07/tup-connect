@@ -114,9 +114,9 @@
                 </select> <br> <br>
 
                 <label for="lastname" class="input-label"> Course: </label>
-                <select name="course" id="course" class="input-input" required>
+                <select name="course" id="course" class="input-input" required defaultValue="null">
                     <?php foreach ($courses as $course) : ?>
-                        <option value=<?php echo $course["course_id"] ?>><?php echo $course["course_name"] . ' - ' .  $course["course_code"] ?></option>
+                        <option hidden x-ref=<?php echo $course["college_id"] ?> class="course-option" value=<?php echo $course["course_id"] ?>><?php echo $course["course_name"] . ' - ' .  $course["course_code"] ?></option>
                     <?php endforeach ?>
                 </select> <br> <br>
             </div>
@@ -142,7 +142,7 @@
     <script>
         var base_url = "<?php echo base_url() ?>"
     </script>
-    <script src=<?php echo  base_url() . "public/script.js" ?>></script>
+    <script src=<?php echo base_url() . "public/script.js" ?>></script>
     <script>
         controller.init()
     </script>
