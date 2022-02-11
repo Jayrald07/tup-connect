@@ -103,9 +103,9 @@
             <li>
                 <a href="javascript:void(0)" id="report-post">Report Post</a>
             </li>
-            <li>
+            <!-- <li>
                 <a href="javascript:void(0)" id="report-user">Report User</a>
-            </li>
+            </li> -->
             <li id="user-based-block">
                 <a href="javascript:void(0)" id="block-user">Block User</a>
             </li>
@@ -440,6 +440,45 @@
             </div>
         </div>
     </div>
+    <?php if (isset($is_new) AND $is_new) {?>
+    <div class="welcome-modal">
+        <div class="welcome-modal-body">
+            <h1>Welcome, TUPian!</h1>
+            <small style="margin: 30px 0;display:block">Here are the things you can do in TUP Connect</small>
+            <div class="splide">
+                <div class="splide__track">
+                    <ul class="splide__list">
+                        <li class="splide__slide">
+                            <img src="<?php echo base_url() . "public/assets/select-group.svg" ?>" height="200"/>
+                            <p>
+                                Join groups and interact with TUPians who have same interests as yours!
+                            </p>
+                        </li>
+                        <li class="splide__slide">
+                            <img src="<?php echo base_url() . "public/assets/choose-org.svg" ?>" height="200"/>
+                            <p>
+                                Join to accreditted organization in your campus.
+                            </p>
+                        </li>
+                        <li class="splide__slide">
+                            <img src="<?php echo base_url() . "public/assets/start-fw.svg" ?>" height="200"/>
+                            <p>
+                                Anonymously rant all you want in the Freedom Wall!
+                            </p>
+                        </li>
+                        <li class="splide__slide">
+                            <img src="<?php echo base_url() . "public/assets/start-ask.svg" ?>" height="200"/>
+                            <p>
+                                Ask or help other TUPians in Forum
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <a href="javascript:void(0)" id="explore-now">Explore Now</a>
+        </div>
+    </div>
+    <?php }?>
 
     <div class="post-container">
         <div style="position:relative">
@@ -855,12 +894,16 @@
             </div>
         <?php } ?>
     </div>
+    <script>
+        var base_url = "<?php echo base_url() ?>"
+    </script>
     <script src=<?php echo base_url()."public/script.js" ?>></script>
     <script>
         controller.posts_init()
         CKEDITOR.replace('post-content')
         CKEDITOR.replace('post-content-edit')
         controller.org_admin();
+
 
         $(document).ready(function() {
             $("time.timeago").timeago();

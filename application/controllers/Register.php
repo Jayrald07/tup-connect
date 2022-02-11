@@ -58,18 +58,37 @@ class Register extends CI_Controller
 
     public function validation()
     {
-        $data = $this->input->post();
-        $data['email_code'] = random_string('numeric', 6);
-        $data['user_id'] = random_string('alnum', 15);
-        $data['user_detail_id'] = random_string('alnum', 15);
-        if ($this->registration_model->insert($data)) {
-            $this->session->set_userdata(array(
-                "user_detail_id" => $data['user_detail_id']
-            ));
 
-            if ($this->sendVerifiication($data['email_code'])) redirect(base_url()."verify");
-            else echo "Error Sending The Code";
-        } else echo "Can't register at this time";
+        $data = $this->input->post();
+
+        if (!$this->registration_model->is_email_exist($data["tupemail"])) {
+            if (!$this->registration_model->is_username_exist($data["username"])) {
+                $data['email_code'] = random_string('numeric', 6);
+                $data['user_id'] = random_string('alnum', 15);
+                $data['user_detail_id'] = random_string('alnum', 15);
+                if ($this->registration_model->insert($data)) {
+                    $this->session->set_userdata(array(
+                        "user_detail_id" => $data['user_detail_id']
+                    ));
+        
+                    if ($this->sendVerifiication($data['email_code'])) redirect(base_url()."verify");
+                    else echo "Error Sending The Code";
+                } else echo "Can't register at this time";
+            } else {
+                $this->session->set_flashdata(array(
+                    "reg_error_title" => "Username Exist",
+                    "reg_error_description" => "Please try another username"
+                ));
+                redirect("register");
+            }
+        } else {
+            $this->session->set_flashdata(array(
+                "reg_error_title" => "Email Exist",
+                "reg_error_description" => "Please use another email"
+            ));
+            redirect("register");
+        }
+
     }
 
     public function _verify($type)
@@ -110,8 +129,11 @@ class Register extends CI_Controller
         } else {
             if ($type === "register") {
                 $gender = $this->registration_model->get_gender_details();
-
                 $this->load->view("registration", array(
+                    "error" => [
+                        "title" => $this->session->userdata("reg_error_title"),
+                        "description" => $this->session->userdata("reg_error_description"),
+                    ],
                     "action" => base_url() . "register/validation",
                     "type" => "first",
                     "genders" => $gender
@@ -163,7 +185,8 @@ class Register extends CI_Controller
         );
 
         $this->session->set_userdata("user_photo","user-1.png");
+        $this->session->set_flashdata("is_new",TRUE);
 
-        if ($this->registration_model->final_insert($data)) redirect(base_url()."lobby");
+        if ($this->registration_model->final_insert($data)) redirect(base_url()."groups");
     }
 }

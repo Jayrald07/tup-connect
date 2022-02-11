@@ -138,7 +138,7 @@ class Lobby extends CI_Controller
         $data["is_owner"] = $this->post_model->is_group_owner($this->session->userdata("user_detail_id"));
         $data["is_admin"] = $this->session->userdata("is_admin");
         $data["permissions"] = $this->post_model->get_user_permissions($this->session->userdata("user_detail_id"));
-
+        $data["is_new"] = $this->session->userdata("is_new");
         $this->load->view("view_post", $data);
     }
 
@@ -155,7 +155,7 @@ class Lobby extends CI_Controller
         $data["startup"] = TRUE;
         $data["user_photo"] = $this->session->userdata("user_photo");
         $data["is_admin"] = $this->session->userdata("is_admin");
-
+        $data["is_new"] = $this->session->userdata("is_new");
 
         $this->load->view("view_post", $data);
     }

@@ -262,6 +262,7 @@ class Organization extends CI_Controller
     public function org_verification($status) {
 
         if (empty(trim($this->session->userdata("user_detail_id")))) redirect(base_url()."login");
+        if (empty(trim($this->session->userdata("is_admin")))) redirect(base_url()."groups");
 
 
         $data["user_photo"] = $this->session->userdata("user_photo");

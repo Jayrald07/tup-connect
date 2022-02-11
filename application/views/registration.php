@@ -16,7 +16,17 @@
             <figure>
                 <img src="<?php echo base_url() . "public/assets/logo.svg" ?>" />
             </figure>
-
+            <?php
+            if (isset($error) AND $error AND !empty(trim($error["title"])) ) {
+            ?>
+                <section class="alert-error">
+                    <i class="fas fa-info-circle"></i>
+                    <section>
+                        <h1><?php echo $error["title"] ?></h1>
+                        <p><?php echo $error["description"] ?></p>
+                    </section>
+                </section>
+            <?php } ?>
             <?php echo form_error(); ?>
             <?php echo form_open($action, "id='basic-profile-id'"); ?>
 
@@ -129,6 +139,9 @@
 
     </form>
     </main>
+    <script>
+        var base_url = "<?php echo base_url() ?>"
+    </script>
     <script src=<?php echo  base_url() . "public/script.js" ?>></script>
     <script>
         controller.init()

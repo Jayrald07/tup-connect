@@ -129,7 +129,7 @@ var ui = (function () {
 })();
 
 var controller = (function (_UI) {
-	const tup_email_parser = /\w+([a-z])\.\w+([a-z])@tup.edu.ph/;
+	const tup_email_parser = /\w+([a-z])\w+([a-z])@tup.edu.ph/;
 	let is_basic_good = false;
 	let is_password_good = false;
 	let boxes;
@@ -196,7 +196,7 @@ var controller = (function (_UI) {
 		async vote(post_id, type) {
 			try {
 				let result = await $.ajax({
-					url: "http://localhost/tup-connect/post/vote",
+					url: `${base_url}/post/vote`,
 					type: "POST",
 					dataType: "json",
 					data: {
@@ -249,7 +249,7 @@ var controller = (function (_UI) {
 					.getClass("join-trigger")
 					?.[i]?.addEventListener("click", function () {
 						$.ajax({
-							url: `http://localhost/tup-connect/join_group`,
+							url: `${base_url}/join_group`,
 							type: "POST",
 							dataType: "text",
 							data: {
@@ -266,7 +266,7 @@ var controller = (function (_UI) {
 					.getClass("cancel-group-trigger")
 					?.[i]?.addEventListener("click", function () {
 						$.ajax({
-							url: `http://localhost/tup-connect/cancel_group_request`,
+							url: `${base_url}/cancel_group_request`,
 							type: "POST",
 							dataType: "text",
 							data: {
@@ -288,7 +288,7 @@ var controller = (function (_UI) {
 					.getClass("join-org-trigger")
 					?.[i]?.addEventListener("click", function () {
 						$.ajax({
-							url: `http://localhost/tup-connect/join_org`,
+							url: `${base_url}/join_org`,
 							type: "POST",
 							dataType: "text",
 							data: {
@@ -305,7 +305,7 @@ var controller = (function (_UI) {
 					.getClass("cancel-org-trigger")
 					?.[i]?.addEventListener("click", function () {
 						$.ajax({
-							url: `http://localhost/tup-connect/cancel_org_request`,
+							url: `${base_url}/cancel_org_request`,
 							type: "POST",
 							dataType: "text",
 							data: {
@@ -323,7 +323,7 @@ var controller = (function (_UI) {
 		join_action(data) {
 			if (data.is_owner) {
 				return (
-					'<a href="http://localhost/tup-connect/groups/' +
+					`<a href="${base_url}/groups/` +
 					data.group_id +
 					'" class="search-group-join" >View</a>'
 				);
@@ -347,7 +347,7 @@ var controller = (function (_UI) {
 		join_org_action(data) {
 			if (data.is_owner) {
 				return (
-					'<a href="http://localhost/tup-connect/organizations/' +
+					`<a href="${base_url}/organizations/` +
 					data.organization_id +
 					'" class="search-org-join" >View</a>'
 				);
@@ -381,7 +381,7 @@ var controller = (function (_UI) {
 			} else {
 				_UI.getClass("search-result-container")[0].textContent = null;
 				$.ajax({
-					url: `http://localhost/tup-connect/search_group`,
+					url: `${base_url}/search_group`,
 					type: "POST",
 					dataType: "json",
 					data: {
@@ -529,7 +529,7 @@ var controller = (function (_UI) {
 			} else {
 				_UI.getClass("org-result-container")[0].textContent = null;
 				$.ajax({
-					url: `http://localhost/tup-connect/find_org`,
+					url: `${base_url}/find_org`,
 					type: "POST",
 					dataType: "json",
 					data: {
@@ -575,6 +575,10 @@ var controller = (function (_UI) {
 		},
 		posts_init() {
 			let _ = this;
+
+			_UI.getId("explore-now")?.addEventListener("click", () => {
+				_UI.getClass("welcome-modal")[0].style.display = "none";
+			});
 
 			_UI.getId("announcement-group")?.addEventListener("click", () => {
 				_UI.getId("announcement-container").style.display = "block";
@@ -681,7 +685,7 @@ var controller = (function (_UI) {
 				let comment_text = _UI.getId("comment-input");
 				if (String(comment_text.value).trim().length) {
 					$.ajax({
-						url: "http://localhost/tup-connect/update_comment",
+						url: `${base_url}/update_comment`,
 						type: "POST",
 						dataType: "text",
 						data: {
@@ -704,7 +708,7 @@ var controller = (function (_UI) {
 
 			_UI.getId("delete-comment-delete").addEventListener("click", () => {
 				$.ajax({
-					url: "http://localhost/tup-connect/delete_comment",
+					url: `${base_url}/delete_comment`,
 					type: "POST",
 					dataType: "text",
 					data: {
@@ -732,13 +736,14 @@ var controller = (function (_UI) {
 
 			for (let i = 0; i < _UI.post_option_toggle.length; i++) {
 				_UI.post_option_toggle[i].addEventListener("click", function (e) {
-					_UI.post_option.style.left = e.target.offsetLeft - 110 + "px";
-					_UI.post_option.style.top = e.target.offsetTop - 10 + "px";
+					console.log(e);
+					_UI.post_option.style.left = e.pageX - 110 + "px";
+					_UI.post_option.style.top = e.pageY - 10 + "px";
 					report_post_id = this.getAttribute("post-value");
 					report_user_id = this.getAttribute("user-value");
 
 					$.ajax({
-						url: "http://localhost/tup-connect/post/is_delete",
+						url: `${base_url}/post/is_delete`,
 						type: "POST",
 						dataType: "text",
 						data: {
@@ -761,7 +766,7 @@ var controller = (function (_UI) {
 					_UI.comment_body.textContent = null;
 					console.log(comment_post_id);
 					$.ajax({
-						url: "http://localhost/tup-connect/comment/get",
+						url: `${base_url}/comment/get`,
 						type: "POST",
 						dataType: "json",
 						data: { "post-id": comment_post_id },
@@ -786,11 +791,13 @@ var controller = (function (_UI) {
 											<section class="comment-section" id="${item.comment_id}">
 												<div class="comment-section-header">
 													<figure>
-														<img src="http://localhost/tup-connect/${path}${item.image_path}" />
+														<img src="${base_url}/${path}${item.image_path}" />
 													</figure>
 													<div>
 														<h1>${item.first_name} ${item.last_name}</h1>
-														<time>${item.date_time_stamp}</time>
+														<time class="timeago" datetime="${item.date_time_stamp}">${
+												item.date_time_stamp
+											}</time>
 													</div>
 													${
 														item.is_own
@@ -831,11 +838,13 @@ var controller = (function (_UI) {
 											<section class="comment-section reply-card">
 												<div class="comment-section-header">
 													<figure>
-														<img src="http://localhost/tup-connect/${path}${reply.image_path}" />
+														<img src="${base_url}/${path}${reply.image_path}" />
 													</figure>
 													<div>
 														<h1>${reply.first_name} ${reply.last_name}</h1>
-														<time>${reply.date_time_stamp}</time>
+														<time  class="timeago" datetime="${reply.date_time_stamp}">${
+													reply.date_time_stamp
+												}</time>
 													</div>
 													${
 														reply.is_own
@@ -856,6 +865,7 @@ var controller = (function (_UI) {
 								});
 								_.register_reply_event();
 								_.register_comment_event();
+								$("time.timeago").timeago();
 							} else
 								_UI.comment_body.innerHTML =
 									"<p align='center'><small>No Comment</small></p>";
@@ -916,7 +926,7 @@ var controller = (function (_UI) {
 			});
 			_UI.comment_button.addEventListener("click", () => {
 				$.ajax({
-					url: "http://localhost/tup-connect/comment/insert",
+					url: `${base_url}/comment/insert`,
 					type: "POST",
 					dataType: "text",
 					data: {
@@ -937,7 +947,7 @@ var controller = (function (_UI) {
 				"click",
 				this.report.bind({ type: "post" })
 			);
-			_UI.report_user.addEventListener(
+			_UI.report_user?.addEventListener(
 				"click",
 				this.report.bind({ type: "user" })
 			);
@@ -968,7 +978,7 @@ var controller = (function (_UI) {
 				}
 
 				$.ajax({
-					url: `http://localhost/tup-connect/post/${props.url}`,
+					url: `${base_url}/post/${props.url}`,
 					type: "POST",
 					dataType: "text",
 					data: props,
@@ -987,7 +997,7 @@ var controller = (function (_UI) {
 
 			_UI.delete_delete.addEventListener("click", (e) => {
 				$.ajax({
-					url: "http://localhost/tup-connect/post/delete",
+					url: `${base_url}/post/delete`,
 					type: "POST",
 					dataType: "text",
 					data: {
@@ -1005,7 +1015,7 @@ var controller = (function (_UI) {
 				_UI.post_image_container.textContent = "";
 				_UI.post_option.style.display = "none";
 				$.ajax({
-					url: "http://localhost/tup-connect/post/getone",
+					url: `${base_url}/post/getone`,
 					type: "POST",
 					dataType: "json",
 					data: {
@@ -1026,7 +1036,7 @@ var controller = (function (_UI) {
 										"afterbegin",
 										`<div class="image-container">
 								<a href="javascript:void(0)" x-value=${post_image_id} class="post-image-delete"><i class="fas fa-trash"></i></a>
-								<img src="http://localhost/tup-connect/uploads/${post_image_path}" />
+								<img src="${base_url}/uploads/${post_image_path}" />
 								</div>
 							`
 									);
@@ -1055,7 +1065,7 @@ var controller = (function (_UI) {
 					data.append("post_image_add[]", _UI.post_image_add.files[i]);
 
 				$.ajax({
-					url: "http://localhost/tup-connect/post/update",
+					url: `${base_url}/post/update`,
 					type: "POST",
 					dataType: "text",
 					data,
@@ -1167,7 +1177,7 @@ var controller = (function (_UI) {
 
 			_UI.getId("delete-member-delete").addEventListener("click", (e) => {
 				$.ajax({
-					url: "http://localhost/tup-connect/member/delete",
+					url: `${base_url}/member/delete`,
 					type: "POST",
 					dataType: "text",
 					data: {
@@ -1185,7 +1195,7 @@ var controller = (function (_UI) {
 
 			_UI.getId("delete-org-member-delete").addEventListener("click", (e) => {
 				$.ajax({
-					url: "http://localhost/tup-connect/org_member/delete",
+					url: `${base_url}/org_member/delete`,
 					type: "POST",
 					dataType: "text",
 					data: {
@@ -1203,7 +1213,7 @@ var controller = (function (_UI) {
 		},
 		group_user_update_status(status, ref, isBulk) {
 			$.ajax({
-				url: "http://localhost/tup-connect/group/update_status",
+				url: `${base_url}/group/update_status`,
 				type: "POST",
 				dataType: "text",
 				data: {
@@ -1237,7 +1247,7 @@ var controller = (function (_UI) {
 		},
 		org_user_update_status(status, ref, isBulk) {
 			$.ajax({
-				url: "http://localhost/tup-connect/org/update_status",
+				url: `${base_url}/org/update_status`,
 				type: "POST",
 				dataType: "text",
 				data: {
@@ -1271,7 +1281,7 @@ var controller = (function (_UI) {
 		},
 		update_post_reported(status, ref, isBulk) {
 			$.ajax({
-				url: "http://localhost/tup-connect/report/update_status",
+				url: `${base_url}/report/update_status`,
 				type: "POST",
 				dataType: "text",
 				data: {
@@ -1307,7 +1317,7 @@ var controller = (function (_UI) {
 			for (let i = 0; i < addrole.length; i++) {
 				addrole[i].addEventListener("click", function () {
 					$.ajax({
-						url: "http://localhost/tup-connect/role/update_member_role",
+						url: `${base_url}/role/update_member_role`,
 						type: "POST",
 						dataType: "json",
 						data: {
@@ -1331,7 +1341,7 @@ var controller = (function (_UI) {
 			for (let i = 0; i < addrole.length; i++) {
 				addrole[i].addEventListener("click", function () {
 					$.ajax({
-						url: "http://localhost/tup-connect/role/update_org_member_role",
+						url: `${base_url}/role/update_org_member_role`,
 						type: "POST",
 						dataType: "json",
 						data: {
@@ -1355,7 +1365,7 @@ var controller = (function (_UI) {
 			for (let i = 0; i < removerole.length; i++) {
 				removerole[i].addEventListener("click", function () {
 					$.ajax({
-						url: "http://localhost/tup-connect/role/update_member_role",
+						url: `${base_url}/role/update_member_role`,
 						type: "POST",
 						dataType: "json",
 						data: {
@@ -1380,7 +1390,7 @@ var controller = (function (_UI) {
 			for (let i = 0; i < removerole.length; i++) {
 				removerole[i].addEventListener("click", function () {
 					$.ajax({
-						url: "http://localhost/tup-connect/role/update_org_member_role",
+						url: `${base_url}/role/update_org_member_role`,
 						type: "POST",
 						dataType: "json",
 						data: {
@@ -1419,7 +1429,7 @@ var controller = (function (_UI) {
 			let _ = this;
 			_UI.getId(id)?.addEventListener("click", function () {
 				$.ajax({
-					url: "http://localhost/tup-connect/role/toggle_permission",
+					url: `${base_url}/role/toggle_permission`,
 					type: "POST",
 					dataType: "text",
 					data: {
@@ -1447,6 +1457,10 @@ var controller = (function (_UI) {
 						?.classList.remove("hidden");
 				});
 			}
+
+			_UI.getId("delete-cancel").addEventListener("click", () => {
+				_UI.getClass("delete-modal")[0].style.display = "none";
+			});
 
 			let tog = _UI.getClass("toggler");
 			for (let i = 0; i < tog.length; i++) {
@@ -1579,7 +1593,7 @@ var controller = (function (_UI) {
 
 			_UI.getId("add-role-trigger")?.addEventListener("click", () => {
 				$.ajax({
-					url: "http://localhost/tup-connect/group/add_role",
+					url: `${base_url}/group/add_role`,
 					type: "POST",
 					dataType: "json",
 					data: {
@@ -1587,6 +1601,7 @@ var controller = (function (_UI) {
 					},
 					success: (data) => {
 						if (data.length) {
+							location.reload();
 							_UI.getId("role-container").insertAdjacentHTML(
 								"afterbegin",
 								`
@@ -1612,7 +1627,7 @@ var controller = (function (_UI) {
 
 			_UI.getId("add-org-role-trigger")?.addEventListener("click", () => {
 				$.ajax({
-					url: "http://localhost/tup-connect/org/add_role",
+					url: `${base_url}/org/add_role`,
 					type: "POST",
 					dataType: "json",
 					data: {
@@ -1654,7 +1669,7 @@ var controller = (function (_UI) {
 
 			_UI.getId("delete-delete")?.addEventListener("click", () => {
 				$.ajax({
-					url: "http://localhost/tup-connect/role/delete_role",
+					url: `${base_url}/role/delete_role`,
 					type: "POST",
 					dataType: "json",
 					data: {
@@ -1684,7 +1699,7 @@ var controller = (function (_UI) {
 				mems[i]?.addEventListener("click", function () {
 					_UI.getClass("members-modal-body")[0].textContent = null;
 					$.ajax({
-						url: "http://localhost/tup-connect/role/members",
+						url: `${base_url}/role/members`,
 						type: "POST",
 						dataType: "json",
 						data: {
@@ -1700,7 +1715,7 @@ var controller = (function (_UI) {
 										"afterbegin",
 										`
 									<div class="role-member-card" id="rmr-${item.user_detail_id}">
-										<img src="http://localhost/tup-connect/${path}${item.image_path}" />
+										<img src="${base_url}/${path}${item.image_path}" />
 										<h1>${item.first_name} ${item.middle_name} ${item.last_name}</h1>
 										<a href="javascript:void(0)" class="member-remove-role" x-value="${item.user_detail_id}">Remove</a>
 									</div>
@@ -1719,7 +1734,7 @@ var controller = (function (_UI) {
 					[i]?.addEventListener("click", function () {
 						_UI.getClass("members-modal-body")[0].textContent = null;
 						$.ajax({
-							url: "http://localhost/tup-connect/role/no_roles",
+							url: `${base_url}/role/no_roles`,
 							type: "POST",
 							dataType: "json",
 							success: (data) => {
@@ -1734,7 +1749,7 @@ var controller = (function (_UI) {
 											"afterbegin",
 											`
 										<div class="role-member-card" id="rm-${item.user_detail_id}">
-											<img src="http://localhost/tup-connect/${path}${item.image_path}" />
+											<img src="${base_url}/${path}${item.image_path}" />
 											<h1>${item.first_name} ${item.middle_name} ${item.last_name}</h1>
 											<a href="javascript:void(0)" class="member-add-role" x-value="${item.user_detail_id}">Add</a>
 										</div>
@@ -1754,7 +1769,7 @@ var controller = (function (_UI) {
 					[i]?.addEventListener("click", function () {
 						_UI.getClass("members-modal-body")[0].textContent = null;
 						$.ajax({
-							url: "http://localhost/tup-connect/role/org_no_roles",
+							url: `${base_url}/role/org_no_roles`,
 							type: "POST",
 							dataType: "json",
 							success: (data) => {
@@ -1769,7 +1784,7 @@ var controller = (function (_UI) {
 											"afterbegin",
 											`
 										<div class="role-member-card" id="rm-${item.user_detail_id}">
-											<img src="http://localhost/tup-connect/${path}${item.image_path}" />
+											<img src="${base_url}/${path}${item.image_path}" />
 											<h1>${item.first_name} ${item.middle_name} ${item.last_name}</h1>
 											<a href="javascript:void(0)" class="member-org-add-role" x-value="${item.user_detail_id}">Add</a>
 										</div>
@@ -1789,7 +1804,7 @@ var controller = (function (_UI) {
 				org_mems[i]?.addEventListener("click", function () {
 					_UI.getClass("members-modal-body")[0].textContent = null;
 					$.ajax({
-						url: "http://localhost/tup-connect/role/org_members",
+						url: `${base_url}/role/org_members`,
 						type: "POST",
 						dataType: "json",
 						data: {
@@ -1805,7 +1820,7 @@ var controller = (function (_UI) {
 										"afterbegin",
 										`
 									<div class="role-member-card" id="rmr-${item.user_detail_id}">
-										<img src="http://localhost/tup-connect/${path}${item.image_path}" />
+										<img src="${base_url}/${path}${item.image_path}" />
 										<h1>${item.first_name} ${item.middle_name} ${item.last_name}</h1>
 										<a href="javascript:void(0)" class="member-org-remove-role" x-value="${item.user_detail_id}">Remove</a>
 									</div>
@@ -1825,7 +1840,7 @@ var controller = (function (_UI) {
 					[i]?.addEventListener("click", function () {
 						_UI.getClass("members-modal-body")[0].textContent = null;
 						$.ajax({
-							url: "http://localhost/tup-connect/role/org_no_roles",
+							url: `${base_url}/role/org_no_roles`,
 							type: "POST",
 							dataType: "json",
 							success: (data) => {
@@ -1840,7 +1855,7 @@ var controller = (function (_UI) {
 											"afterbegin",
 											`
 										<div class="role-member-card" id="rm-${item.user_detail_id}">
-											<img src="http://localhost/tup-connect/${path}${item.image_path}" />
+											<img src="${base_url}/${path}${item.image_path}" />
 											<h1>${item.first_name} ${item.middle_name} ${item.last_name}</h1>
 											<a href="javascript:void(0)" class="member-org-add-role" x-value="${item.user_detail_id}">Add</a>
 										</div>
@@ -1859,7 +1874,7 @@ var controller = (function (_UI) {
 			_UI.getId("role-permission")?.addEventListener("change", function () {
 				current_role_id = this.value;
 				$.ajax({
-					url: "http://localhost/tup-connect/role/get_permission",
+					url: `${base_url}/role/get_permission`,
 					type: "POST",
 					dataType: "json",
 					data: {
@@ -1892,7 +1907,7 @@ var controller = (function (_UI) {
 
 			_UI.getId("role-clear-permission")?.addEventListener("click", () => {
 				$.ajax({
-					url: "http://localhost/tup-connect/role/clear_permission",
+					url: `${base_url}/role/clear_permission`,
 					type: "POST",
 					dataType: "text",
 					data: {
@@ -1936,7 +1951,7 @@ var controller = (function (_UI) {
 			for (let i = 0; i < val.length; i++) {
 				val[i].addEventListener("click", function () {
 					$.ajax({
-						url: "http://localhost/tup-connect/org_validate",
+						url: `${base_url}/org_validate`,
 						type: "POST",
 						dataType: "text",
 						data: {
